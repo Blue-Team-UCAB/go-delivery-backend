@@ -1,8 +1,9 @@
+import { ProductRepository } from 'src/product/infrastructure/repository/product.repository';
 import { DataSource, getMetadataArgsStorage } from 'typeorm';
 
 export const ormDatabaseProviders = [
   {
-    provide: 'DataSource',
+    provide: 'BaseDeDatos',
 
     useFactory: async () => {
       const dataSource = new DataSource({
@@ -30,5 +31,13 @@ export const ormDatabaseProviders = [
 
       return dataSource;
     },
+  },
+
+  {
+    provide: 'ProductRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new ProductRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
   },
 ];

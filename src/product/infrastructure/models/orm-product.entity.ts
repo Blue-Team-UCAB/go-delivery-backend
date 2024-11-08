@@ -1,10 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity()
+@Entity('Producto')
 export class Product {
   @PrimaryGeneratedColumn('uuid')
-  codigo_cancion: string;
+  idProducto: string;
 
   @Column()
-  nombre_cancion: string;
+  ProductoNombre: string;
 }
