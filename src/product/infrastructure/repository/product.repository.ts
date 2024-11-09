@@ -4,6 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Result } from 'src/common/Domain/result-handler/Result';
 import { Product } from 'src/product/domain/product';
 import { ProductMapper } from '../mappers/product.mapper';
+import { GetProductPageServiceEntryDto } from 'src/product/aplication/dto/entry/get-product-page-service-entry.dto';
 
 export class ProductRepository extends Repository<ProductoORM> implements IProductRepository {
   private readonly productMapper: ProductMapper;
@@ -25,6 +26,17 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
       }
 
       return Result.success<Product>(resp, 200);
+    } catch (e) {
+      return Result.fail(null, 500, e.message);
+    }
+  }
+
+  async findAllProducts(page: number, take: number): Promise<Result<Product[]>> {
+    try {
+      const skip = take * page - take;
+      const products = await this.createQueryBuilder('producto').select(['producto.id_Producto', 'producto.nombre_Producto', 'producto.descripcion_Producto']).skip(skip).take(take).getMany();
+      const resp = await Promise.all(products.map(product => this.productMapper.fromPersistenceToDomain(product)));
+      return Result.success<Product[]>(resp, 200);
     } catch (e) {
       return Result.fail(null, 500, e.message);
     }
