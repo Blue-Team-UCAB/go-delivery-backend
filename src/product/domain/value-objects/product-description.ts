@@ -4,9 +4,9 @@ import { InvalidProductDescriptionException } from '../exceptions/invalid-produc
 export class ProductDescription implements ValueObject<ProductDescription> {
   private readonly _description: string;
 
-  constructor(descriprion: string) {
-    if (descriprion.length < 20) throw new InvalidProductDescriptionException(`Description ${descriprion} is not valid`);
-    this._description = descriprion;
+  constructor(description: string) {
+    if (description.length < 20) throw new InvalidProductDescriptionException(`Description ${description} is not valid`);
+    this._description = description;
   }
 
   equals(obj: ProductDescription): boolean {
