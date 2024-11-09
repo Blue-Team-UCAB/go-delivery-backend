@@ -23,6 +23,6 @@ export class ProductController {
   @Post()
   async createProduct(@Body() createProductDto: CreateProductDto) {
     const service = new createProductApplicationService(this.productRepository, this.uuidCreator);
-    service.execute(createProductDto);
+    return (await service.execute(createProductDto)).Value;
   }
 }
