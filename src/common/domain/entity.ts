@@ -1,11 +1,7 @@
 import { ValueObject } from './value-object';
 
 export class Entity<T extends ValueObject<T>> {
-  private readonly id: T;
-
-  protected constructor(id: T) {
-    this.id = id;
-  }
+  protected constructor(private readonly id: T) {}
 
   get Id() {
     return this.id;
