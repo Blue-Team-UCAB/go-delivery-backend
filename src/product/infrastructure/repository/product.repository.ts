@@ -13,8 +13,21 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
     this.productMapper = new ProductMapper();
   }
 
-  findProductById(id: string): Promise<Result<Product>> {
-    throw new Error('Method not implemented.');
+  async findProductById(id: string): Promise<Result<Product>> {
+    try {
+      const produt = await this.createQueryBuilder('producto')
+        .select(['producto.id_Producto', 'producto.nombre_Producto', 'producto.descripcion_Producto'])
+        .where('producto.id_Producto = :id', { id })
+        .getOne();
+      const resp = await this.productMapper.fromPersistenceToDomain(produt);
+      if (!resp) {
+        return Result.fail(null, 404, 'No existe el producto Solicitado');
+      }
+
+      return Result.success<Product>(resp, 200);
+    } catch (e) {
+      return Result.fail(null, 500, e.message);
+    }
   }
 
   async saveProductAggregate(product: Product): Promise<Result<Product>> {

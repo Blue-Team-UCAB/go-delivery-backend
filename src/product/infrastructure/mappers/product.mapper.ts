@@ -1,6 +1,9 @@
 import { IMapper } from 'src/common/application/mapper/mapper.interface';
 import { ProductORMEntity } from '../models/orm-product.entity';
 import { Product } from 'src/product/domain/product';
+import { ProductId } from 'src/product/domain/value-objects/product.id';
+import { ProductName } from 'src/product/domain/value-objects/product-name';
+import { ProductDescription } from 'src/product/domain/value-objects/product-description';
 
 export class ProductMapper implements IMapper<Product, ProductORMEntity> {
   async fromDomainToPersistence(domain: Product): Promise<ProductORMEntity> {
@@ -10,7 +13,7 @@ export class ProductMapper implements IMapper<Product, ProductORMEntity> {
     productORM.nombre_Producto = domain.Name.Name;
     return productORM;
   }
-  fromPersistenceToDomain(persistence: ProductORMEntity): Promise<Product> {
-    throw new Error('Method not implemented.');
+  async fromPersistenceToDomain(persistence: ProductORMEntity): Promise<Product> {
+    return new Product(ProductId.create(persistence.id_Producto), ProductName.create(persistence.nombre_Producto), ProductDescription.create(persistence.descripcion_Producto));
   }
 }

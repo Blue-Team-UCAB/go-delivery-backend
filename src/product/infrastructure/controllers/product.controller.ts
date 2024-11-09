@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Inject } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Get, Param } from '@nestjs/common';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { DataSource } from 'typeorm';
 import { ApiTags } from '@nestjs/swagger';
 import { createProductApplicationService } from 'src/product/aplication/commands/create-product-application.service';
 import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-generator';
 import { ProductRepository } from '../repository/product.repository';
+import { GetProductByIdApplicationService } from 'src/product/aplication/queries/get-product-id.application.service';
 
 @ApiTags('Products')
 @Controller('product')
@@ -24,5 +25,11 @@ export class ProductController {
   async createProduct(@Body() createProductDto: CreateProductDto) {
     const service = new createProductApplicationService(this.productRepository, this.uuidCreator);
     return (await service.execute(createProductDto)).Value;
+  }
+
+  @Get(':id')
+  async getProductId(@Param('id') id: string) {
+    const service = new GetProductByIdApplicationService(this.productRepository);
+    return (await service.execute({ id: id })).Value;
   }
 }
