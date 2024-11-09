@@ -1,5 +1,5 @@
 import { ValueObject } from 'src/common/domain/value-object';
-import { InvalidProductNameException } from '../exeptions/invalid-product-name.exeption';
+import { InvalidProductNameException } from '../exceptions/invalid-product-name.exception';
 
 export class ProductName implements ValueObject<ProductName> {
   private readonly _name: string;

@@ -3,7 +3,7 @@ import { ProductId } from './value-objects/product.id';
 import { ProductName } from './value-objects/product-name';
 import { ProductDescription } from './value-objects/product-description';
 import { ProductCreatedEvent } from './events/product-created.event';
-import { InvalidProductException } from './exeptions/invalid-product.exception';
+import { InvalidProductException } from './exceptions/invalid-product.exception';
 import { DomainEvent } from 'src/common/domain/domain-event';
 
 export class Product extends AggregateRoot<ProductId> {

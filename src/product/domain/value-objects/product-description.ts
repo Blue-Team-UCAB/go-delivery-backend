@@ -1,5 +1,5 @@
 import { ValueObject } from 'src/common/domain/value-object';
-import { InvalidProductDescriptionException } from '../exeptions/invalid-product-description.exeption';
+import { InvalidProductDescriptionException } from '../exceptions/invalid-product-description.exception';
 
 export class ProductDescription implements ValueObject<ProductDescription> {
   private readonly _description: string;

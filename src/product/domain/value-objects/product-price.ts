@@ -1,5 +1,5 @@
 import { ValueObject } from 'src/common/domain/value-object';
-import { InvalidProductPriceException } from '../exeptions/invalid-product-price.exeption';
+import { InvalidProductPriceException } from '../exceptions/invalid-product-price.exception';
 
 export class ProductPrice implements ValueObject<ProductPrice> {
   private readonly _price: number;

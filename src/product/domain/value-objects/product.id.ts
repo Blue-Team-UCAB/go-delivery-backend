@@ -1,5 +1,5 @@
 import { ValueObject } from 'src/common/domain/value-object';
-import { InvalidProductIdException } from '../exeptions/invalid-product-id.exeption';
+import { InvalidProductIdException } from '../exceptions/invalid-product-id.exception';
 
 export class ProductId implements ValueObject<ProductId> {
   private readonly _id: string;
