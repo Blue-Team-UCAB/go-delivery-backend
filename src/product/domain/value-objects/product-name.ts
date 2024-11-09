@@ -5,7 +5,7 @@ export class ProductName implements ValueObject<ProductName> {
   private readonly _name: string;
 
   constructor(name: string) {
-    if (name.length < 8) throw new InvalidProductNameException(`Name ${name} is not valid`);
+    if (name.length < 3) throw new InvalidProductNameException(`Name ${name} is not valid`);
     this._name = name;
   }
 
