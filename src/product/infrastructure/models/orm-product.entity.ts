@@ -1,10 +1,13 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('Producto')
-export class Product {
+export class ProductORMEntity {
   @PrimaryGeneratedColumn('uuid')
-  idProducto: string;
+  id_Producto: string;
 
   @Column()
-  ProductoNombre: string;
+  nombre_Producto: string;
+
+  @Column()
+  descripcion_Producto: string;
 }

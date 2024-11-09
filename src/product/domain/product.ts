@@ -18,8 +18,8 @@ export class Product extends AggregateRoot<ProductId> {
     return this.description;
   }
 
-  constructor(id: ProductId, description: ProductDescription) {
-    const productCreated = ProductCreatedEvent.create(id.Id, description.Description);
+  constructor(id: ProductId, name: ProductName, description: ProductDescription) {
+    const productCreated = ProductCreatedEvent.create(id, name, description);
     super(id, productCreated);
   }
 
@@ -27,5 +27,10 @@ export class Product extends AggregateRoot<ProductId> {
     if (!this.name || !this.description) throw new InvalidProductException(`Product not valid`);
   }
 
-  protected when(event: DomainEvent): void {}
+  protected when(event: DomainEvent): void {
+    if (event instanceof ProductCreatedEvent) {
+      this.name = event.name;
+      this.description = event.description;
+    }
+  }
 }
