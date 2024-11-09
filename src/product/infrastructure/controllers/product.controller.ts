@@ -12,7 +12,10 @@ export class ProductController {
   private readonly productRepository: ProductRepository;
   private readonly uuidCreator: UuidGenerator;
 
-  constructor(@Inject('BaseDeDatos') private readonly dataSource: DataSource) {
+  constructor(
+    @Inject('BaseDeDatos')
+    private readonly dataSource: DataSource,
+  ) {
     this.uuidCreator = new UuidGenerator();
     this.productRepository = new ProductRepository(this.dataSource);
   }
