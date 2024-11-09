@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Get, Param, ParseIntPipe, ValidationPipe, Query } from '@nestjs/common';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { DataSource } from 'typeorm';
 import { ApiTags } from '@nestjs/swagger';
@@ -7,6 +7,7 @@ import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-gener
 import { ProductRepository } from '../repository/product.repository';
 import { GetProductByIdApplicationService } from 'src/product/aplication/queries/get-product-id.application.service';
 import { GetProductByPageApplicationService } from 'src/product/aplication/queries/get-product-page.application.service';
+import { GetProductPageDto } from '../dto/get-product-page.dto';
 
 @ApiTags('Products')
 @Controller('product')
@@ -34,9 +35,10 @@ export class ProductController {
     return (await service.execute({ id: id })).Value;
   }
 
-  @Get(':page/:take')
-  async getProductByPage(@Param('page', ParseIntPipe) page: number, @Param('take', ParseIntPipe) take: number) {
+  @Get()
+  async getProductByPage(@Query(ValidationPipe) query: GetProductPageDto) {
+    const { page, take } = query;
     const service = new GetProductByPageApplicationService(this.productRepository);
-    return (await service.execute({ page: page, take: take })).Value;
+    return (await service.execute({ page, take })).Value;
   }
 }
