@@ -1,4 +1,5 @@
-import { IsString, MinLength, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, MinLength, IsOptional, IsNumber, IsPositive } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -10,10 +11,27 @@ export class CreateProductDto {
   description: string;
 
   @IsString()
+  @MinLength(3)
+  currency: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  price: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  stock: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  weight: number;
+
   @IsOptional()
   imageBuffer?: Buffer;
 
-  @IsString()
   @IsOptional()
   contentType?: string;
 }

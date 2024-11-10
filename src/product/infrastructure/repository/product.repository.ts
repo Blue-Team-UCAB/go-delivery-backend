@@ -16,7 +16,16 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
   async findProductById(id: string): Promise<Result<Product>> {
     try {
       const produt = await this.createQueryBuilder('producto')
-        .select(['producto.id_Producto', 'producto.nombre_Producto', 'producto.descripcion_Producto', 'producto.imagen_Producto'])
+        .select([
+          'producto.id_Producto',
+          'producto.nombre_Producto',
+          'producto.descripcion_Producto',
+          'producto.currency_Producto',
+          'producto.price_Producto',
+          'producto.stock_Producto',
+          'producto.weight_Producto',
+          'producto.imagen_Producto',
+        ])
         .where('producto.id_Producto = :id', { id })
         .getOne();
       const resp = await this.productMapper.fromPersistenceToDomain(produt);
@@ -34,10 +43,20 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
     try {
       const skip = take * page - take;
       const products = await this.createQueryBuilder('producto')
-        .select(['producto.id_Producto', 'producto.nombre_Producto', 'producto.descripcion_Producto', 'producto.imagen_Producto'])
+        .select([
+          'producto.id_Producto',
+          'producto.nombre_Producto',
+          'producto.descripcion_Producto',
+          'producto.currency_Producto',
+          'producto.price_Producto',
+          'producto.stock_Producto',
+          'producto.weight_Producto',
+          'producto.imagen_Producto',
+        ])
         .skip(skip)
         .take(take)
         .getMany();
+      console.log(products);
       const resp = await Promise.all(products.map(product => this.productMapper.fromPersistenceToDomain(product)));
       return Result.success<Product[]>(resp, 200);
     } catch (e) {
