@@ -10,4 +10,7 @@ export class ProductORMEntity {
 
   @Column()
   descripcion_Producto: string;
+
+  @Column()
+  imagen_Producto: string;
 }
