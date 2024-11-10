@@ -1,17 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe,Logger } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-
 async function GoDely() {
-
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true
+      forbidNonWhitelisted: true,
     }),
   );
 
@@ -21,18 +19,11 @@ async function GoDely() {
     allowedHeaders: 'Content-Type, Accept, Range',
   });
 
-  const config = new DocumentBuilder()
-    .setTitle('Go Dely API')
-    .setDescription('Delivery app backend done with DDD.')
-    .setVersion('1.0')
-    .build();
+  const config = new DocumentBuilder().setTitle('Go Dely API').setDescription('Delivery app backend done with DDD.').setVersion('1.0').build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/documentation', app, documentFactory);
 
-  await app.listen(process.env.PORT);
-  Logger.log(`Server is running on ${process.env.PORT} url = ${process.env.URL}/`);
-
-  
+  await app.listen(process.env.PORT, '0.0.0.0');
 }
 
 GoDely();
