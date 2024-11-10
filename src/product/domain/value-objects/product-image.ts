@@ -5,7 +5,7 @@ export class ProductImage implements ValueObject<ProductImage> {
   private readonly url: string;
 
   constructor(url: string) {
-    if (!this.isValidUrlOrPath(url)) {
+    if (!this.isValidUrl(url)) {
       throw new InvalidProductImageException(`The URL ${url} is not valid.`);
     }
     this.url = url;
@@ -19,18 +19,9 @@ export class ProductImage implements ValueObject<ProductImage> {
     return this.url;
   }
 
-  private isValidUrlOrPath(url: string): boolean {
-    return this.isAbsoluteUrl(url) || this.isRelativePath(url);
-  }
-
-  private isAbsoluteUrl(url: string): boolean {
-    const regex = new RegExp(/^(http(s?):\/\/)([/|.|\w|\s|-])*\.(jpg|jpeg|gif|png)$/i);
-    return regex.test(url);
-  }
-
-  private isRelativePath(path: string): boolean {
+  private isValidUrl(url: string): boolean {
     const regex = new RegExp(/^(\/?products?\/[a-zA-Z0-9_-]+\.(jpg|jpeg|gif|png))$/i);
-    return regex.test(path);
+    return regex.test(url);
   }
 
   static create(url: string): ProductImage {

@@ -38,7 +38,7 @@ export class ProductController {
 
   @Get(':id')
   async getProductId(@Param('id') id: string) {
-    const service = new GetProductByIdApplicationService(this.productRepository);
+    const service = new GetProductByIdApplicationService(this.productRepository, this.s3Service);
     return (await service.execute({ id: id })).Value;
   }
 
