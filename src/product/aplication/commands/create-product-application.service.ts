@@ -1,7 +1,7 @@
 import { IApplicationService } from 'src/common/application/application-services/application-service.interface';
 import { CreateProductServiceEntryDto } from '../dto/entry/create-product-service-entry.dto';
 import { CreateProductServiceResponseDto } from '../dto/response/create-product-service-response.dto';
-import { Result } from 'src/common/Domain/result-handler/Result';
+import { Result } from '../../../common/domain/result-handler/result';
 import { IdGenerator } from 'src/common/application/id-generator/id-generator.interface';
 import { Product } from 'src/product/domain/product';
 import { ProductId } from 'src/product/domain/value-objects/product.id';

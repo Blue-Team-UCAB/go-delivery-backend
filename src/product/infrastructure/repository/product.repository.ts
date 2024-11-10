@@ -1,7 +1,7 @@
 import { IProductRepository } from 'src/product/domain/repositories/product-repository.interface';
 import { ProductORMEntity as ProductoORM } from '../models/orm-product.entity';
 import { DataSource, Repository } from 'typeorm';
-import { Result } from 'src/common/Domain/result-handler/Result';
+import { Result } from '../../../common/domain/result-handler/result';
 import { Product } from 'src/product/domain/product';
 import { ProductMapper } from '../mappers/product.mapper';
 import { GetProductPageServiceEntryDto } from 'src/product/aplication/dto/entry/get-product-page-service-entry.dto';
