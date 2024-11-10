@@ -1,5 +1,5 @@
-import { GetProductAllServiceResponseDto } from './get-products-all-service.response.dto';
+import { GetProductIdServiceResponseDto } from './get-product-id-service.response.dto';
 
 export interface GetProductPageServiceResponseDto {
-  products: GetProductAllServiceResponseDto[];
+  products: GetProductIdServiceResponseDto[];
 }
