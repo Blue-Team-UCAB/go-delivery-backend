@@ -1,9 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-
+import { Controller, Get, Res } from '@nestjs/common';
+import { Response } from 'express';
 @Controller()
 export class AppController {
-  @Get() // Esto define la ruta de inicio ("/")
-  getHome(): string {
-    return 'Bienvenido a la página de inicio';
+  @Get()
+  getHome(@Res() res: Response) {
+    res.send(`
+      <html>
+        <head><title>Inicio</title></head>
+        <body>
+          <h1>Bienvenido a la página de inicio</h1>
+          <p>Esta es una introducción.</p>
+        </body>
+      </html>
+    `);
   }
 }

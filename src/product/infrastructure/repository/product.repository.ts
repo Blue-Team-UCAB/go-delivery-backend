@@ -56,7 +56,6 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
         .skip(skip)
         .take(take)
         .getMany();
-      console.log(products);
       const resp = await Promise.all(products.map(product => this.productMapper.fromPersistenceToDomain(product)));
       return Result.success<Product[]>(resp, 200);
     } catch (e) {
