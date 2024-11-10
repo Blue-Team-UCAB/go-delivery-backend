@@ -6,10 +6,18 @@ import { ProductCreatedEvent } from './events/product-created.event';
 import { InvalidProductException } from './exceptions/invalid-product.exception';
 import { DomainEvent } from '../../common/domain/domain-event';
 import { ProductImage } from './value-objects/product-image';
+import { ProductCurrency } from './value-objects/product-currency';
+import { ProductPrice } from './value-objects/product-price';
+import { ProductStock } from './value-objects/product-stock';
+import { ProductWeight } from './value-objects/product-weight';
 
 export class Product extends AggregateRoot<ProductId> {
   private name: ProductName;
   private description: ProductDescription;
+  private currency: ProductCurrency;
+  private price: ProductPrice;
+  private stock: ProductStock;
+  private weight: ProductWeight;
   private imageUrl: ProductImage;
 
   get Name(): ProductName {
@@ -24,19 +32,39 @@ export class Product extends AggregateRoot<ProductId> {
     return this.imageUrl;
   }
 
-  constructor(id: ProductId, name: ProductName, description: ProductDescription, imageUrl: ProductImage) {
-    const productCreated = ProductCreatedEvent.create(id, name, description, imageUrl);
+  get Currency(): ProductCurrency {
+    return this.currency;
+  }
+
+  get Price(): ProductPrice {
+    return this.price;
+  }
+
+  get Stock(): ProductStock {
+    return this.stock;
+  }
+
+  get Weight(): ProductWeight {
+    return this.weight;
+  }
+
+  constructor(id: ProductId, name: ProductName, description: ProductDescription, currency: ProductCurrency, price: ProductPrice, stock: ProductStock, weight: ProductWeight, imageUrl: ProductImage) {
+    const productCreated = ProductCreatedEvent.create(id, name, description, currency, price, stock, weight, imageUrl);
     super(id, productCreated);
   }
 
   protected checkValidState(): void {
-    if (!this.name || !this.description) throw new InvalidProductException(`Product not valid`);
+    if (!this.name || !this.description || !this.imageUrl || !this.currency || !this.price || !this.stock || !this.weight) throw new InvalidProductException(`Product not valid`);
   }
 
   protected when(event: DomainEvent): void {
     if (event instanceof ProductCreatedEvent) {
       this.name = event.name;
       this.description = event.description;
+      this.currency = event.currency;
+      this.price = event.price;
+      this.stock = event.stock;
+      this.weight = event.weight;
       this.imageUrl = event.imageUrl;
     }
   }

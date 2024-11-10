@@ -26,6 +26,10 @@ export class GetProductByPageApplicationService implements IApplicationService<G
           id: product.Id.Id,
           name: product.Name.Name,
           description: product.Description.Description,
+          currency: product.Currency.Currency,
+          price: product.Price.Price,
+          stock: product.Stock.Stock,
+          weight: product.Weight.Weight,
           imagenUrl: imageUrl,
         };
       }),

@@ -12,5 +12,17 @@ export class ProductORMEntity {
   descripcion_Producto: string;
 
   @Column()
+  currency_Producto: string;
+
+  @Column()
+  price_Producto: number;
+
+  @Column()
+  stock_Producto: number;
+
+  @Column()
+  weight_Producto: number;
+
+  @Column()
   imagen_Producto: string;
 }

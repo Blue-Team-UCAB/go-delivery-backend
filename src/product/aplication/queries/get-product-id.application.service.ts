@@ -25,6 +25,10 @@ export class GetProductByIdApplicationService implements IApplicationService<Get
       id: productResult.Value.Id.Id,
       name: productResult.Value.Name.Name,
       description: productResult.Value.Description.Description,
+      currency: productResult.Value.Currency.Currency,
+      price: productResult.Value.Price.Price,
+      stock: productResult.Value.Stock.Stock,
+      weight: productResult.Value.Weight.Weight,
       imagenUrl: imageUrl,
     };
 

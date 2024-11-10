@@ -10,6 +10,10 @@ import { ProductDescription } from '../../domain/value-objects/product-descripti
 import { IProductRepository } from '../../domain/repositories/product-repository.interface';
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { ProductImage } from '../../domain/value-objects/product-image';
+import { ProductCurrency } from '../../domain/value-objects/product-currency';
+import { ProductPrice } from '../../domain/value-objects/product-price';
+import { ProductStock } from '../../domain/value-objects/product-stock';
+import { ProductWeight } from '../../domain/value-objects/product-weight';
 
 export class createProductApplicationService implements IApplicationService<CreateProductServiceEntryDto, CreateProductServiceResponseDto> {
   constructor(
@@ -26,10 +30,23 @@ export class createProductApplicationService implements IApplicationService<Crea
     const dataProduct = {
       name: ProductName.create(data.name),
       description: ProductDescription.create(data.description),
+      currency: ProductCurrency.create(data.currency),
+      price: ProductPrice.create(data.price),
+      stock: ProductStock.create(data.stock),
+      weight: ProductWeight.create(data.weight),
       imageUrl: ProductImage.create(imageUrl),
     };
 
-    const product = new Product(ProductId.create(await this.idGenerator.generateId()), dataProduct.name, dataProduct.description, dataProduct.imageUrl);
+    const product = new Product(
+      ProductId.create(await this.idGenerator.generateId()),
+      dataProduct.name,
+      dataProduct.description,
+      dataProduct.currency,
+      dataProduct.price,
+      dataProduct.stock,
+      dataProduct.weight,
+      dataProduct.imageUrl,
+    );
     const result = await this.productRepository.saveProductAggregate(product);
 
     if (!result.isSuccess()) {
@@ -42,6 +59,10 @@ export class createProductApplicationService implements IApplicationService<Crea
       id: product.Id.Id,
       name: product.Name.Name,
       description: product.Description.Description,
+      currency: product.Currency.Currency,
+      price: product.Price.Price,
+      stock: product.Stock.Stock,
+      weight: product.Weight.Weight,
       imageUrl: imagenUlr,
     };
 
