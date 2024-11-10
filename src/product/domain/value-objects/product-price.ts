@@ -1,4 +1,4 @@
-import { ValueObject } from 'src/common/domain/value-object';
+import { ValueObject } from '../../../common/domain/value-object';
 import { InvalidProductPriceException } from '../exceptions/invalid-product-price.exception';
 
 export class ProductPrice implements ValueObject<ProductPrice> {

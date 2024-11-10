@@ -1,4 +1,4 @@
-import { ValueObject } from 'src/common/domain/value-object';
+import { ValueObject } from '../../../common/domain/value-object';
 import { InvalidCategoryIdException } from '../exceptions/invalid-category-id.exception';
 
 export class CategoryId implements ValueObject<CategoryId> {

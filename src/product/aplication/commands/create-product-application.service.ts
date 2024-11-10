@@ -1,15 +1,15 @@
-import { IApplicationService } from 'src/common/application/application-services/application-service.interface';
+import { IApplicationService } from '../../../common/application/application-services/application-service.interface';
 import { CreateProductServiceEntryDto } from '../dto/entry/create-product-service-entry.dto';
 import { CreateProductServiceResponseDto } from '../dto/response/create-product-service-response.dto';
 import { Result } from '../../../common/domain/result-handler/result';
-import { IdGenerator } from 'src/common/application/id-generator/id-generator.interface';
-import { Product } from 'src/product/domain/product';
-import { ProductId } from 'src/product/domain/value-objects/product.id';
-import { ProductName } from 'src/product/domain/value-objects/product-name';
-import { ProductDescription } from 'src/product/domain/value-objects/product-description';
-import { IProductRepository } from 'src/product/domain/repositories/product-repository.interface';
-import { IStorageS3Service } from 'src/common/application/s3-storage-service/s3.storage.service.interface';
-import { ProductImage } from 'src/product/domain/value-objects/product-image';
+import { IdGenerator } from '../../../common/application/id-generator/id-generator.interface';
+import { Product } from '../../domain/product';
+import { ProductId } from '../../domain/value-objects/product.id';
+import { ProductName } from '../../domain/value-objects/product-name';
+import { ProductDescription } from '../../domain/value-objects/product-description';
+import { IProductRepository } from '../../domain/repositories/product-repository.interface';
+import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
+import { ProductImage } from '../../domain/value-objects/product-image';
 
 export class createProductApplicationService implements IApplicationService<CreateProductServiceEntryDto, CreateProductServiceResponseDto> {
   constructor(

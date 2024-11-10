@@ -1,4 +1,4 @@
-import { ValueObject } from 'src/common/domain/value-object';
+import { ValueObject } from '../../../common/domain/value-object';
 import { InvalidCategoryNameException } from '../exceptions/invalid-category-name.exception';
 
 export class CategoryName implements ValueObject<CategoryName> {

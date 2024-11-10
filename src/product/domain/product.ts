@@ -1,10 +1,10 @@
-import { AggregateRoot } from 'src/common/domain/aggregate-root';
+import { AggregateRoot } from '../../common/domain/aggregate-root';
 import { ProductId } from './value-objects/product.id';
 import { ProductName } from './value-objects/product-name';
 import { ProductDescription } from './value-objects/product-description';
 import { ProductCreatedEvent } from './events/product-created.event';
 import { InvalidProductException } from './exceptions/invalid-product.exception';
-import { DomainEvent } from 'src/common/domain/domain-event';
+import { DomainEvent } from '../../common/domain/domain-event';
 import { ProductImage } from './value-objects/product-image';
 
 export class Product extends AggregateRoot<ProductId> {

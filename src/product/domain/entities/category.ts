@@ -1,4 +1,4 @@
-import { Entity } from 'src/common/domain/entity';
+import { Entity } from '../../../common/domain/entity';
 import { CategoryId } from '../value-objects/category.id';
 import { CategoryName } from '../value-objects/category-name';
 
