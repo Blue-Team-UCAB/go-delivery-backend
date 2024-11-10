@@ -47,6 +47,7 @@ export class createProductApplicationService implements IApplicationService<Crea
       dataProduct.weight,
       dataProduct.imageUrl,
     );
+
     const result = await this.productRepository.saveProductAggregate(product);
 
     if (!result.isSuccess()) {
