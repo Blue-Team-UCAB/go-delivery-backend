@@ -9,8 +9,8 @@ async function GoDely() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      transform: true,
       forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
