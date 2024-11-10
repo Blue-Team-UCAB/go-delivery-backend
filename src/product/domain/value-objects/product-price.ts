@@ -5,7 +5,7 @@ export class ProductPrice implements ValueObject<ProductPrice> {
   private readonly _price: number;
 
   constructor(price: number) {
-    if (price > 0.01) throw new InvalidProductPriceException(`Price ${price} is not valid`);
+    if (price < 0.01) throw new InvalidProductPriceException(`Price ${price} is not valid`);
     this._price = price;
   }
 
