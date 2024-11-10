@@ -17,7 +17,7 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
   async findProductById(id: string): Promise<Result<Product>> {
     try {
       const produt = await this.createQueryBuilder('producto')
-        .select(['producto.id_Producto', 'producto.nombre_Producto', 'producto.descripcion_Producto'])
+        .select(['producto.id_Producto', 'producto.nombre_Producto', 'producto.descripcion_Producto', 'producto.imagen_Producto'])
         .where('producto.id_Producto = :id', { id })
         .getOne();
       const resp = await this.productMapper.fromPersistenceToDomain(produt);

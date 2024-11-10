@@ -5,10 +5,12 @@ import { ProductDescription } from './value-objects/product-description';
 import { ProductCreatedEvent } from './events/product-created.event';
 import { InvalidProductException } from './exceptions/invalid-product.exception';
 import { DomainEvent } from 'src/common/domain/domain-event';
+import { ProductImage } from './value-objects/product-image';
 
 export class Product extends AggregateRoot<ProductId> {
   private name: ProductName;
   private description: ProductDescription;
+  private imageUrl: ProductImage;
 
   get Name(): ProductName {
     return this.name;
@@ -18,8 +20,12 @@ export class Product extends AggregateRoot<ProductId> {
     return this.description;
   }
 
-  constructor(id: ProductId, name: ProductName, description: ProductDescription) {
-    const productCreated = ProductCreatedEvent.create(id, name, description);
+  get ImageUrl(): ProductImage {
+    return this.imageUrl;
+  }
+
+  constructor(id: ProductId, name: ProductName, description: ProductDescription, imageUrl: ProductImage) {
+    const productCreated = ProductCreatedEvent.create(id, name, description, imageUrl);
     super(id, productCreated);
   }
 
@@ -31,6 +37,7 @@ export class Product extends AggregateRoot<ProductId> {
     if (event instanceof ProductCreatedEvent) {
       this.name = event.name;
       this.description = event.description;
+      this.imageUrl = event.imageUrl;
     }
   }
 }
