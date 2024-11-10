@@ -1,4 +1,4 @@
-import { ProductRepository } from 'src/product/infrastructure/repository/product.repository';
+import { ProductRepository } from '../../../../product/infrastructure/repository/product.repository';
 import { DataSource, getMetadataArgsStorage } from 'typeorm';
 
 export const ormDatabaseProviders = [

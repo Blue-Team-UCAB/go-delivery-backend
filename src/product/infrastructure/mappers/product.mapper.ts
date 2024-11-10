@@ -1,10 +1,10 @@
-import { IMapper } from 'src/common/application/mapper/mapper.interface';
+import { IMapper } from '../../../common/application/mapper/mapper.interface';
 import { ProductORMEntity } from '../models/orm-product.entity';
-import { Product } from 'src/product/domain/product';
-import { ProductId } from 'src/product/domain/value-objects/product.id';
-import { ProductName } from 'src/product/domain/value-objects/product-name';
-import { ProductDescription } from 'src/product/domain/value-objects/product-description';
-import { ProductImage } from 'src/product/domain/value-objects/product-image';
+import { Product } from '../../domain/product';
+import { ProductId } from '../../domain/value-objects/product.id';
+import { ProductName } from '../../domain/value-objects/product-name';
+import { ProductDescription } from '../../domain/value-objects/product-description';
+import { ProductImage } from '../../domain/value-objects/product-image';
 
 export class ProductMapper implements IMapper<Product, ProductORMEntity> {
   async fromDomainToPersistence(domain: Product): Promise<ProductORMEntity> {
