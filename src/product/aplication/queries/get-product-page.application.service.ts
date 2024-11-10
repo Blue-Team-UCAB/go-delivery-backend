@@ -1,7 +1,7 @@
 import { IApplicationService } from 'src/common/application/application-services/application-service.interface';
 import { GetProductPageServiceEntryDto } from '../dto/entry/get-product-page-service-entry.dto';
 import { GetProductPageServiceResponseDto } from '../dto/response/get-product-page-service-responde.dto';
-import { Result } from 'src/common/Domain/result-handler/Result';
+import { Result } from '../../../common/domain/result-handler/result';
 import { IProductRepository } from 'src/product/domain/repositories/product-repository.interface';
 import { Product } from 'src/product/domain/product';
 import { IStorageS3Service } from 'src/common/application/s3-storage-service/s3.storage.service.interface';

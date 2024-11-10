@@ -1,4 +1,4 @@
-import { Result } from 'src/common/Domain/result-handler/Result';
+import { Result } from '../../../common/domain/result-handler/result';
 import { Product } from '../product';
 
 export interface IProductRepository {
