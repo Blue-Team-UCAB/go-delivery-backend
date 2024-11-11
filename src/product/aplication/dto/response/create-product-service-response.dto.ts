@@ -7,4 +7,5 @@ export interface CreateProductServiceResponseDto {
   stock: number;
   weight: number;
   imageUrl: string;
+  categories: string[];
 }

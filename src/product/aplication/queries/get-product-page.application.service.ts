@@ -31,6 +31,7 @@ export class GetProductByPageApplicationService implements IApplicationService<G
           stock: product.Stock.Stock,
           weight: product.Weight.Weight,
           imagenUrl: imageUrl,
+          categories: product.Categories.map(category => category.Category),
         };
       }),
     );

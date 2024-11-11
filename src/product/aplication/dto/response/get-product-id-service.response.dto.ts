@@ -7,4 +7,5 @@ export interface GetProductIdServiceResponseDto {
   stock: number;
   weight: number;
   imagenUrl: string;
+  categories: string[];
 }

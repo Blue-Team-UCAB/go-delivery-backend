@@ -14,6 +14,7 @@ import { ProductCurrency } from '../../domain/value-objects/product-currency';
 import { ProductPrice } from '../../domain/value-objects/product-price';
 import { ProductStock } from '../../domain/value-objects/product-stock';
 import { ProductWeight } from '../../domain/value-objects/product-weight';
+import { ProductCategory } from '../../domain/value-objects/product-category';
 
 export class createProductApplicationService implements IApplicationService<CreateProductServiceEntryDto, CreateProductServiceResponseDto> {
   constructor(
@@ -27,6 +28,8 @@ export class createProductApplicationService implements IApplicationService<Crea
 
     const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);
 
+    const categories = data.categories.map(category => ProductCategory.create(category));
+
     const dataProduct = {
       name: ProductName.create(data.name),
       description: ProductDescription.create(data.description),
@@ -35,6 +38,7 @@ export class createProductApplicationService implements IApplicationService<Crea
       stock: ProductStock.create(data.stock),
       weight: ProductWeight.create(data.weight),
       imageUrl: ProductImage.create(imageUrl),
+      categories: categories,
     };
 
     const product = new Product(
@@ -46,6 +50,7 @@ export class createProductApplicationService implements IApplicationService<Crea
       dataProduct.stock,
       dataProduct.weight,
       dataProduct.imageUrl,
+      dataProduct.categories,
     );
     const result = await this.productRepository.saveProductAggregate(product);
 
@@ -64,6 +69,7 @@ export class createProductApplicationService implements IApplicationService<Crea
       stock: product.Stock.Stock,
       weight: product.Weight.Weight,
       imageUrl: imagenUlr,
+      categories: product.Categories.map(category => category.Category),
     };
 
     return Result.success<CreateProductServiceResponseDto>(response, 200);

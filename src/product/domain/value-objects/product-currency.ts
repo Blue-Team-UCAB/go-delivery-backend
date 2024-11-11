@@ -2,21 +2,21 @@ import { ValueObject } from '../../../common/domain/value-object';
 import { InvalidProductCurrencyException } from '../exceptions/invalid-product-currency.exception';
 
 export class ProductCurrency implements ValueObject<ProductCurrency> {
-  private readonly currency: string;
+  private readonly _currency: string;
 
   constructor(currency: string) {
     if (!this.isValidCurrency(currency)) {
       throw new InvalidProductCurrencyException(`Currency ${currency} is not valid`);
     }
-    this.currency = currency.toUpperCase();
+    this._currency = currency.toUpperCase();
   }
 
-  equals(currency: ProductCurrency): boolean {
-    return this.currency === currency.currency;
+  equals(obj: ProductCurrency): boolean {
+    return this._currency === obj._currency;
   }
 
   get Currency(): string {
-    return this.currency;
+    return this._currency;
   }
 
   private isValidCurrency(currency: string): boolean {

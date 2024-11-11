@@ -25,6 +25,7 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
           'producto.stock_Producto',
           'producto.weight_Producto',
           'producto.imagen_Producto',
+          'producto.categories_Producto',
         ])
         .where('producto.id_Producto = :id', { id })
         .getOne();
@@ -52,6 +53,7 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
           'producto.stock_Producto',
           'producto.weight_Producto',
           'producto.imagen_Producto',
+          'producto.categories_Producto',
         ])
         .skip(skip)
         .take(take)

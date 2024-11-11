@@ -25,4 +25,10 @@ export class ProductORMEntity {
 
   @Column()
   imagen_Producto: string;
+
+  @Column('text', {
+    array: true,
+    default: [],
+  })
+  categories_Producto: string[];
 }

@@ -7,4 +7,5 @@ export interface CreateProductServiceEntryDto {
   weight: number;
   imageBuffer?: Buffer;
   contentType?: string;
+  categories: string[];
 }
