@@ -1,7 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
-import { Readable } from 'stream';
-import { IStorageS3Service } from 'src/common/application/s3-storage-service/s3.storage.service.interface';
+import { IStorageS3Service } from '../../../application/s3-storage-service/s3.storage.service.interface';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()

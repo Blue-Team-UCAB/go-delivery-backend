@@ -1,4 +1,4 @@
-import { ValueObject } from 'src/common/domain/value-object';
+import { ValueObject } from '../../../common/domain/value-object';
 import { InvalidProductWeightException } from '../exceptions/invalid-product-weight.exception';
 
 export class ProductWeight implements ValueObject<ProductWeight> {

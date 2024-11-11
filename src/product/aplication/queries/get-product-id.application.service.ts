@@ -1,10 +1,10 @@
-import { IApplicationService } from 'src/common/application/application-services/application-service.interface';
+import { IApplicationService } from '../../../common/application/application-services/application-service.interface';
 import { GetProductIdServiceResponseDto } from '../dto/response/get-product-id-service.response.dto';
 import { GetProductIdServiceEntryDto } from '../dto/entry/get-product-id-service.entry.dto';
-import { Result } from 'src/common/Domain/result-handler/Result';
-import { IProductRepository } from 'src/product/domain/repositories/product-repository.interface';
-import { Product } from 'src/product/domain/product';
-import { IStorageS3Service } from 'src/common/application/s3-storage-service/s3.storage.service.interface';
+import { Result } from '../../../common/domain/result-handler/result';
+import { IProductRepository } from '../../domain/repositories/product-repository.interface';
+import { Product } from '../../domain/product';
+import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 
 export class GetProductByIdApplicationService implements IApplicationService<GetProductIdServiceEntryDto, GetProductIdServiceResponseDto> {
   constructor(
@@ -25,7 +25,12 @@ export class GetProductByIdApplicationService implements IApplicationService<Get
       id: productResult.Value.Id.Id,
       name: productResult.Value.Name.Name,
       description: productResult.Value.Description.Description,
+      currency: productResult.Value.Currency.Currency,
+      price: productResult.Value.Price.Price,
+      stock: productResult.Value.Stock.Stock,
+      weight: productResult.Value.Weight.Weight,
       imagenUrl: imageUrl,
+      categories: productResult.Value.Categories.map(category => category.Category),
     };
 
     return Result.success(response, 200);

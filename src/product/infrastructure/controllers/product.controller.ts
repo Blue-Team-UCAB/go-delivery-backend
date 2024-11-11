@@ -2,13 +2,13 @@ import { Controller, Post, Body, Inject, Get, Param, ValidationPipe, Query, Uplo
 import { CreateProductDto } from '../dto/create-product.dto';
 import { DataSource } from 'typeorm';
 import { ApiTags } from '@nestjs/swagger';
-import { createProductApplicationService } from 'src/product/aplication/commands/create-product-application.service';
-import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-generator';
+import { createProductApplicationService } from '../../aplication/commands/create-product-application.service';
+import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-generator';
 import { ProductRepository } from '../repository/product.repository';
-import { GetProductByIdApplicationService } from 'src/product/aplication/queries/get-product-id.application.service';
-import { GetProductByPageApplicationService } from 'src/product/aplication/queries/get-product-page.application.service';
+import { GetProductByIdApplicationService } from '../../aplication/queries/get-product-id.application.service';
+import { GetProductByPageApplicationService } from '../../aplication/queries/get-product-page.application.service';
 import { GetProductPageDto } from '../dto/get-product-page.dto';
-import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
+import { S3Service } from '../../../common/infrastructure/providers/services/s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 

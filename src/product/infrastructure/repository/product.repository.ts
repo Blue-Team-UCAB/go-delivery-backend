@@ -1,10 +1,9 @@
-import { IProductRepository } from 'src/product/domain/repositories/product-repository.interface';
+import { IProductRepository } from '../../domain/repositories/product-repository.interface';
 import { ProductORMEntity as ProductoORM } from '../models/orm-product.entity';
 import { DataSource, Repository } from 'typeorm';
-import { Result } from 'src/common/Domain/result-handler/Result';
-import { Product } from 'src/product/domain/product';
+import { Result } from '../../../common/domain/result-handler/result';
+import { Product } from '../../domain/product';
 import { ProductMapper } from '../mappers/product.mapper';
-import { GetProductPageServiceEntryDto } from 'src/product/aplication/dto/entry/get-product-page-service-entry.dto';
 
 export class ProductRepository extends Repository<ProductoORM> implements IProductRepository {
   private readonly productMapper: ProductMapper;
@@ -17,7 +16,17 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
   async findProductById(id: string): Promise<Result<Product>> {
     try {
       const produt = await this.createQueryBuilder('producto')
-        .select(['producto.id_Producto', 'producto.nombre_Producto', 'producto.descripcion_Producto', 'producto.imagen_Producto'])
+        .select([
+          'producto.id_Producto',
+          'producto.nombre_Producto',
+          'producto.descripcion_Producto',
+          'producto.currency_Producto',
+          'producto.price_Producto',
+          'producto.stock_Producto',
+          'producto.weight_Producto',
+          'producto.imagen_Producto',
+          'producto.categories_Producto',
+        ])
         .where('producto.id_Producto = :id', { id })
         .getOne();
       const resp = await this.productMapper.fromPersistenceToDomain(produt);
@@ -35,7 +44,17 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
     try {
       const skip = take * page - take;
       const products = await this.createQueryBuilder('producto')
-        .select(['producto.id_Producto', 'producto.nombre_Producto', 'producto.descripcion_Producto', 'producto.imagen_Producto'])
+        .select([
+          'producto.id_Producto',
+          'producto.nombre_Producto',
+          'producto.descripcion_Producto',
+          'producto.currency_Producto',
+          'producto.price_Producto',
+          'producto.stock_Producto',
+          'producto.weight_Producto',
+          'producto.imagen_Producto',
+          'producto.categories_Producto',
+        ])
         .skip(skip)
         .take(take)
         .getMany();
