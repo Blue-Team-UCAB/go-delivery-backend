@@ -1,3 +1,4 @@
+import { UserRepository } from '../../../../auth/infrastructure/repository/user.repository';
 import { ProductRepository } from '../../../../product/infrastructure/repository/product.repository';
 import { DataSource, getMetadataArgsStorage } from 'typeorm';
 
@@ -37,6 +38,13 @@ export const ormDatabaseProviders = [
     provide: 'ProductRepository',
     useFactory: (dataSource: DataSource) => {
       return new ProductRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'UserRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new UserRepository(dataSource);
     },
     inject: ['BaseDeDatos'],
   },
