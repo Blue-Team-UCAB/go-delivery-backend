@@ -11,6 +11,8 @@ import { GetProductPageDto } from '../dto/get-product-page.dto';
 import { S3Service } from '../../../common/infrastructure/providers/services/s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
+import { MessagingService } from '../../../common/application/events/messaging.service';
+import { DomainEvent } from '../../../common/domain/domain-event';
 
 @ApiTags('Products')
 @Controller('product')
@@ -22,15 +24,16 @@ export class ProductController {
     @Inject('BaseDeDatos')
     private readonly dataSource: DataSource,
     private readonly s3Service: S3Service,
+    private readonly messagingService: MessagingService<DomainEvent>,
   ) {
     this.uuidCreator = new UuidGenerator();
-    this.productRepository = new ProductRepository(this.dataSource);
+    this.productRepository = new ProductRepository(this.dataSource, this.messagingService);
   }
 
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() image: Express.Multer.File) {
-    const service = new createProductApplicationService(this.productRepository, this.uuidCreator, this.s3Service);
+    const service = new createProductApplicationService(this.productRepository, this.uuidCreator, this.s3Service, this.messagingService);
     createProductDto.imageBuffer = image.buffer;
     createProductDto.contentType = image.mimetype;
     return (await service.execute(createProductDto)).Value;

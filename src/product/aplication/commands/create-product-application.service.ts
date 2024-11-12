@@ -15,12 +15,15 @@ import { ProductPrice } from '../../domain/value-objects/product-price';
 import { ProductStock } from '../../domain/value-objects/product-stock';
 import { ProductWeight } from '../../domain/value-objects/product-weight';
 import { ProductCategory } from '../../domain/value-objects/product-category';
+import { MessagingService } from '../../../common/application/events/messaging.service';
+import { DomainEvent } from '../../../common/domain/domain-event';
 
 export class createProductApplicationService implements IApplicationService<CreateProductServiceEntryDto, CreateProductServiceResponseDto> {
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly idGenerator: IdGenerator<string>,
     private readonly s3Service: IStorageS3Service,
+    private readonly messagingService: MessagingService<DomainEvent>,
   ) {}
 
   async execute(data: CreateProductServiceEntryDto): Promise<Result<CreateProductServiceResponseDto>> {
@@ -51,6 +54,7 @@ export class createProductApplicationService implements IApplicationService<Crea
       dataProduct.weight,
       dataProduct.imageUrl,
       dataProduct.categories,
+      this.messagingService,
     );
     const result = await this.productRepository.saveProductAggregate(product);
 

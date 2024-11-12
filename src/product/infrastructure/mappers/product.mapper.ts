@@ -10,8 +10,12 @@ import { ProductPrice } from '../../domain/value-objects/product-price';
 import { ProductStock } from '../../domain/value-objects/product-stock';
 import { ProductWeight } from '../../domain/value-objects/product-weight';
 import { ProductCategory } from '../../domain/value-objects/product-category';
+import { SendMessage } from '../../../common/domain/send-message';
+import { DomainEvent } from '../../../common/domain/domain-event';
 
 export class ProductMapper implements IMapper<Product, ProductORMEntity> {
+  constructor(private readonly messagingService: SendMessage<DomainEvent>) {}
+
   async fromDomainToPersistence(domain: Product): Promise<ProductORMEntity> {
     const productORM = new ProductORMEntity();
     productORM.id_Producto = domain.Id.Id;
@@ -25,6 +29,7 @@ export class ProductMapper implements IMapper<Product, ProductORMEntity> {
     productORM.categories_Producto = domain.Categories.map(category => category.Category);
     return productORM;
   }
+
   async fromPersistenceToDomain(persistence: ProductORMEntity): Promise<Product> {
     return new Product(
       ProductId.create(persistence.id_Producto),
@@ -36,6 +41,7 @@ export class ProductMapper implements IMapper<Product, ProductORMEntity> {
       ProductWeight.create(persistence.weight_Producto),
       ProductImage.create(persistence.imagen_Producto),
       persistence.categories_Producto.map(category => ProductCategory.create(category)),
+      this.messagingService,
     );
   }
 }

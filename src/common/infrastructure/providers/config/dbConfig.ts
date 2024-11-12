@@ -1,10 +1,12 @@
+// src/common/infrastructure/providers/config/dbConfig.ts
 import { ProductRepository } from '../../../../product/infrastructure/repository/product.repository';
 import { DataSource, getMetadataArgsStorage } from 'typeorm';
+import { SendMessage } from '../../../domain/send-message';
+import { DomainEvent } from '../../../domain/domain-event';
 
 export const ormDatabaseProviders = [
   {
     provide: 'BaseDeDatos',
-
     useFactory: async () => {
       const dataSource = new DataSource({
         type: 'postgres',
@@ -32,12 +34,11 @@ export const ormDatabaseProviders = [
       return dataSource;
     },
   },
-
   {
     provide: 'ProductRepository',
-    useFactory: (dataSource: DataSource) => {
-      return new ProductRepository(dataSource);
+    useFactory: (dataSource: DataSource, messagingService: SendMessage<DomainEvent>) => {
+      return new ProductRepository(dataSource, messagingService);
     },
-    inject: ['BaseDeDatos'],
+    inject: ['BaseDeDatos', 'MessagingService'],
   },
 ];

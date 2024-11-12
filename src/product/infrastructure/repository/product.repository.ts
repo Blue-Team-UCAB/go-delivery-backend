@@ -4,13 +4,15 @@ import { DataSource, Repository } from 'typeorm';
 import { Result } from '../../../common/domain/result-handler/result';
 import { Product } from '../../domain/product';
 import { ProductMapper } from '../mappers/product.mapper';
+import { SendMessage } from '../../../common/domain/send-message';
+import { DomainEvent } from '../../../common/domain/domain-event';
 
 export class ProductRepository extends Repository<ProductoORM> implements IProductRepository {
   private readonly productMapper: ProductMapper;
 
-  constructor(dataSource: DataSource) {
+  constructor(dataSource: DataSource, messagingService: SendMessage<DomainEvent>) {
     super(ProductoORM, dataSource.createEntityManager());
-    this.productMapper = new ProductMapper();
+    this.productMapper = new ProductMapper(messagingService);
   }
 
   async findProductById(id: string): Promise<Result<Product>> {

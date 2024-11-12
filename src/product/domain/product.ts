@@ -11,6 +11,7 @@ import { ProductPrice } from './value-objects/product-price';
 import { ProductStock } from './value-objects/product-stock';
 import { ProductWeight } from './value-objects/product-weight';
 import { ProductCategory } from './value-objects/product-category';
+import { SendMessage } from '../../common/domain/send-message';
 
 export class Product extends AggregateRoot<ProductId> {
   private name: ProductName;
@@ -64,9 +65,10 @@ export class Product extends AggregateRoot<ProductId> {
     weight: ProductWeight,
     imageUrl: ProductImage,
     categories: ProductCategory[],
+    messagingService: SendMessage<DomainEvent>,
   ) {
     const productCreated = ProductCreatedEvent.create(id, name, description, currency, price, stock, weight, imageUrl, categories);
-    super(id, productCreated);
+    super(id, messagingService, productCreated);
   }
 
   protected checkValidState(): void {
