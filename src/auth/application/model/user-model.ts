@@ -9,5 +9,4 @@ export type User = {
   passwordUser: string;
   roleUser: UserType;
   phoneUser: string;
-  birthdateUser: Date;
 };

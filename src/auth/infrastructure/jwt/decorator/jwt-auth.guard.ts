@@ -1,10 +1,10 @@
 import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Result } from 'src/common/Domain/result-handler/Result';
 import { User } from '../../../application/model/user-model';
 import { DataSource } from 'typeorm';
-import { JwtPayload } from '../decorator/jwt-payload.interface';
+import { JwtPayload } from '../jwt-payload.interface';
 import { UserRepository } from '../../../infrastructure/repository/user.repository';
+import { Optional } from '../../../../common/domain/result-handler/optional.handler';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -34,9 +34,10 @@ export class JwtAuthGuard implements CanActivate {
     return true;
   }
 
+  //Verificar
   private async validate(payload: JwtPayload) {
-    const user: Result<User> = await this.userRepository.getById(payload.id);
-    if (!user.isSuccess()) throw new Error('Error buscando al usuario a traves del token');
-    return user.Value;
+    const user: Optional<User> | undefined = await this.userRepository.getById(payload.id);
+    if (user.getAssigned() === false) throw new Error('Error buscando al usuario a traves del token');
+    return user;
   }
 }

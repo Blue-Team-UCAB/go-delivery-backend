@@ -1,3 +1,3 @@
-export interface IJwtGenerator<T> {
-  generateJwt(param: T): T;
+export interface IJwtGenerator {
+  generateJwt(param: string): string;
 }

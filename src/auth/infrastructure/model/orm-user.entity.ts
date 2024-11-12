@@ -1,4 +1,3 @@
-import { IsOptional } from 'class-validator';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('User')
@@ -13,15 +12,14 @@ export class UserORMEntity {
   email_User: string;
 
   @Column()
+  password_User: string;
+
+  @Column()
   role_User: string;
 
   @Column()
   phone_User: string;
 
-  @Column({ type: 'date' })
-  birthdate_User: Date;
-
-  @Column()
-  @IsOptional()
+  @Column({ nullable: true })
   codigo_Verificacion?: string;
 }
