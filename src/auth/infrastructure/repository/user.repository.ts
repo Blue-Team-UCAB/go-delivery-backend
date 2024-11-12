@@ -27,8 +27,17 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
     }
   }
 
-  getById(id: string): Promise<Optional<User>> {
-    throw new Error('Method not implemented.');
+  async getById(id: string): Promise<Optional<User>> {
+    try {
+      const user = await this.findOne({ where: { id_User: id } });
+      if (user) {
+        let userDomain = await this.userMapper.fromPersistenceToDomain(user);
+        return new Optional<User>(userDomain);
+      }
+      return new Optional<User>();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async saveUser(user: User): Promise<Result<User>> {
