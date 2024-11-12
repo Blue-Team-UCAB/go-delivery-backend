@@ -6,11 +6,17 @@ import { s3Provider } from './common/infrastructure/providers/config/amazonS3Pro
 import { S3Service } from './common/infrastructure/providers/services/s3.service';
 import { AppController } from './app.controller';
 import { FireBaseConfig } from './common/infrastructure/providers/config/fireBaseConfig';
-import { FireBaseAuthService } from './common/infrastructure/providers/services/firebase-Auth.service';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [
+    ConfigModule.forRoot(),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET_KEY,
+      signOptions: { expiresIn: '24h' },
+    }),
+  ],
   controllers: [ProductController, AppController],
-  providers: [...ormDatabaseProviders, ...s3Provider, S3Service, ...FireBaseConfig, FireBaseAuthService],
+  providers: [...ormDatabaseProviders, ...s3Provider, S3Service, ...FireBaseConfig],
 })
 export class AppModule {}
