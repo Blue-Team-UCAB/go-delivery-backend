@@ -1,14 +1,25 @@
 import { JwtService } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from '../jwt/jwt-strategy';
 
 export const JwtProvider = [
   {
     provide: 'JwtGenerator',
     useFactory: () => {
-      const jwtService = new JwtService({
+      return new JwtService({
         secret: process.env.JWT_SECRET_KEY,
         signOptions: { expiresIn: '24h' },
       });
-      return jwtService;
     },
+  },
+  {
+    provide: 'PassportModule',
+    useFactory: () => {
+      return PassportModule.register({ defaultStrategy: 'jwt' });
+    },
+  },
+  {
+    provide: 'JwtStrategy',
+    useClass: JwtStrategy,
   },
 ];

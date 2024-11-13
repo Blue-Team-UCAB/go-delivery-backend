@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly userRepository: IUserRepository,
   ) {
     super({
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: process.env.JWT_SECRET_KEY,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
@@ -21,7 +21,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtPayload) {
     const { id } = payload;
     const user: Optional<User> = await this.userRepository.getById(id);
-
     if (user.getAssigned() === false) {
       throw new HttpResponseHandler.HandleException(403, 'User not found');
     }
