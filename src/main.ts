@@ -23,18 +23,18 @@ async function GoDely() {
     allowedHeaders: 'Content-Type, Accept, Range',
   });
 
-  // app.connectMicroservice<MicroserviceOptions>({
-  //   transport: Transport.RMQ,
-  //   options: {
-  //     urls: [configService.get<string>('RABBITMQ_URL')],
-  //     queue: configService.get<string>('RABBITMQ_QUEUE'),
-  //     queueOptions: {
-  //       durable: true,
-  //     },
-  //   },
-  // });
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [configService.get<string>('RABBITMQ_URL')],
+      queue: configService.get<string>('RABBITMQ_QUEUE'),
+      queueOptions: {
+        durable: true,
+      },
+    },
+  });
 
-  // await app.startAllMicroservices();
+  await app.startAllMicroservices();
 
   const config = new DocumentBuilder().setTitle('Go Dely API').setDescription('Delivery app backend done with DDD.').setVersion('1.0').build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
