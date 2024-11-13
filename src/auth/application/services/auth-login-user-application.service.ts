@@ -14,7 +14,9 @@ export class AuthLoginUserApplicationService implements IApplicationService<ISig
   ) {}
 
   async execute(data: ISignInEntryApplication): Promise<Result<ISignUpResponseApplication>> {
-    const findUser = await this.userRepository.getByEmail(data.email);
+    const emailLower = data.email.toLowerCase();
+
+    const findUser = await this.userRepository.getByEmail(emailLower);
 
     if (findUser.getAssigned() === false) {
       return Result.fail<ISignUpResponseApplication>(null, 400, 'User not found');

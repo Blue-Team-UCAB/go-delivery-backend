@@ -16,7 +16,9 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
   ) {}
 
   async execute(data: ISignUpEntryApplication): Promise<Result<ISignUpResponseApplication>> {
-    const findUser = await this.userRepository.getByEmail(data.email);
+    const emailLower = data.email.toLowerCase();
+
+    const findUser = await this.userRepository.getByEmail(emailLower);
     if (findUser.getAssigned() === true) {
       return Result.fail<ISignUpResponseApplication>(null, 400, 'Email already in use');
     }
@@ -27,7 +29,7 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
     const user = {
       idUser: userId,
       nameUser: data.name,
-      emailUser: data.email,
+      emailUser: emailLower,
       passwordUser: hashpassword,
       roleUser: 'CLIENT',
       phoneUser: data.phone,
@@ -40,8 +42,8 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
     }
 
     const response: ISignUpResponseApplication = {
-      name: data.name,
-      email: data.email,
+      name: user.nameUser,
+      email: user.emailUser,
       token: this.jwtGenerator.generateJwt(userId),
     };
 
