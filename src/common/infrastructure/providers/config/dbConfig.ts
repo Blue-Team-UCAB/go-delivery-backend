@@ -1,4 +1,5 @@
 // src/common/infrastructure/providers/config/dbConfig.ts
+import { UserRepository } from '../../../../auth/infrastructure/repository/user.repository';
 import { ProductRepository } from '../../../../product/infrastructure/repository/product.repository';
 import { DataSource, getMetadataArgsStorage } from 'typeorm';
 import { SendMessage } from '../../../domain/send-message';
@@ -40,5 +41,12 @@ export const ormDatabaseProviders = [
       return new ProductRepository(dataSource, messagingService);
     },
     inject: ['BaseDeDatos', 'MessagingService'],
+  },
+  {
+    provide: 'UserRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new UserRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
   },
 ];

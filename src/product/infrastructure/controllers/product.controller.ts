@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject, Get, Param, ValidationPipe, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Get, Param, ValidationPipe, Query, UploadedFile, UseInterceptors, UseGuards } from '@nestjs/common';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { DataSource } from 'typeorm';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,6 +13,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { MessagingService } from '../../../common/application/events/messaging.service';
 import { DomainEvent } from '../../../common/domain/domain-event';
+import { IsAdmin } from '../../../auth/infrastructure/jwt/decorator/isAdmin.decorator';
+import { IsClientOrAdmin } from '../../../auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
 
 @ApiTags('Products')
 @Controller('product')
@@ -31,6 +33,7 @@ export class ProductController {
   }
 
   @Post()
+  @IsAdmin()
   @UseInterceptors(FileInterceptor('image'))
   async createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() image: Express.Multer.File) {
     const service = new createProductApplicationService(this.productRepository, this.uuidCreator, this.s3Service, this.messagingService);
@@ -40,12 +43,14 @@ export class ProductController {
   }
 
   @Get(':id')
+  @IsClientOrAdmin()
   async getProductId(@Param('id') id: string) {
     const service = new GetProductByIdApplicationService(this.productRepository, this.s3Service);
     return (await service.execute({ id: id })).Value;
   }
 
   @Get()
+  @IsClientOrAdmin()
   async getProductByPage(@Query(ValidationPipe) query: GetProductPageDto) {
     const { page, take } = query;
     const service = new GetProductByPageApplicationService(this.productRepository, this.s3Service);
