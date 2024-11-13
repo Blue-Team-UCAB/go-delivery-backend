@@ -13,6 +13,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { IsAdmin } from '../../../auth/infrastructure/jwt/decorator/isAdmin.decorator';
 import { IsClientOrAdmin } from '../../../auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
+import { EventPublisher } from '../../../common/infrastructure/Event-Publisher/eventPublisher.service';
+import { DomainEvent } from 'src/common/domain/domain-event';
 
 @ApiTags('Products')
 @Controller('product')
@@ -24,6 +26,7 @@ export class ProductController {
     @Inject('BaseDeDatos')
     private readonly dataSource: DataSource,
     private readonly s3Service: S3Service,
+    private readonly publisher: EventPublisher<DomainEvent>,
   ) {
     this.uuidCreator = new UuidGenerator();
     this.productRepository = new ProductRepository(this.dataSource);
@@ -33,7 +36,7 @@ export class ProductController {
   @IsAdmin()
   @UseInterceptors(FileInterceptor('image'))
   async createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() image: Express.Multer.File) {
-    const service = new createProductApplicationService(this.productRepository, this.uuidCreator, this.s3Service);
+    const service = new createProductApplicationService(this.productRepository, this.uuidCreator, this.s3Service, this.publisher);
     createProductDto.imageBuffer = image.buffer;
     createProductDto.contentType = image.mimetype;
     return (await service.execute(createProductDto)).Value;

@@ -15,12 +15,16 @@ import { ProductPrice } from '../../domain/value-objects/product-price';
 import { ProductStock } from '../../domain/value-objects/product-stock';
 import { ProductWeight } from '../../domain/value-objects/product-weight';
 import { ProductCategory } from '../../domain/value-objects/product-category';
+import { IPublisher } from '../../../common/application/events/eventPublisher.interface';
+import { PRODUCT_CREATED_EVENT } from '../../domain/events/product-created.event';
+import { DomainEvent } from '../../../common/domain/domain-event';
 
 export class createProductApplicationService implements IApplicationService<CreateProductServiceEntryDto, CreateProductServiceResponseDto> {
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly idGenerator: IdGenerator<string>,
     private readonly s3Service: IStorageS3Service,
+    private readonly publisher: IPublisher<DomainEvent>,
   ) {}
 
   async execute(data: CreateProductServiceEntryDto): Promise<Result<CreateProductServiceResponseDto>> {
@@ -57,6 +61,8 @@ export class createProductApplicationService implements IApplicationService<Crea
     if (!result.isSuccess()) {
       return Result.fail<CreateProductServiceResponseDto>(result.Error, result.StatusCode, result.Message);
     }
+
+    await this.publisher.publish(PRODUCT_CREATED_EVENT, product.getDomainEvents());
 
     const imagenUlr = await this.s3Service.getFile(product.ImageUrl.Url);
 
