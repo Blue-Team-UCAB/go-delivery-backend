@@ -29,7 +29,6 @@ export class AuthLoginUserApplicationService implements IApplicationService<ISig
     const token = this.jwtGenerator.generateJwt(findUser.getValue().idUser);
 
     const response: ISignUpResponseApplication = {
-      id: findUser.getValue().idUser,
       name: findUser.getValue().nameUser,
       email: findUser.getValue().emailUser,
       jwt_token: token,
