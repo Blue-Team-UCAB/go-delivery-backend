@@ -5,6 +5,7 @@ import { Repository, DataSource } from 'typeorm';
 import { UserORMEntity } from '../model/orm-user.entity';
 import { UserMapper } from '../mappers/user.mapper';
 import { Optional } from 'src/common/domain/result-handler/optional.handler';
+import { InternalServerErrorException } from '@nestjs/common';
 
 export class UserRepository extends Repository<UserORMEntity> implements IUserRepository {
   private readonly userMapper: UserMapper;
@@ -23,7 +24,7 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
       }
       return new Optional<User>();
     } catch (error) {
-      console.log(error);
+      throw new InternalServerErrorException({ error });
     }
   }
 
@@ -36,7 +37,7 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
       }
       return new Optional<User>();
     } catch (error) {
-      console.log(error);
+      throw new InternalServerErrorException({ error });
     }
   }
 
