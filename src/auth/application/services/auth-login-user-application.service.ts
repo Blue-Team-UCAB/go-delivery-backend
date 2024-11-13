@@ -31,7 +31,7 @@ export class AuthLoginUserApplicationService implements IApplicationService<ISig
     const response: ISignUpResponseApplication = {
       name: findUser.getValue().nameUser,
       email: findUser.getValue().emailUser,
-      jwt_token: token,
+      token: token,
     };
 
     return Result.success<ISignUpResponseApplication>(response, 200);

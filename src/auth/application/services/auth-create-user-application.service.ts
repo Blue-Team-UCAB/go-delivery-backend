@@ -42,7 +42,7 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
     const response: ISignUpResponseApplication = {
       name: data.name,
       email: data.email,
-      jwt_token: this.jwtGenerator.generateJwt(userId),
+      token: this.jwtGenerator.generateJwt(userId),
     };
 
     return Result.success<ISignUpResponseApplication>(response, 200);
