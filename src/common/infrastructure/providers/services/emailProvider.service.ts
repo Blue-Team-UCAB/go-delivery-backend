@@ -26,7 +26,6 @@ export class MailSenderService {
     };
 
     await this.transporter.sendMail(mailOptions);
-    console.log(`Email sent to ${to}`);
   }
 
   async sendEmailforAllUsers(subject: string, html: string): Promise<void> {
