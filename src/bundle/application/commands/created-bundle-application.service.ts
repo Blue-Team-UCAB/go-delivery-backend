@@ -33,6 +33,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
   ) {}
 
   async execute(data: CreateBundleServiceEntryDto): Promise<Result<CreateBundleServiceResponseDto>> {
+    console.log(data);
     const imageKey = `bundles/${await this.idGenerator.generateId()}.jpg`;
 
     const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);

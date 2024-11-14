@@ -34,10 +34,10 @@ export class BundleProduct extends Entity<ProductId> implements PricableAndWeigh
   }
 
   calculatePrice(): number {
-    return this.price.Price;
+    return this.price.Price * this.quantity.Quantity;
   }
 
   calculateWeight(): number {
-    return this.weight.Weight;
+    return this.weight.Weight * this.quantity.Quantity;
   }
 }

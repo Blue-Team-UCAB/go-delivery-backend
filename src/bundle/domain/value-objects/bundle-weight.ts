@@ -5,7 +5,7 @@ export class BundleWeight implements ValueObject<BundleWeight> {
   private readonly _weight: number;
 
   constructor(weight: number) {
-    if (weight < 0.01) throw new InvalidBundleWeightException(`Weight ${weight} is not valid`);
+    if (weight < 0) throw new InvalidBundleWeightException(`Weight ${weight} is not valid`);
     this._weight = weight;
   }
 

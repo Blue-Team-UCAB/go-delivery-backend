@@ -28,6 +28,7 @@ export class BundleController {
   ) {
     this.uuidCreator = new UuidGenerator();
     this.bundleRepository = new BundleRepository(this.dataSource);
+    this.poductRepository = new ProductRepository(this.dataSource);
   }
 
   @Post()
