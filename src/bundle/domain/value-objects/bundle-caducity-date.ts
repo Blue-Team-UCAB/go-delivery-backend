@@ -4,7 +4,7 @@ import { InvalidCaducityDateException } from '../exceptions/invalid-caducity-dat
 export class BundleCaducityDate implements ValueObject<BundleCaducityDate> {
   private readonly _caducity_date: Date;
 
-  constructor(caducity_date: string) {
+  constructor(caducity_date: Date) {
     const date = new Date(caducity_date);
     if (isNaN(date.getTime())) {
       throw new InvalidCaducityDateException(`Caducity date ${caducity_date} is not valid`);
@@ -23,7 +23,7 @@ export class BundleCaducityDate implements ValueObject<BundleCaducityDate> {
     return this._caducity_date;
   }
 
-  static create(caducity_date: string): BundleCaducityDate {
+  static create(caducity_date: Date): BundleCaducityDate {
     return new BundleCaducityDate(caducity_date);
   }
 }
