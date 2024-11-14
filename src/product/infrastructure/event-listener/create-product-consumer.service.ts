@@ -3,22 +3,44 @@ import { EventPattern, Payload, Ctx, RmqContext } from '@nestjs/microservices';
 import { IListener } from '../../../common/infrastructure/Event-listener/event-listener.interface';
 import { MailSenderService } from '../../../common/infrastructure/providers/services/emailProvider.service';
 import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
+import { EventStorageMongoService } from '../../../common/infrastructure/mongo-event/mongo-event.service';
+import { DomainEventBase } from '../../../common/domain/domain-event';
 
 @Controller()
 export class CreateProductConsumerService<T> implements IListener<T> {
   constructor(
     private readonly mailService: MailSenderService,
     private readonly s3Service: S3Service,
+    private readonly eventStorageMongoService: EventStorageMongoService,
   ) {}
 
   @EventPattern('ProductCreatedEvent')
   async handle(@Payload() data: T, @Ctx() context: RmqContext) {
     try {
+      await this.saveEvent(data);
       const producto = await this.mapProductCreatedEvent(data);
       this.mailService.sendEmailforAllUsers(`Exciting News! ${producto.name} is Here!`, this.getHtml(producto));
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
+  }
+
+  async saveEvent(event) {
+    const DomainEventBase: DomainEventBase = {
+      name: event.eventName,
+      timestamp: event.ocurredOn,
+      data: {
+        id: event.id._id,
+        description: event.description._description,
+        currency: event.currency._currency,
+        price: event.price._price,
+        stock: event.stock._stock,
+        weight: event.weight._weight,
+        imageUrl: event.imageUrl.url,
+        categories: event.categories.map(category => category._category),
+      },
+    };
+    await this.eventStorageMongoService.save(DomainEventBase);
   }
 
   async mapProductCreatedEvent(event) {

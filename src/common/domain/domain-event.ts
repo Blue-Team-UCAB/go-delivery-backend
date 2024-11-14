@@ -15,3 +15,9 @@ export abstract class DomainEvent {
     return this.eventName;
   }
 }
+
+export type DomainEventBase = {
+  name: string;
+  timestamp: Date;
+  data: {};
+};
