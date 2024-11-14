@@ -1,7 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, Logger } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { MicroserviceOptions } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
+import { RabbitMQMicroservice } from './common/infrastructure/providers/config/rabbitMq';
 
 async function GoDely() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +25,9 @@ async function GoDely() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, Range',
   });
+
+  app.connectMicroservice<MicroserviceOptions>(RabbitMQMicroservice(app.get(ConfigService)));
+  await app.startAllMicroservices();
 
   const config = new DocumentBuilder().setTitle('Go Dely API').setDescription('Delivery app backend done with DDD.').setVersion('1.0').build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);

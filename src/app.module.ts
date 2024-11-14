@@ -7,15 +7,20 @@ import { s3Provider } from './common/infrastructure/providers/config/amazonS3Pro
 import { S3Service } from './common/infrastructure/providers/services/s3.service';
 import { AppController } from './app.controller';
 import { FireBaseConfig } from './common/infrastructure/providers/config/fireBaseConfig';
-import { JwtModule } from '@nestjs/jwt';
 import { Sha256Service } from './common/infrastructure/providers/services/sha256Service.service';
 import { AuthController } from './auth/infrastructure/controller/auth.controller';
 import { JwtProvider } from './auth/infrastructure/provider/jwtProvider';
-import { JwtGenerator } from './auth/infrastructure/jwt/jwt-generator';
+import { RabbitMQProvider } from './common/infrastructure/providers/config/rabbitMq';
+import { CreateProductConsumerService } from './product/infrastructure/event-listener/create-product-consumer.service';
+import { EventPublisher } from './common/infrastructure/Event-Publisher/eventPublisher.service';
+import { MailSenderService } from './common/infrastructure/providers/services/emailProvider.service';
+import { UserEmailProvider } from './auth/infrastructure/provider/userEmail.provider';
+import { MongoEventModule } from './common/infrastructure/mongo-event/mongo-event.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
-  controllers: [ProductController, BundleController, AppController, AuthController],
-  providers: [...ormDatabaseProviders, ...s3Provider, S3Service, ...FireBaseConfig, Sha256Service, ...JwtProvider],
+  imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule],
+  controllers: [ProductController, BundleController, AppController, AuthController, CreateProductConsumerService],
+  providers: [...ormDatabaseProviders, ...s3Provider, S3Service, ...FireBaseConfig, Sha256Service, ...JwtProvider, ...RabbitMQProvider, EventPublisher, MailSenderService, UserEmailProvider],
 })
 export class AppModule {}
