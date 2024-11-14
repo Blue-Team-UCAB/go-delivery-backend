@@ -102,7 +102,7 @@ export class CreateProductConsumerService<T> implements IListener<T> {
                         </tr>
                         <tr>
                             <td align="center" style="padding: 20px;">
-                                <a href="https://github.com/Blue-Team-UCAB/go-delivery-backend" style="display: inline-block; background-color: #2000b1; color: #ffffff; text-decoration: none; padding: 15px 100px; font-size: 14px; font-weight: bold; border-radius: 8px;">
+                                <a href="http://www.godely_blue.com/" style="display: inline-block; background-color: #2000b1; color: #ffffff; text-decoration: none; padding: 15px 100px; font-size: 14px; font-weight: bold; border-radius: 8px;">
                                     Compra ahora
                                 </a>
                             </td>
