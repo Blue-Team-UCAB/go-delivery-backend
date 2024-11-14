@@ -35,8 +35,6 @@ export class createBundleApplicationService implements IApplicationService<Creat
   async execute(data: CreateBundleServiceEntryDto): Promise<Result<CreateBundleServiceResponseDto>> {
     const imageKey = `bundles/${await this.idGenerator.generateId()}.jpg`;
 
-    const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);
-
     const bundleProducts: PricableAndWeightable[] = [];
 
     for (const product of data.products) {
@@ -65,7 +63,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
       description: BundleDescription.create(data.description),
       currency: BundleCurrency.create(data.currency),
       stock: BundleStock.create(data.stock),
-      imageUrl: BundleImage.create(imageUrl),
+      imageUrl: BundleImage.create(imageKey),
       caducityDate: BundleCaducityDate.create(data.caducityDate),
       products: bundleProducts,
     };
@@ -87,6 +85,8 @@ export class createBundleApplicationService implements IApplicationService<Creat
     bundle.calculateWeight();
 
     const result = await this.bundleRepository.saveBundleAggregate(bundle);
+
+    const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);
 
     if (!result.isSuccess()) {
       return Result.fail<CreateBundleServiceResponseDto>(result.Error, result.StatusCode, result.Message);

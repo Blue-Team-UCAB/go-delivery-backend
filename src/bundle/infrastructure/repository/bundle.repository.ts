@@ -87,7 +87,6 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
         .skip(skip)
         .take(take)
         .getMany();
-      console.log(`bundles: ${bundles}`);
       const resp = await Promise.all(bundles.map(bundle => this.bundleMapper.fromPersistenceToDomain(bundle)));
       return Result.success<Bundle[]>(resp, 200);
     } catch (e) {
