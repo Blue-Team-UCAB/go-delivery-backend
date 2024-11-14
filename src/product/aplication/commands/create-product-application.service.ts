@@ -28,7 +28,7 @@ export class createProductApplicationService implements IApplicationService<Crea
   ) {}
 
   async execute(data: CreateProductServiceEntryDto): Promise<Result<CreateProductServiceResponseDto>> {
-    const imageKey = `products/${await this.idGenerator.generateId()}.jpg`;
+    const imageKey = `products/${await this.idGenerator.generateId()}.png`;
 
     const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);
 
