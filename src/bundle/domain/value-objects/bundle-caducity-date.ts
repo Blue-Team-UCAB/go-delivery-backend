@@ -9,7 +9,7 @@ export class BundleCaducityDate implements ValueObject<BundleCaducityDate> {
     if (isNaN(date.getTime())) {
       throw new InvalidBundleCaducityDateException(`Caducity date ${caducity_date} is not valid`);
     }
-    if (date < new Date()) {
+    if (date < new Date(Date.now())) {
       throw new InvalidBundleCaducityDateException(`Caducity date ${caducity_date} cannot be in the past`);
     }
     this._caducity_date = date;
