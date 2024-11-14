@@ -14,9 +14,11 @@ import { CreateProductConsumerService } from './product/infrastructure/event-lis
 import { EventPublisher } from './common/infrastructure/Event-Publisher/eventPublisher.service';
 import { MailSenderService } from './common/infrastructure/providers/services/emailProvider.service';
 import { UserEmailProvider } from './auth/infrastructure/provider/userEmail.provider';
+import { MongoEventModule } from './common/infrastructure/mongo-event/mongo-event.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule],
   controllers: [ProductController, AppController, AuthController, CreateProductConsumerService],
   providers: [...ormDatabaseProviders, ...s3Provider, S3Service, ...FireBaseConfig, Sha256Service, ...JwtProvider, ...RabbitMQProvider, EventPublisher, MailSenderService, UserEmailProvider],
 })
