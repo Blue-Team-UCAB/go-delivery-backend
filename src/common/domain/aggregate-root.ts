@@ -3,9 +3,10 @@ import { Entity } from './entity';
 import { ValueObject } from './value-object';
 
 export abstract class AggregateRoot<T extends ValueObject<T>> extends Entity<T> {
-  protected events: DomainEvent[] = [];
-
-  protected constructor(id: T, event: DomainEvent) {
+  protected constructor(
+    id: T,
+    private event: DomainEvent,
+  ) {
     super(id);
     this.apply(event);
   }
@@ -13,16 +14,14 @@ export abstract class AggregateRoot<T extends ValueObject<T>> extends Entity<T> 
   protected apply(event: DomainEvent): void {
     this.when(event);
     this.checkValidState();
-    this.events.push(event);
   }
 
   protected abstract when(event: DomainEvent): void;
 
   protected abstract checkValidState(): void;
 
-  public pullDomainEvents(): DomainEvent[] {
-    const events = this.events;
-    this.events = [];
-    return events;
+  public getDomainEvents(): DomainEvent {
+    const events = this.event;
+    return this.event;
   }
 }
