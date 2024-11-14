@@ -17,18 +17,63 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
 
   async findBundleById(id: string): Promise<Result<Bundle>> {
     try {
-      const bundleORM = await this.findOne({ where: { id }, relations: ['bundleProducts', 'bundleEntities'] });
-      if (!bundleORM) {
-        return Result.fail<Bundle>(new Error('Bundle not found'), 404, 'Bundle not found');
+      const bundle = await this.createQueryBuilder('bundle')
+        .select([
+          'bundle.id',
+          'bundle.name',
+          'bundle.description',
+          'bundle.currency',
+          'bundle.price',
+          'bundle.stock',
+          'bundle.weight',
+          'bundle.imageUrl',
+          'bundle.caducityDate',
+          'bundleProducts',
+          'bundleEntities',
+        ])
+        .leftJoinAndSelect('bundle.bundleProducts', 'bundleProducts')
+        .leftJoinAndSelect('bundle.bundleEntities', 'bundleEntities')
+        .where('bundle.id = :id', { id })
+        .getOne();
+      const resp = await this.bundleMapper.fromPersistenceToDomain(bundle);
+      if (!resp) {
+        return Result.fail(null, 404, 'No existe el combo Solicitado');
       }
-      const bundle = await this.bundleMapper.fromPersistenceToDomain(bundleORM);
-      return Result.success<Bundle>(bundle, 200);
-    } catch (error) {
-      return Result.fail<Bundle>(error, 500, error.message);
+      return Result.success<Bundle>(resp, 200);
+    } catch (e) {
+      return Result.fail(null, 500, e.message);
     }
   }
 
-  // async findAllBundles(page: number, take: number): Promise<Result<Bundle[]>> {}
+  async findAllBundles(page: number, take: number): Promise<Result<Bundle[]>> {
+    try {
+      const skip = take * page - take;
+      const bundles = await this.createQueryBuilder('bundle')
+        .select([
+          'bundle.id',
+          'bundle.name',
+          'bundle.description',
+          'bundle.currency',
+          'bundle.price',
+          'bundle.stock',
+          'bundle.weight',
+          'bundle.imageUrl',
+          'bundle.caducityDate',
+          'bundleProducts',
+          'bundleEntities',
+        ])
+        .leftJoinAndSelect('bundle.bundleProducts', 'bundleProducts')
+        .leftJoinAndSelect('bundle.bundleEntities', 'bundleEntities')
+        .skip(skip)
+        .take(take)
+        .getMany();
+
+      const resp = await Promise.all(bundles.map(bundle => this.bundleMapper.fromPersistenceToDomain(bundle)));
+      return Result.success<Bundle[]>(resp, 200);
+    } catch (e) {
+      return Result.fail(null, 500, e.message);
+    }
+  }
 
   async saveBundleAggregate(bundle: Bundle): Promise<Result<Bundle>> {
     try {

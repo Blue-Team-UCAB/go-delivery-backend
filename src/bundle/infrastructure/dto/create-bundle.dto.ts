@@ -1,6 +1,6 @@
 import { IsString, IsNumber, IsPositive, IsOptional, IsArray, ArrayNotEmpty, ArrayMinSize, MinLength } from 'class-validator';
 import { Type } from 'class-transformer';
-import { BundleProductDto } from '../../../bundle/infrastructure/dto/bundle-product.dto';
+import { BundleProductDto } from './bundle-product.dto';
 
 export class CreateBundleDto {
   @IsString()

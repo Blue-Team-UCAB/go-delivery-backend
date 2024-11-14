@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ormDatabaseProviders } from './common/infrastructure/providers/config/dbConfig';
 import { ProductController } from './product/infrastructure/controllers/product.controller';
+import { BundleController } from './bundle/infrastructure/controllers/bundle.controller';
 import { s3Provider } from './common/infrastructure/providers/config/amazonS3Provider';
 import { S3Service } from './common/infrastructure/providers/services/s3.service';
 import { AppController } from './app.controller';
@@ -14,7 +15,7 @@ import { JwtGenerator } from './auth/infrastructure/jwt/jwt-generator';
 
 @Module({
   imports: [ConfigModule.forRoot()],
-  controllers: [ProductController, AppController, AuthController],
+  controllers: [ProductController, BundleController, AppController, AuthController],
   providers: [...ormDatabaseProviders, ...s3Provider, S3Service, ...FireBaseConfig, Sha256Service, ...JwtProvider],
 })
 export class AppModule {}
