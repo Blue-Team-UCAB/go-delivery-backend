@@ -50,4 +50,13 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
       return Result.fail<User>(new Error(error.message), error.code, error.message);
     }
   }
+
+  async getAllEmails(): Promise<string[]> {
+    try {
+      const emails = await this.find({ select: ['email_User'] });
+      return emails.map(email => email.email_User);
+    } catch (error) {
+      throw new InternalServerErrorException({ error });
+    }
+  }
 }

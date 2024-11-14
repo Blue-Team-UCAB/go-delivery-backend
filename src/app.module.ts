@@ -12,10 +12,12 @@ import { JwtProvider } from './auth/infrastructure/provider/jwtProvider';
 import { RabbitMQProvider } from './common/infrastructure/providers/config/rabbitMq';
 import { CreateProductConsumerService } from './product/infrastructure/event-listener/create-product-consumer.service';
 import { EventPublisher } from './common/infrastructure/Event-Publisher/eventPublisher.service';
+import { MailSenderService } from './common/infrastructure/providers/services/emailProvider.service';
+import { UserEmailProvider } from './auth/infrastructure/provider/userEmail.provider';
 
 @Module({
   imports: [ConfigModule.forRoot()],
   controllers: [ProductController, AppController, AuthController, CreateProductConsumerService],
-  providers: [...ormDatabaseProviders, ...s3Provider, S3Service, ...FireBaseConfig, Sha256Service, ...JwtProvider, ...RabbitMQProvider, EventPublisher],
+  providers: [...ormDatabaseProviders, ...s3Provider, S3Service, ...FireBaseConfig, Sha256Service, ...JwtProvider, ...RabbitMQProvider, EventPublisher, MailSenderService, UserEmailProvider],
 })
 export class AppModule {}
