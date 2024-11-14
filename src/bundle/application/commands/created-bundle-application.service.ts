@@ -33,7 +33,6 @@ export class createBundleApplicationService implements IApplicationService<Creat
   ) {}
 
   async execute(data: CreateBundleServiceEntryDto): Promise<Result<CreateBundleServiceResponseDto>> {
-    console.log(data);
     const imageKey = `bundles/${await this.idGenerator.generateId()}.jpg`;
 
     const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);
@@ -44,14 +43,14 @@ export class createBundleApplicationService implements IApplicationService<Creat
       let productEntity: PricableAndWeightable;
       if (product.type === 'product') {
         const productResult = await this.productRepository.findProductById(product.id);
-        if (!productResult.isSuccess) {
+        if (!productResult.isSuccess || !productResult.Value) {
           return Result.fail<CreateBundleServiceResponseDto>(productResult.Error, productResult.StatusCode, productResult.Message);
         }
         const productDetail = productResult.Value;
         productEntity = new BundleProduct(productDetail.Id, productDetail.Name, productDetail.Price, productDetail.Weight, BundleProductQuantity.create(product.quantity));
       } else if (product.type === 'bundle') {
         const bundleResult = await this.bundleRepository.findBundleById(product.id);
-        if (!bundleResult.isSuccess) {
+        if (!bundleResult.isSuccess || !bundleResult.Value) {
           return Result.fail<CreateBundleServiceResponseDto>(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
         }
         const bundleDetail = bundleResult.Value;
@@ -61,16 +60,11 @@ export class createBundleApplicationService implements IApplicationService<Creat
       bundleProducts.push(productEntity);
     }
 
-    const totalPrice = bundleProducts.reduce((total, product) => total + product.calculatePrice(), 0);
-    const totalWeight = bundleProducts.reduce((total, product) => total + product.calculateWeight(), 0);
-
     const dataBundle = {
       name: BundleName.create(data.name),
       description: BundleDescription.create(data.description),
       currency: BundleCurrency.create(data.currency),
-      price: BundlePrice.create(totalPrice),
       stock: BundleStock.create(data.stock),
-      weight: BundleWeight.create(totalWeight),
       imageUrl: BundleImage.create(imageUrl),
       caducityDate: BundleCaducityDate.create(data.caducityDate),
       products: bundleProducts,

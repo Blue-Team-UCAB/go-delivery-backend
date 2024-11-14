@@ -29,13 +29,12 @@ export class CreateBundleDto {
   @IsArray()
   @ArrayNotEmpty()
   @ArrayMinSize(1)
-  @ValidateNested({ each: true }) // Valida cada instancia individualmente
-  @Type(() => BundleProductDto) // Convierte cada elemento al tipo BundleProductDto
+  @ValidateNested({ each: true })
+  @Type(() => BundleProductDto)
   @Transform(({ value }) => {
     if (typeof value === 'string') {
       try {
-        const parsedValue = JSON.parse(value); // Parseamos si es un string
-        console.log('Parsed products (string):', parsedValue);
+        const parsedValue = JSON.parse(value);
         return parsedValue.map((item: any) => plainToInstance(BundleProductDto, item));
       } catch (error) {
         throw new Error('Invalid JSON string for products');
@@ -44,7 +43,7 @@ export class CreateBundleDto {
 
     if (Array.isArray(value)) {
       console.log('Products is already an array:', value);
-      return value.map(item => plainToInstance(BundleProductDto, item)); // Convertimos cada elemento
+      return value.map(item => plainToInstance(BundleProductDto, item));
     }
 
     throw new Error('Invalid type for products, expected string or array');
