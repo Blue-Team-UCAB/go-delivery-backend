@@ -1,6 +1,6 @@
 import { DomainException } from '../../../common/domain/domain-exception';
 
-export class InvalidBundleImageException extends DomainException {
+export class InvalidBundleQuantityException extends DomainException {
   constructor(message: string) {
     super(message);
   }

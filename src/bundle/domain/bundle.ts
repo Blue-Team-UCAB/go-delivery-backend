@@ -23,16 +23,16 @@ export class Bundle extends AggregateRoot<BundleId> implements PricableAndWeight
   private caducityDate: BundleCaducityDate;
   private products: PricableAndWeightable[];
 
-  addProduct(product: PricableAndWeightable): void {
-    this.products.push(product);
-  }
-
   calculatePrice(): number {
-    return this.products.reduce((total, product) => total + product.calculatePrice(), 0);
+    const totalPrice = this.products.reduce((total, product) => total + product.calculatePrice(), 0);
+    this.price = BundlePrice.create(totalPrice);
+    return totalPrice;
   }
 
   calculateWeight(): number {
-    return this.products.reduce((total, product) => total + product.calculateWeight(), 0);
+    const totalWeight = this.products.reduce((total, product) => total + product.calculateWeight(), 0);
+    this.weight = BundleWeight.create(totalWeight);
+    return totalWeight;
   }
 
   get Name(): BundleName {

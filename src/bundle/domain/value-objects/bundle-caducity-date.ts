@@ -1,5 +1,5 @@
 import { ValueObject } from '../../../common/domain/value-object';
-import { InvalidCaducityDateException } from '../exceptions/invalid-caducity-date.exception';
+import { InvalidBundleCaducityDateException } from '../exceptions/invalid-bundle-caducity-date.exception';
 
 export class BundleCaducityDate implements ValueObject<BundleCaducityDate> {
   private readonly _caducity_date: Date;
@@ -7,10 +7,10 @@ export class BundleCaducityDate implements ValueObject<BundleCaducityDate> {
   constructor(caducity_date: Date) {
     const date = new Date(caducity_date);
     if (isNaN(date.getTime())) {
-      throw new InvalidCaducityDateException(`Caducity date ${caducity_date} is not valid`);
+      throw new InvalidBundleCaducityDateException(`Caducity date ${caducity_date} is not valid`);
     }
     if (date < new Date()) {
-      throw new InvalidCaducityDateException(`Caducity date ${caducity_date} cannot be in the past`);
+      throw new InvalidBundleCaducityDateException(`Caducity date ${caducity_date} cannot be in the past`);
     }
     this._caducity_date = date;
   }

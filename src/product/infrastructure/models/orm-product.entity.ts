@@ -1,4 +1,3 @@
-import { IsNumber } from 'class-validator';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('Producto')
@@ -20,6 +19,7 @@ export class ProductORMEntity {
 
   @Column('float')
   stock_Producto: number;
+
   @Column('float')
   weight_Producto: number;
 

@@ -1,5 +1,5 @@
 import { ValueObject } from '../../../common/domain/value-object';
-import { InvalidBundleProductQuantityException } from '../exceptions/invalid-bundle-product-quantity';
+import { InvalidBundleProductQuantityException } from '../exceptions/invalid-bundle-product-quantity.exception';
 
 export class BundleProductQuantity implements ValueObject<BundleProductQuantity> {
   private readonly _quantity: number;
@@ -13,7 +13,7 @@ export class BundleProductQuantity implements ValueObject<BundleProductQuantity>
     return this._quantity === obj._quantity;
   }
 
-  get Queantity(): number {
+  get Quantity(): number {
     return this._quantity;
   }
 

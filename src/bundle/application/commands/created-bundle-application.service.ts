@@ -20,6 +20,8 @@ import { BundleProduct } from '../../domain/entities/bundle-product';
 import { BundleProductQuantity } from '../../domain/value-objects/bundle-product-quantity';
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { PricableAndWeightable } from 'src/bundle/domain/interfaces/bundle-composite';
+import { BundleEntity } from '../../domain/entities/bundle';
+import { BundleQuantity } from '.././../../bundle/domain/value-objects/bundle-quantity';
 
 @Injectable()
 export class createBundleApplicationService implements IApplicationService<CreateBundleServiceEntryDto, CreateBundleServiceResponseDto> {
@@ -38,7 +40,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
     const bundleProducts: PricableAndWeightable[] = [];
 
     for (const product of data.products) {
-      let productEntity;
+      let productEntity: PricableAndWeightable;
       if (product.type === 'product') {
         const productResult = await this.productRepository.findProductById(product.id);
         if (!productResult.isSuccess) {
@@ -51,19 +53,23 @@ export class createBundleApplicationService implements IApplicationService<Creat
         if (!bundleResult.isSuccess) {
           return Result.fail<CreateBundleServiceResponseDto>(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
         }
-        productEntity = bundleResult.Value;
+        const bundleDetail = bundleResult.Value;
+        productEntity = new BundleEntity(bundleDetail.Id, bundleDetail.Name, bundleDetail.Price, bundleDetail.Weight, BundleQuantity.create(product.quantity));
       }
 
       bundleProducts.push(productEntity);
     }
 
+    const totalPrice = bundleProducts.reduce((total, product) => total + product.calculatePrice(), 0);
+    const totalWeight = bundleProducts.reduce((total, product) => total + product.calculateWeight(), 0);
+
     const dataBundle = {
       name: BundleName.create(data.name),
       description: BundleDescription.create(data.description),
       currency: BundleCurrency.create(data.currency),
-      price: BundlePrice.create(data.price),
+      price: BundlePrice.create(totalPrice),
       stock: BundleStock.create(data.stock),
-      weight: BundleWeight.create(data.weight),
+      weight: BundleWeight.create(totalWeight),
       imageUrl: BundleImage.create(imageUrl),
       caducityDate: BundleCaducityDate.create(data.caducityDate),
       products: bundleProducts,
@@ -74,13 +80,16 @@ export class createBundleApplicationService implements IApplicationService<Creat
       dataBundle.name,
       dataBundle.description,
       dataBundle.currency,
-      dataBundle.price,
+      BundlePrice.create(0),
       dataBundle.stock,
-      dataBundle.weight,
+      BundleWeight.create(0),
       dataBundle.imageUrl,
       dataBundle.caducityDate,
       dataBundle.products,
     );
+
+    bundle.calculatePrice();
+    bundle.calculateWeight();
 
     const result = await this.bundleRepository.saveBundleAggregate(bundle);
 
@@ -101,23 +110,23 @@ export class createBundleApplicationService implements IApplicationService<Creat
       imageUrl: imagenUlr,
       caducityDate: bundle.CaducityDate.CaducityDate,
       products: bundle.Products.map(product => {
-        if (product instanceof Bundle) {
-          return {
-            id: product.Id.Id,
-            name: product.Name.Name,
-            price: product.Price.Price,
-            weight: product.Weight.Weight,
-            quantity: 1, // Default quantity for bundles
-            type: 'bundle',
-          };
-        } else if (product instanceof BundleProduct) {
+        if (product instanceof BundleProduct) {
           return {
             id: product.Id.Id,
             name: product.Name.Name,
             price: product.Price.Price,
             weight: product.Weight.Weight,
             quantity: product.Quantity.Quantity,
-            type: 'product',
+            type: 'product' as const,
+          };
+        } else if (product instanceof BundleEntity) {
+          return {
+            id: product.Id.Id,
+            name: product.Name.Name,
+            price: product.Price.Price,
+            weight: product.Weight.Weight,
+            quantity: product.Quantity.Quantity,
+            type: 'bundle' as const,
           };
         }
         return null;
