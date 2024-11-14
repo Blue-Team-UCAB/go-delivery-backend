@@ -17,9 +17,11 @@ export class CreateProductConsumerService<T> implements IListener<T> {
   @EventPattern('ProductCreatedEvent')
   async handle(@Payload() data: T, @Ctx() context: RmqContext) {
     try {
+      const logo = await this.s3Service.getFile('logoGodely.jpg');
+      const nuevoProducto = await this.s3Service.getFile('nuevoProducto.jpg');
       await this.saveEvent(data);
       const producto = await this.mapProductCreatedEvent(data);
-      this.mailService.sendEmailforAllUsers(`Exciting News! ${producto.name} is Here!`, this.getHtml(producto));
+      this.mailService.sendEmailforAllUsers(`Exciting News! ${producto.name} is Here!`, this.getHtml(producto, logo, nuevoProducto));
     } catch (error) {
       throw new Error(error);
     }
@@ -53,52 +55,69 @@ export class CreateProductConsumerService<T> implements IListener<T> {
     };
   }
 
-  getHtml(producto): string {
+  getHtml(producto, logo, nuevoProducto): string {
     return `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>New Product Notification</title>
-        <style>
-          body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f9f9f9; color: #333; }
-          .email-container { max-width: 600px; margin: 20px auto; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
-          .header { background-color: #007bff; color: #ffffff; text-align: center; padding: 15px; font-size: 22px; font-weight: bold; }
-          .content { padding: 20px; line-height: 1.6; }
-          .content h2 { font-size: 18px; color: #007bff; margin-top: 0; }
-          .content p { font-size: 16px; margin: 10px 0; }
-          .content .product-image { text-align: center; margin: 20px 0; }
-          .content .product-image img { max-width: 100%; height: auto; border-radius: 8px; }
-          .button { display: block; width: 100%; text-align: center; margin: 20px 0; }
-          .button a { text-decoration: none; background-color: #007bff; color: #ffffff; padding: 10px 20px; border-radius: 5px; font-size: 16px; font-weight: bold; }
-          .button a:hover { background-color: #0056b3; }
-          .footer { background-color: #f9f9f9; text-align: center; padding: 15px; font-size: 14px; color: #666; }
-          .footer a { color: #007bff; text-decoration: none; }
-        </style>
-      </head>
-      <body>
-        <div class="email-container">
-          <div class="header">
-            🎉 New Product Available!
-          </div>
-          <div class="content">
-            <h2>Introducing: ${producto.name}</h2>
-            <p>${producto.description}</p>
-            <p><strong>Price:</strong> ${producto.currency} ${producto.price}</p>
-            <div class="product-image">
-              <img src="${producto.imageUrl}" alt="${producto.name}">
-            </div>
-            <div class="button">
-              <a href="#">Learn More</a>
-            </div>
-          </div>
-          <div class="footer">
-            <p>Thank you for shopping with GoDely!</p>
-          </div>
-        </div>
-      </body>
-      </html>
+        <title>Email Product Section</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+        <table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f4f4; margin: 0; padding: 0;">
+            <tr>
+                <td align="center" style="padding: 20px 0;">
+                    <table width="480" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; font-family: Arial, sans-serif;">
+                        <tr>
+                            <td align="center" style="padding: 20px;">
+                                <img src=${logo} alt="Company logo" width="54" style="display: block;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <img src=${nuevoProducto} alt="Product showcase" width="100%" style="display: block;">
+                            </td>
+                        </tr>
+                         <tr>
+                        <td align="center" style="padding: 20px;">
+                            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;">
+                                <tr>
+                                    <td align="center" style="width: 50%; padding: 10px; vertical-align: middle;">
+                                        <img src=${producto.imageUrl} alt="${producto.name}" width="150" style="display: block; max-width: 100%;">
+                                    </td>
+                                    <td align="center" style="width: 50%; padding: 10px; vertical-align: middle; text-align: center;">
+                                        <p style="margin: 0; font-size: 16px; font-weight: bold; color: #000;">${producto.name}</p>
+                                        <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: bold; color: #857cb1;">${producto.price}$</p>
+                                        <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">${producto.description}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td align="center" style="padding: 20px; font-size: 20px; font-weight: normal; color: #1f2024;">
+                                Todos tus pedidos <br> en un solo lugar
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" style="padding: 20px;">
+                                <a href="https://github.com/Blue-Team-UCAB/go-delivery-backend" style="display: inline-block; background-color: #2000b1; color: #ffffff; text-decoration: none; padding: 15px 100px; font-size: 14px; font-weight: bold; border-radius: 8px;">
+                                    Compra ahora
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" style="padding: 20px; background-color: #020035; color: #ffffff; font-size: 14px;">
+                                ©BlueTeam
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
     `;
   }
 }
