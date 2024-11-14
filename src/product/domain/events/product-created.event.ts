@@ -9,6 +9,8 @@ import { ProductStock } from '../value-objects/product-stock';
 import { ProductWeight } from '../value-objects/product-weight';
 import { ProductCategory } from '../value-objects/product-category';
 
+export const PRODUCT_CREATED_EVENT = 'ProductCreatedEvent';
+
 export class ProductCreatedEvent extends DomainEvent {
   protected constructor(
     public id: ProductId,
