@@ -20,6 +20,7 @@ import { ProductWeight } from '../../../product/domain/value-objects/product-wei
 import { BundleProductQuantity } from '../../domain/value-objects/bundle-product-quantity';
 import { BundleQuantity } from '../../domain/value-objects/bundle-quantity';
 import { IMapper } from '../../../common/application/mapper/mapper.interface';
+import { ProductImage } from '../../../product/domain/value-objects/product-image';
 
 export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
   async fromDomainToPersistence(domain: Bundle): Promise<BundleORMEntity> {
@@ -39,6 +40,7 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
       productORM.name_Bundle_Product = product.Name.Name;
       productORM.price_Bundle_Product = product.Price.Price;
       productORM.weight_Bundle_Product = product.Weight.Weight;
+      productORM.imagen_Bundle_Product = product.Image.Url;
       productORM.quantity_Bundle_Product = product.Quantity.Quantity;
       return productORM;
     });
@@ -48,13 +50,41 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
       bundleEntityORM.name_Bundle_Entity = product.Name.Name;
       bundleEntityORM.price_Bundle_Entity = product.Price.Price;
       bundleEntityORM.weight_Bundle_Entity = product.Weight.Weight;
+      bundleEntityORM.imagen_Bundle_Entity = product.Image.Url;
       bundleEntityORM.quantity_Bundle_Entity = product.Quantity.Quantity;
       return bundleEntityORM;
     });
     return bundleORM;
   }
 
-  async fromPersistenceToDomain(persistence: BundleORMEntity): Promise<Bundle> {
+  async fromPersistenceToDomain(persistence: BundleORMEntity, includeProducts: boolean = true): Promise<Bundle> {
+    const products = includeProducts
+      ? [
+          ...persistence.bundleProducts.map(
+            product =>
+              new BundleProduct(
+                new ProductId(product.productId_Bundle_Product),
+                new ProductName(product.name_Bundle_Product),
+                new ProductPrice(product.price_Bundle_Product),
+                new ProductWeight(product.weight_Bundle_Product),
+                new ProductImage(product.imagen_Bundle_Product),
+                new BundleProductQuantity(product.quantity_Bundle_Product),
+              ),
+          ),
+          ...persistence.bundleEntities.map(
+            bundleEntity =>
+              new BundleEntity(
+                new BundleId(bundleEntity.bundleId_Bundle_Entity),
+                new BundleName(bundleEntity.name_Bundle_Entity),
+                new BundlePrice(bundleEntity.price_Bundle_Entity),
+                new BundleWeight(bundleEntity.weight_Bundle_Entity),
+                new BundleImage(bundleEntity.imagen_Bundle_Entity),
+                new BundleQuantity(bundleEntity.quantity_Bundle_Entity),
+              ),
+          ),
+        ]
+      : [];
+
     const bundle = new Bundle(
       new BundleId(persistence.id),
       new BundleName(persistence.name),
@@ -65,28 +95,7 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
       new BundleWeight(persistence.weight),
       new BundleImage(persistence.imageUrl),
       new BundleCaducityDate(persistence.caducityDate),
-      [
-        ...persistence.bundleProducts.map(
-          product =>
-            new BundleProduct(
-              new ProductId(product.productId_Bundle_Product),
-              new ProductName(product.name_Bundle_Product),
-              new ProductPrice(product.price_Bundle_Product),
-              new ProductWeight(product.weight_Bundle_Product),
-              new BundleProductQuantity(product.quantity_Bundle_Product),
-            ),
-        ),
-        ...persistence.bundleEntities.map(
-          bundleEntity =>
-            new BundleEntity(
-              new BundleId(bundleEntity.bundleId_Bundle_Entity),
-              new BundleName(bundleEntity.name_Bundle_Entity),
-              new BundlePrice(bundleEntity.price_Bundle_Entity),
-              new BundleWeight(bundleEntity.weight_Bundle_Entity),
-              new BundleQuantity(bundleEntity.quantity_Bundle_Entity),
-            ),
-        ),
-      ],
+      products,
     );
     return bundle;
   }

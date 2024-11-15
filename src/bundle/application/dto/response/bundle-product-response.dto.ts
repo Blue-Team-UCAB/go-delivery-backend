@@ -3,6 +3,7 @@ export interface BundleProductResponseDto {
   name: string;
   price: number;
   weight: number;
+  imageUrl: string;
   quantity: number;
   type: 'product' | 'bundle';
 }

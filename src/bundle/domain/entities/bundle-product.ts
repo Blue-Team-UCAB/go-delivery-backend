@@ -5,6 +5,7 @@ import { ProductPrice } from '../../../product/domain/value-objects/product-pric
 import { ProductWeight } from '../../../product/domain/value-objects/product-weight';
 import { PricableAndWeightable } from '../interfaces/bundle-composite';
 import { BundleProductQuantity } from '../value-objects/bundle-product-quantity';
+import { ProductImage } from '../../../product/domain/value-objects/product-image';
 
 export class BundleProduct extends Entity<ProductId> implements PricableAndWeightable {
   constructor(
@@ -12,6 +13,7 @@ export class BundleProduct extends Entity<ProductId> implements PricableAndWeigh
     private readonly name: ProductName,
     private readonly price: ProductPrice,
     private readonly weight: ProductWeight,
+    private readonly image: ProductImage,
     private readonly quantity: BundleProductQuantity,
   ) {
     super(id);
@@ -27,6 +29,10 @@ export class BundleProduct extends Entity<ProductId> implements PricableAndWeigh
 
   get Weight(): ProductWeight {
     return this.weight;
+  }
+
+  get Image(): ProductImage {
+    return this.image;
   }
 
   get Quantity(): BundleProductQuantity {

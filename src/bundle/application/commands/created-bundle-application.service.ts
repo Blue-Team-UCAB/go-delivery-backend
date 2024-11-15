@@ -22,6 +22,7 @@ import { IStorageS3Service } from '../../../common/application/s3-storage-servic
 import { PricableAndWeightable } from 'src/bundle/domain/interfaces/bundle-composite';
 import { BundleEntity } from '../../domain/entities/bundle';
 import { BundleQuantity } from '.././../../bundle/domain/value-objects/bundle-quantity';
+import { BundleProductResponseDto } from '../dto/response/bundle-product-response.dto';
 
 @Injectable()
 export class createBundleApplicationService implements IApplicationService<CreateBundleServiceEntryDto, CreateBundleServiceResponseDto> {
@@ -45,14 +46,14 @@ export class createBundleApplicationService implements IApplicationService<Creat
           return Result.fail<CreateBundleServiceResponseDto>(productResult.Error, productResult.StatusCode, productResult.Message);
         }
         const productDetail = productResult.Value;
-        productEntity = new BundleProduct(productDetail.Id, productDetail.Name, productDetail.Price, productDetail.Weight, BundleProductQuantity.create(product.quantity));
+        productEntity = new BundleProduct(productDetail.Id, productDetail.Name, productDetail.Price, productDetail.Weight, productDetail.ImageUrl, BundleProductQuantity.create(product.quantity));
       } else if (product.type === 'bundle') {
         const bundleResult = await this.bundleRepository.findBundleById(product.id);
         if (!bundleResult.isSuccess || !bundleResult.Value) {
           return Result.fail<CreateBundleServiceResponseDto>(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
         }
         const bundleDetail = bundleResult.Value;
-        productEntity = new BundleEntity(bundleDetail.Id, bundleDetail.Name, bundleDetail.Price, bundleDetail.Weight, BundleQuantity.create(product.quantity));
+        productEntity = new BundleEntity(bundleDetail.Id, bundleDetail.Name, bundleDetail.Price, bundleDetail.Weight, bundleDetail.ImageUrl, BundleQuantity.create(product.quantity));
       }
 
       bundleProducts.push(productEntity);
@@ -84,7 +85,12 @@ export class createBundleApplicationService implements IApplicationService<Creat
     bundle.calculatePrice();
     bundle.calculateWeight();
 
+    console.log(bundle);
+    console.log(bundle.Products);
+
     const result = await this.bundleRepository.saveBundleAggregate(bundle);
+
+    console.log(result.Value);
 
     const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);
 
@@ -93,6 +99,36 @@ export class createBundleApplicationService implements IApplicationService<Creat
     }
 
     const imagenUlr = await this.s3Service.getFile(bundle.ImageUrl.Url);
+
+    const products: BundleProductResponseDto[] = await Promise.all(
+      bundle.Products.map(async product => {
+        let imageUrlBundle: string = '';
+        if (product instanceof BundleProduct) {
+          imageUrlBundle = await this.s3Service.getFile(product.Image.Url);
+          return {
+            id: product.Id.Id,
+            name: product.Name.Name,
+            price: product.Price.Price,
+            weight: product.Weight.Weight,
+            imageUrl: imageUrlBundle,
+            quantity: product.Quantity.Quantity,
+            type: 'product' as const,
+          };
+        } else if (product instanceof BundleEntity) {
+          imageUrlBundle = await this.s3Service.getFile(product.Image.Url);
+          return {
+            id: product.Id.Id,
+            name: product.Name.Name,
+            price: product.Price.Price,
+            weight: product.Weight.Weight,
+            imageUrl: imageUrlBundle,
+            quantity: product.Quantity.Quantity,
+            type: 'bundle' as const,
+          };
+        }
+        return null;
+      }).filter(product => product !== null),
+    );
 
     const response: CreateBundleServiceResponseDto = {
       id: bundle.Id.Id,
@@ -104,28 +140,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
       weight: bundle.Weight.Weight,
       imageUrl: imagenUlr,
       caducityDate: bundle.CaducityDate.CaducityDate,
-      products: bundle.Products.map(product => {
-        if (product instanceof BundleProduct) {
-          return {
-            id: product.Id.Id,
-            name: product.Name.Name,
-            price: product.Price.Price,
-            weight: product.Weight.Weight,
-            quantity: product.Quantity.Quantity,
-            type: 'product' as const,
-          };
-        } else if (product instanceof BundleEntity) {
-          return {
-            id: product.Id.Id,
-            name: product.Name.Name,
-            price: product.Price.Price,
-            weight: product.Weight.Weight,
-            quantity: product.Quantity.Quantity,
-            type: 'bundle' as const,
-          };
-        }
-        return null;
-      }).filter(product => product !== null),
+      products: products,
     };
 
     return Result.success<CreateBundleServiceResponseDto>(response, 200);

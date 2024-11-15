@@ -18,6 +18,9 @@ export class BundleEntityORMEntity {
   @Column('float')
   weight_Bundle_Entity: number;
 
+  @Column()
+  imagen_Bundle_Entity: string;
+
   @Column('int')
   quantity_Bundle_Entity: number;
 

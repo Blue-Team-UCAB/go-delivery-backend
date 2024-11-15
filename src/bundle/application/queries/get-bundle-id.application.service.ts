@@ -27,28 +27,35 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
 
     const imageUrl: string = await this.s3Service.getFile(bundleResult.Value.ImageUrl.Url);
 
-    const products: BundleProductResponseDto[] = bundleResult.Value.Products.map(product => {
-      if (product instanceof BundleProduct) {
-        return {
-          id: product.Id.Id,
-          name: product.Name.Name,
-          price: product.Price.Price,
-          weight: product.Weight.Weight,
-          quantity: product.Quantity.Quantity,
-          type: 'product' as const,
-        };
-      } else if (product instanceof BundleEntity) {
-        return {
-          id: product.Id.Id,
-          name: product.Name.Name,
-          price: product.Price.Price,
-          weight: product.Weight.Weight,
-          quantity: product.Quantity.Quantity,
-          type: 'bundle' as const,
-        };
-      }
-      return null;
-    }).filter(product => product !== null);
+    const products: BundleProductResponseDto[] = await Promise.all(
+      bundleResult.Value.Products.map(async product => {
+        let imageUrlBundle: string = '';
+        if (product instanceof BundleProduct) {
+          imageUrlBundle = await this.s3Service.getFile(product.Image.Url);
+          return {
+            id: product.Id.Id,
+            name: product.Name.Name,
+            price: product.Price.Price,
+            weight: product.Weight.Weight,
+            imageUrl: imageUrlBundle,
+            quantity: product.Quantity.Quantity,
+            type: 'product' as const,
+          };
+        } else if (product instanceof BundleEntity) {
+          imageUrlBundle = await this.s3Service.getFile(product.Image.Url);
+          return {
+            id: product.Id.Id,
+            name: product.Name.Name,
+            price: product.Price.Price,
+            weight: product.Weight.Weight,
+            imageUrl: imageUrlBundle,
+            quantity: product.Quantity.Quantity,
+            type: 'bundle' as const,
+          };
+        }
+        return null;
+      }).filter(product => product !== null),
+    );
 
     const response: GetBundleIdServiceResponseDto = {
       id: bundleResult.Value.Id.Id,

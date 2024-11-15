@@ -11,6 +11,5 @@ export interface GetBundlePageServiceResponseDto {
     weight: number;
     imageUrl: string;
     caducityDate: Date;
-    products: BundleProductResponseDto[];
   }[];
 }
