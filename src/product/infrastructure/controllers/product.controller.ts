@@ -52,8 +52,8 @@ export class ProductController {
   @Get()
   @IsClientOrAdmin()
   async getProductByPage(@Query(ValidationPipe) query: GetProductPageDto) {
-    const { page, take } = query;
+    const { page, take, category, search } = query;
     const service = new GetProductByPageApplicationService(this.productRepository, this.s3Service);
-    return (await service.execute({ page, take })).Value;
+    return (await service.execute({ page, take, category, search })).Value;
   }
 }

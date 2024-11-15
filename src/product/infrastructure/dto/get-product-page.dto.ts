@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class GetProductPageDto {
   @IsOptional()
@@ -13,4 +13,12 @@ export class GetProductPageDto {
   @Min(1)
   @Type(() => Number)
   take: number = 10;
+
+  @IsOptional()
+  @IsString()
+  category?: string;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
