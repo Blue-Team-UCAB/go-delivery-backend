@@ -13,7 +13,7 @@ export class GetProductByPageApplicationService implements IApplicationService<G
   ) {}
 
   async execute(data: GetProductPageServiceEntryDto): Promise<Result<GetProductPageServiceResponseDto>> {
-    const productResult: Result<Product[]> = await this.productRepository.findAllProducts(data.page, data.take);
+    const productResult: Result<Product[]> = await this.productRepository.findAllProducts(data.page, data.take, data.category, data.search);
 
     if (!productResult.isSuccess) {
       return Result.fail(productResult.Error, productResult.StatusCode, productResult.Message);

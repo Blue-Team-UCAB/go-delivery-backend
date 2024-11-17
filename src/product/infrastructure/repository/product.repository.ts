@@ -40,10 +40,11 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
     }
   }
 
-  async findAllProducts(page: number, take: number): Promise<Result<Product[]>> {
+  async findAllProducts(page: number, take: number, category?: string, search?: string): Promise<Result<Product[]>> {
     try {
       const skip = take * page - take;
-      const products = await this.createQueryBuilder('producto')
+
+      const query = this.createQueryBuilder('producto')
         .select([
           'producto.id_Producto',
           'producto.nombre_Producto',
@@ -56,11 +57,21 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
           'producto.categories_Producto',
         ])
         .skip(skip)
-        .take(take)
-        .getMany();
+        .take(take);
+
+      if (category) {
+        query.andWhere(':category = ANY(producto.categories_Producto)', { category });
+      }
+
+      if (search) {
+        query.andWhere('producto.nombre_Producto ILIKE :search OR producto.descripcion_Producto ILIKE :search', { search: `%${search}%` });
+      }
+
+      const products = await query.getMany();
       const resp = await Promise.all(products.map(product => this.productMapper.fromPersistenceToDomain(product)));
       return Result.success<Product[]>(resp, 200);
     } catch (e) {
+      console.error('Error in findAllProducts:', e);
       return Result.fail(null, 500, e.message);
     }
   }

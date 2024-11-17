@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ormDatabaseProviders } from './common/infrastructure/providers/config/dbConfig';
 import { ProductController } from './product/infrastructure/controllers/product.controller';
+import { BundleController } from './bundle/infrastructure/controllers/bundle.controller';
 import { s3Provider } from './common/infrastructure/providers/config/amazonS3Provider';
 import { S3Service } from './common/infrastructure/providers/services/s3.service';
 import { AppController } from './app.controller';
@@ -19,7 +20,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule],
-  controllers: [ProductController, AppController, AuthController, CreateProductConsumerService],
+  controllers: [ProductController, BundleController, AppController, AuthController, CreateProductConsumerService],
   providers: [...ormDatabaseProviders, ...s3Provider, S3Service, ...FireBaseConfig, Sha256Service, ...JwtProvider, ...RabbitMQProvider, EventPublisher, MailSenderService, UserEmailProvider],
 })
 export class AppModule {}

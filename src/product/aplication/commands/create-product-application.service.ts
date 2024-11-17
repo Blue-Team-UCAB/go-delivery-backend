@@ -30,8 +30,6 @@ export class createProductApplicationService implements IApplicationService<Crea
   async execute(data: CreateProductServiceEntryDto): Promise<Result<CreateProductServiceResponseDto>> {
     const imageKey = `products/${await this.idGenerator.generateId()}.png`;
 
-    const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);
-
     const categories = data.categories.map(category => ProductCategory.create(category));
 
     const dataProduct = {
@@ -41,7 +39,7 @@ export class createProductApplicationService implements IApplicationService<Crea
       price: ProductPrice.create(data.price),
       stock: ProductStock.create(data.stock),
       weight: ProductWeight.create(data.weight),
-      imageUrl: ProductImage.create(imageUrl),
+      imageUrl: ProductImage.create(imageKey),
       categories: categories,
     };
 
@@ -57,6 +55,8 @@ export class createProductApplicationService implements IApplicationService<Crea
       dataProduct.categories,
     );
     const result = await this.productRepository.saveProductAggregate(product);
+
+    const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);
 
     if (!result.isSuccess()) {
       return Result.fail<CreateProductServiceResponseDto>(result.Error, result.StatusCode, result.Message);
