@@ -10,15 +10,15 @@ import { DomainEventBase } from '../../../common/domain/domain-event';
 export class CreateProductConsumerService<T> implements IListener<T> {
   constructor(
     private readonly mailService: MailSenderService,
-    private readonly s3Service: S3Service,
     private readonly eventStorageMongoService: EventStorageMongoService,
+    private readonly s3Service: S3Service,
   ) {}
 
   @EventPattern('ProductCreatedEvent')
   async handle(@Payload() data: T, @Ctx() context: RmqContext) {
     try {
-      const logo = await this.s3Service.getFile('logoGodely.jpg');
-      const nuevoProducto = await this.s3Service.getFile('nuevoProducto.jpg');
+      const logo = 'https://godely.s3.us-east-1.amazonaws.com/logoGodely.jpg';
+      const nuevoProducto = 'https://godely.s3.us-east-1.amazonaws.com/nuevoProducto.jpg';
       await this.saveEvent(data);
       const producto = await this.mapProductCreatedEvent(data);
       this.mailService.sendEmailforAllUsers(`Exciting News! ${producto.name} is Here!`, this.getHtml(producto, logo, nuevoProducto));

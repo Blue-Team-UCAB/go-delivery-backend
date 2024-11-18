@@ -8,6 +8,7 @@ import { ICrypto } from '../../../common/application/crypto/crypto';
 import { IdGenerator } from 'src/common/application/id-generator/id-generator.interface';
 import { User } from '../model/user-model';
 import { IMailSender } from 'src/common/application/mail-sender/mail-sender.interface';
+import { TemplateHandler } from 'src/common/application/html-formater/html-forgot-password.formater.service';
 
 export class ForgotPasswordUserApplicationService implements IApplicationService<IForgotPasswordEntryApplication, IForgotPasswordResponseApplication> {
   constructor(
@@ -41,7 +42,12 @@ export class ForgotPasswordUserApplicationService implements IApplicationService
       return Result.fail<IForgotPasswordResponseApplication>(null, 500, 'Internal server error');
     }
 
-    await this.mailSender.sendMail(newUser.emailUser, 'Verification code', `Your verification code is: ${verificationCode}`);
+    const html = TemplateHandler.generateTemplate('src/templates/recoverPassword.html', {
+      code: verificationCode,
+      name: newUser.nameUser,
+      logo: 'https://godely.s3.us-east-1.amazonaws.com/logoGodely.jpg',
+    });
+    await this.mailSender.sendMail(newUser.emailUser, 'RECOVERY PASSWORD', html);
 
     return Result.success<IForgotPasswordResponseApplication>('Verification code sent', 200);
   }
