@@ -47,7 +47,7 @@ export class ForgotPasswordUserApplicationService implements IApplicationService
       name: newUser.nameUser,
       logo: 'https://godely.s3.us-east-1.amazonaws.com/logoGodely.jpg',
     });
-    await this.mailSender.sendMail(newUser.emailUser, 'RECOVERY PASSWORD', html);
+    await this.mailSender.sendMail(newUser.emailUser, 'Código para restablecer tu contraseña en GoDely', html);
 
     return Result.success<IForgotPasswordResponseApplication>('Verification code sent', 200);
   }
