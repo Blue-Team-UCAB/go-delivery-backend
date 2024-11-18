@@ -14,6 +14,7 @@ import { ForgotPasswordUserApplicationService } from '../../application/services
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { DateService } from '../../../common/infrastructure/providers/services/date.service';
 import { CodeVerificationService } from 'src/common/infrastructure/providers/services/codeGenerator.service';
+import { MailSenderService } from 'src/common/infrastructure/providers/services/emailProvider.service';
 
 @ApiTags('Auth')
 @Controller('Auth')
@@ -30,6 +31,7 @@ export class AuthController {
     private readonly dateService: DateService,
     private readonly uuidGenator: UuidGenerator,
     private readonly codeGenerator: CodeVerificationService,
+    private readonly mailService: MailSenderService,
   ) {
     this.userRepository = new UserRepository(this.dataSource);
     this.jwtGenerator = new JwtGenerator(this.jwtService);
@@ -49,7 +51,7 @@ export class AuthController {
 
   @Post('forgot-password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
-    const service = new ForgotPasswordUserApplicationService(this.userRepository, this.dateService, this.sha256Service, this.codeGenerator);
+    const service = new ForgotPasswordUserApplicationService(this.userRepository, this.dateService, this.sha256Service, this.codeGenerator, this.mailService);
     return await service.execute(data);
   }
 }

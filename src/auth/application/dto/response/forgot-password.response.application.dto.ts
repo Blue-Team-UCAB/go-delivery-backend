@@ -1,3 +1,1 @@
-export interface IForgotPasswordResponseApplication {
-  code: string;
-}
+export interface IForgotPasswordResponseApplication {}

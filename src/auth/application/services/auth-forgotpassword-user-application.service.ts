@@ -6,6 +6,8 @@ import { IUserRepository } from '../repository/user-repository.interface';
 import { IDateService } from '../../../common/application/date-service/date-service.interface';
 import { ICrypto } from '../../../common/application/crypto/crypto';
 import { IdGenerator } from 'src/common/application/id-generator/id-generator.interface';
+import { User } from '../model/user-model';
+import { IMailSender } from 'src/common/application/mail-sender/mail-sender.interface';
 
 export class ForgotPasswordUserApplicationService implements IApplicationService<IForgotPasswordEntryApplication, IForgotPasswordResponseApplication> {
   constructor(
@@ -13,6 +15,7 @@ export class ForgotPasswordUserApplicationService implements IApplicationService
     private readonly dateService: IDateService,
     private readonly codeHasher: ICrypto,
     private readonly codeGenerator: IdGenerator<string>,
+    private readonly mailSender: IMailSender,
   ) {}
 
   async execute(data: IForgotPasswordEntryApplication): Promise<Result<IForgotPasswordResponseApplication>> {
@@ -26,9 +29,20 @@ export class ForgotPasswordUserApplicationService implements IApplicationService
     const verificationCode = await this.codeGenerator.generateId();
     const hashedCode = await this.codeHasher.encrypt(verificationCode);
 
-    user.getValue().verificationCode = hashedCode;
-    user.getValue().expirationCodeDate = expirationDate;
+    const newUser: User = {
+      ...user.getValue(),
+      expirationCodeDate: expirationDate,
+      verificationCode: hashedCode,
+    };
 
-    console.log('User', user.getValue());
+    const result = await this.userRepository.updateUser(newUser);
+
+    if (!result) {
+      return Result.fail<IForgotPasswordResponseApplication>(null, 500, 'Internal server error');
+    }
+
+    await this.mailSender.sendMail(newUser.emailUser, 'Verification code', `Your verification code is: ${verificationCode}`);
+
+    return Result.success<IForgotPasswordResponseApplication>('Verification code sent', 200);
   }
 }

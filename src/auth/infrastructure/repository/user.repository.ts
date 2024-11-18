@@ -59,4 +59,14 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
       throw new InternalServerErrorException({ error });
     }
   }
+
+  async updateUser(user: User): Promise<Result<User>> {
+    try {
+      const userEntity = await this.userMapper.fromDomainToPersistence(user);
+      await this.save(userEntity);
+      return Result.success<User>(user, 200);
+    } catch (error) {
+      return Result.fail<User>(new Error(error.message), error.code, error.message);
+    }
+  }
 }
