@@ -28,7 +28,7 @@ export class S3Service implements IStorageS3Service {
       Key: key,
     });
 
-    const url = await getSignedUrl(this.s3Provider.client, getObjectCommand, { expiresIn: 3600 });
+    const url = await getSignedUrl(this.s3Provider.client, getObjectCommand, { expiresIn: 600000 });
     return url;
   }
 }

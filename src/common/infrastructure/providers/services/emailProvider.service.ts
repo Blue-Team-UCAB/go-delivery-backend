@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { UserEmailProvider } from '../../../../auth/infrastructure/provider/userEmail.provider';
+import { IMailSender } from '../../../application/mail-sender/mail-sender.interface';
 
 @Injectable()
-export class MailSenderService {
+export class MailSenderService implements IMailSender {
   private transporter;
 
   constructor(private readonly userEmailProvider: UserEmailProvider) {

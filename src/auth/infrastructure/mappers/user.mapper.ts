@@ -11,6 +11,8 @@ export class UserMapper implements IMapper<User, UserORMEntity> {
     user.password_User = domain.passwordUser;
     user.role_User = domain.roleUser;
     user.phone_User = domain.phoneUser;
+    user.expirationCodeDate = domain.expirationCodeDate;
+    user.verification_Code = domain.verificationCode;
     return user;
   }
 
@@ -22,6 +24,8 @@ export class UserMapper implements IMapper<User, UserORMEntity> {
       passwordUser: persistence.password_User,
       roleUser: persistence.role_User as UserType,
       phoneUser: persistence.phone_User,
+      expirationCodeDate: persistence.expirationCodeDate,
+      verificationCode: persistence.verification_Code,
     } as User;
   }
 }

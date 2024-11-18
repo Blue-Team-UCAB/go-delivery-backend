@@ -21,5 +21,8 @@ export class UserORMEntity {
   phone_User: string;
 
   @Column({ nullable: true })
-  codigo_Verificacion?: string;
+  expirationCodeDate: Date;
+
+  @Column({ nullable: true })
+  verification_Code?: string;
 }

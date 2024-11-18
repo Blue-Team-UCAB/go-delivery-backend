@@ -17,10 +17,27 @@ import { MailSenderService } from './common/infrastructure/providers/services/em
 import { UserEmailProvider } from './auth/infrastructure/provider/userEmail.provider';
 import { MongoEventModule } from './common/infrastructure/mongo-event/mongo-event.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { DateService } from './common/infrastructure/providers/services/date.service';
+import { UuidGenerator } from './common/infrastructure/id-generator/uuid-generator';
+import { CodeVerificationService } from './common/infrastructure/providers/services/codeGenerator.service';
 
 @Module({
   imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule],
   controllers: [ProductController, BundleController, AppController, AuthController, CreateProductConsumerService],
-  providers: [...ormDatabaseProviders, ...s3Provider, S3Service, ...FireBaseConfig, Sha256Service, ...JwtProvider, ...RabbitMQProvider, EventPublisher, MailSenderService, UserEmailProvider],
+  providers: [
+    ...ormDatabaseProviders,
+    ...s3Provider,
+    S3Service,
+    ...FireBaseConfig,
+    Sha256Service,
+    ...JwtProvider,
+    ...RabbitMQProvider,
+    EventPublisher,
+    MailSenderService,
+    UserEmailProvider,
+    DateService,
+    UuidGenerator,
+    CodeVerificationService,
+  ],
 })
 export class AppModule {}

@@ -25,7 +25,7 @@ export class AuthLoginUserApplicationService implements IApplicationService<ISig
     const passwordHash = await this.passwordHasher.compare(data.password, findUser.getValue().passwordUser);
 
     if (passwordHash === false) {
-      return Result.fail<ISignUpResponseApplication>(null, 400, 'Password incorrect');
+      return Result.fail<ISignUpResponseApplication>(null, 400, 'Invalid Credentials');
     }
 
     const token = this.jwtGenerator.generateJwt(findUser.getValue().idUser);

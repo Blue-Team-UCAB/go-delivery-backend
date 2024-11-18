@@ -9,4 +9,6 @@ export type User = {
   passwordUser: string;
   roleUser: UserType;
   phoneUser: string;
+  expirationCodeDate?: Date | null;
+  verificationCode?: string | null;
 };

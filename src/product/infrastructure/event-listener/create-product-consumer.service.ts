@@ -5,23 +5,25 @@ import { MailSenderService } from '../../../common/infrastructure/providers/serv
 import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
 import { EventStorageMongoService } from '../../../common/infrastructure/mongo-event/mongo-event.service';
 import { DomainEventBase } from '../../../common/domain/domain-event';
+import { TemplateHandler } from 'src/common/application/html-formater/html-forgot-password.formater.service';
 
 @Controller()
 export class CreateProductConsumerService<T> implements IListener<T> {
+  private readonly logo = 'https://godely.s3.us-east-1.amazonaws.com/logoGodely.jpg';
+  private readonly nuevoProducto = 'https://godely.s3.us-east-1.amazonaws.com/nuevoProducto.jpg';
+
   constructor(
     private readonly mailService: MailSenderService,
-    private readonly s3Service: S3Service,
     private readonly eventStorageMongoService: EventStorageMongoService,
+    private readonly s3Service: S3Service,
   ) {}
 
   @EventPattern('ProductCreatedEvent')
   async handle(@Payload() data: T, @Ctx() context: RmqContext) {
     try {
-      const logo = await this.s3Service.getFile('logoGodely.jpg');
-      const nuevoProducto = await this.s3Service.getFile('nuevoProducto.jpg');
-      await this.saveEvent(data);
+      const nuevoProducto = await this.saveEvent(data);
       const producto = await this.mapProductCreatedEvent(data);
-      this.mailService.sendEmailforAllUsers(`Exciting News! ${producto.name} is Here!`, this.getHtml(producto, logo, nuevoProducto));
+      this.mailService.sendEmailforAllUsers(`Excelentes Noticias! ${producto.name} esta aquí!`, await this.getHtml(producto, this.logo, this.nuevoProducto));
     } catch (error) {
       throw new Error(error);
     }
@@ -55,69 +57,14 @@ export class CreateProductConsumerService<T> implements IListener<T> {
     };
   }
 
-  getHtml(producto, logo, nuevoProducto): string {
-    return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Email Product Section</title>
-    </head>
-    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-        <table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f4f4; margin: 0; padding: 0;">
-            <tr>
-                <td align="center" style="padding: 20px 0;">
-                    <table width="480" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; font-family: Arial, sans-serif;">
-                        <tr>
-                            <td align="center" style="padding: 20px;">
-                                <img src=${logo} alt="Company logo" width="54" style="display: block;">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="center">
-                                <img src=${nuevoProducto} alt="Product showcase" width="100%" style="display: block;">
-                            </td>
-                        </tr>
-                         <tr>
-                        <td align="center" style="padding: 20px;">
-                            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;">
-                                <tr>
-                                    <td align="center" style="width: 50%; padding: 10px; vertical-align: middle;">
-                                        <img src=${producto.imageUrl} alt="${producto.name}" width="150" style="display: block; max-width: 100%;">
-                                    </td>
-                                    <td align="center" style="width: 50%; padding: 10px; vertical-align: middle; text-align: center;">
-                                        <p style="margin: 0; font-size: 16px; font-weight: bold; color: #000;">${producto.name}</p>
-                                        <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: bold; color: #857cb1;">${producto.price}$</p>
-                                        <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">${producto.description}</p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td align="center" style="padding: 20px; font-size: 20px; font-weight: normal; color: #1f2024;">
-                                Todos tus pedidos <br> en un solo lugar
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="center" style="padding: 20px;">
-                                <a href="http://www.godely_blue.com/" style="display: inline-block; background-color: #2000b1; color: #ffffff; text-decoration: none; padding: 15px 100px; font-size: 14px; font-weight: bold; border-radius: 8px;">
-                                    Compra ahora
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="center" style="padding: 20px; background-color: #020035; color: #ffffff; font-size: 14px;">
-                                ©BlueTeam
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </body>
-    </html>
-    `;
+  async getHtml(producto, logo, nuevoProducto): Promise<string> {
+    return await TemplateHandler.generateTemplate('src/templates/newProduct.html', {
+      logo: logo,
+      nuevoProducto: nuevoProducto,
+      producto_imageUrl: producto.imageUrl,
+      producto_name: producto.name,
+      producto_price: producto.price,
+      producto_description: producto.description,
+    });
   }
 }
