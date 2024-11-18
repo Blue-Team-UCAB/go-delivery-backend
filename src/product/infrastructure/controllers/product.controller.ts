@@ -20,15 +20,14 @@ import { DomainEvent } from 'src/common/domain/domain-event';
 @Controller('product')
 export class ProductController {
   private readonly productRepository: ProductRepository;
-  private readonly uuidCreator: UuidGenerator;
 
   constructor(
     @Inject('BaseDeDatos')
     private readonly dataSource: DataSource,
     private readonly s3Service: S3Service,
+    private readonly uuidCreator: UuidGenerator,
     private readonly publisher: EventPublisher<DomainEvent>,
   ) {
-    this.uuidCreator = new UuidGenerator();
     this.productRepository = new ProductRepository(this.dataSource);
   }
 
