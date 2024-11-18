@@ -19,10 +19,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: JwtPayload) {
     const { id } = payload;
-    const user: Optional<User> = await this.userRepository.getById(id);
-    if (user.getAssigned() === false) {
+    const resp: Optional<User> = await this.userRepository.getById(id);
+    if (resp.getAssigned() === false) {
       throw new NotFoundException('User Not FOUND');
     }
-    return user.getValue();
+    return {
+      idUser: resp.getValue().idUser,
+      nameUser: resp.getValue().nameUser,
+      emailUser: resp.getValue().emailUser,
+      roleUser: resp.getValue().roleUser,
+      phoneUser: resp.getValue().phoneUser,
+    };
   }
 }

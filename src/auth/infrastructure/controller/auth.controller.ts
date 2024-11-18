@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject, Get, Param, ValidationPipe, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Get } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ApiTags } from '@nestjs/swagger';
 import { UserRepository } from '../repository/user.repository';
@@ -17,6 +17,8 @@ import { CodeVerificationService } from 'src/common/infrastructure/providers/ser
 import { MailSenderService } from 'src/common/infrastructure/providers/services/emailProvider.service';
 import { ChangePasswordCodeDto } from '../dto/change-password-code.dto';
 import { ChangePasswordCodeUserApplicationService } from 'src/auth/application/services/auth-changepassword-code-user.application.service';
+import { UseAuth } from '../jwt/decorator/useAuth.decorator';
+import { GetUser } from '../jwt/decorator/get-user.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -61,5 +63,16 @@ export class AuthController {
   async changePassword(@Body() data: ChangePasswordCodeDto) {
     const service = new ChangePasswordCodeUserApplicationService(this.userRepository, this.dateService, this.sha256Service);
     return await service.execute(data);
+  }
+
+  @Get('current')
+  @UseAuth()
+  async current(@GetUser() user: any) {
+    return {
+      email: user.emailUser,
+      name: user.nameUser,
+      phone: user.phoneUser,
+      type: user.roleUser,
+    };
   }
 }
