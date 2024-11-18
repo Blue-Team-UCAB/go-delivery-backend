@@ -15,9 +15,11 @@ import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { DateService } from '../../../common/infrastructure/providers/services/date.service';
 import { CodeVerificationService } from 'src/common/infrastructure/providers/services/codeGenerator.service';
 import { MailSenderService } from 'src/common/infrastructure/providers/services/emailProvider.service';
+import { ChangePasswordCodeDto } from '../dto/change-password-code.dto';
+import { ChangePasswordCodeUserApplicationService } from 'src/auth/application/services/auth-changepassword-code-user.application.service';
 
 @ApiTags('Auth')
-@Controller('Auth')
+@Controller('auth')
 export class AuthController {
   private readonly userRepository: UserRepository;
   private readonly jwtGenerator: JwtGenerator;
@@ -49,9 +51,15 @@ export class AuthController {
     return await service.execute(user);
   }
 
-  @Post('forgot-password')
+  @Post('forgot/password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
     const service = new ForgotPasswordUserApplicationService(this.userRepository, this.dateService, this.sha256Service, this.codeGenerator, this.mailService);
+    return await service.execute(data);
+  }
+
+  @Post('change/password')
+  async changePassword(@Body() data: ChangePasswordCodeDto) {
+    const service = new ChangePasswordCodeUserApplicationService(this.userRepository, this.dateService, this.sha256Service);
     return await service.execute(data);
   }
 }
