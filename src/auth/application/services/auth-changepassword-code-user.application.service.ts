@@ -23,6 +23,8 @@ export class ChangePasswordCodeUserApplicationService implements IApplicationSer
 
     const expirationDate = this.dateService.toUtcMinus4(user.getValue().expirationCodeDate);
 
+    console.log(expirationDate, this.dateService.now());
+
     if (!expirationDate || expirationDate < this.dateService.now()) {
       return Result.fail<IForgotPasswordResponseApplication>(null, 400, 'Code expired');
     }
