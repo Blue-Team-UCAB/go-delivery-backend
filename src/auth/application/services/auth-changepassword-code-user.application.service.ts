@@ -17,7 +17,7 @@ export class ChangePasswordCodeUserApplicationService implements IApplicationSer
   async execute(data: IChangePasswordCodeEntryApplication): Promise<Result<IForgotPasswordResponseApplication>> {
     const user = await this.userRepository.getByEmail(data.email);
 
-    if (!user) {
+    if (user.getAssigned() === false) {
       return Result.fail<IForgotPasswordResponseApplication>(null, 404, 'User not found');
     }
 
