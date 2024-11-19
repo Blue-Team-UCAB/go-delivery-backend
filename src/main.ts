@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { RabbitMQMicroservice } from './common/infrastructure/providers/config/rabbitMq';
 
 async function GoDely() {
-  process.env.TZ = 'UTC';
+  process.env.TZ = 'America/Caracas';
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
