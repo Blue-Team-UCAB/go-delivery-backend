@@ -18,7 +18,7 @@ import { GetBundleByPageApplicationService } from 'src/bundle/application/querie
 @Controller('bundle')
 export class BundleController {
   private readonly bundleRepository: BundleRepository;
-  private readonly poductRepository: ProductRepository;
+  private readonly productRepository: ProductRepository;
   private readonly uuidCreator: UuidGenerator;
 
   constructor(
@@ -27,15 +27,15 @@ export class BundleController {
     private readonly s3Service: S3Service,
   ) {
     this.uuidCreator = new UuidGenerator();
+    this.productRepository = new ProductRepository(this.dataSource);
     this.bundleRepository = new BundleRepository(this.dataSource);
-    this.poductRepository = new ProductRepository(this.dataSource);
   }
 
   @Post()
   @IsAdmin()
   @UseInterceptors(FileInterceptor('image'))
   async createBundle(@Body() createBundleDto: CreateBundleDto, @UploadedFile() image: Express.Multer.File) {
-    const service = new createBundleApplicationService(this.bundleRepository, this.poductRepository, this.uuidCreator, this.s3Service);
+    const service = new createBundleApplicationService(this.bundleRepository, this.productRepository, this.uuidCreator, this.s3Service);
     createBundleDto.imageBuffer = image.buffer;
     createBundleDto.contentType = image.mimetype;
     return (await service.execute(createBundleDto)).Value;

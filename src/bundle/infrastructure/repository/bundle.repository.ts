@@ -5,6 +5,7 @@ import { Bundle } from '../../domain/bundle';
 import { BundleORMEntity } from '../models/orm-bundle.entity';
 import { BundleMapper } from '../mappers/bundle.mapper';
 import { Result } from '../../../common/domain/result-handler/result';
+import { ProductRepository } from '../../../product/infrastructure/repository/product.repository';
 
 @Injectable()
 export class BundleRepository extends Repository<BundleORMEntity> implements IBundleRepository {
@@ -28,23 +29,28 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
           'bundle.weight',
           'bundle.imageUrl',
           'bundle.caducityDate',
-          'bundleProducts.id_Bundle_Product',
-          'bundleProducts.productId_Bundle_Product',
-          'bundleProducts.name_Bundle_Product',
-          'bundleProducts.price_Bundle_Product',
-          'bundleProducts.weight_Bundle_Product',
-          'bundleProducts.quantity_Bundle_Product',
-          'bundleEntities.id_Bundle_Entity',
-          'bundleEntities.bundleId_Bundle_Entity',
-          'bundleEntities.name_Bundle_Entity',
-          'bundleEntities.price_Bundle_Entity',
-          'bundleEntities.weight_Bundle_Entity',
-          'bundleEntities.quantity_Bundle_Entity',
+          'bundleProducts.id',
+          'bundleProducts.quantity',
+          'product.id_Producto',
+          'product.nombre_Producto',
+          'product.price_Producto',
+          'product.weight_Producto',
+          'product.imagen_Producto',
+          'bundleBundle.id',
+          'bundleBundle.quantity',
+          'childBundle.id',
+          'childBundle.name',
+          'childBundle.price',
+          'childBundle.weight',
+          'childBundle.imageUrl',
         ])
         .leftJoinAndSelect('bundle.bundleProducts', 'bundleProducts')
-        .leftJoinAndSelect('bundle.bundleEntities', 'bundleEntities')
+        .leftJoinAndSelect('bundleProducts.product', 'product')
+        .leftJoinAndSelect('bundle.parentBundles', 'bundleBundle')
+        .leftJoinAndSelect('bundleBundle.childBundle', 'childBundle')
         .where('bundle.id = :id', { id })
         .getOne();
+
       const resp = await this.bundleMapper.fromPersistenceToDomain(bundle, true);
       if (!resp) {
         return Result.fail(null, 404, 'No existe el combo Solicitado');

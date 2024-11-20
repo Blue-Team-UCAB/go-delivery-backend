@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { BundleProductORMEntity } from '../../../bundle/infrastructure/models/orm-bundle-product.entity';
 
 @Entity('Producto')
 export class ProductORMEntity {
@@ -31,4 +32,7 @@ export class ProductORMEntity {
     default: [],
   })
   categories_Producto: string[];
+
+  @OneToMany(() => BundleProductORMEntity, bundleProduct => bundleProduct.product)
+  bundleProducts: BundleProductORMEntity[];
 }

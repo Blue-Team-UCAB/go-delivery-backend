@@ -2,7 +2,7 @@ import { Bundle } from '../../domain/bundle';
 import { BundleORMEntity } from '../models/orm-bundle.entity';
 import { BundleProduct } from '../../domain/entities/bundle-product';
 import { BundleProductORMEntity } from '../models/orm-bundle-product.entity';
-import { BundleEntityORMEntity } from '../models/orm-bundle-entity.entity';
+import { BundleBundleORMEntity } from '../models/orm-bundle-bundle.entity';
 import { BundleEntity } from '../../domain/entities/bundle';
 import { BundleId } from '../../domain/value-objects/bundle.id';
 import { BundleName } from '../../domain/value-objects/bundle-name';
@@ -34,55 +34,61 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
     bundleORM.weight = domain.Weight.Weight;
     bundleORM.imageUrl = domain.ImageUrl.Url;
     bundleORM.caducityDate = domain.CaducityDate.CaducityDate;
+
     bundleORM.bundleProducts = domain.Products.filter(product => product instanceof BundleProduct).map(product => {
       const productORM = new BundleProductORMEntity();
-      productORM.productId_Bundle_Product = product.Id.Id;
-      productORM.name_Bundle_Product = product.Name.Name;
-      productORM.price_Bundle_Product = product.Price.Price;
-      productORM.weight_Bundle_Product = product.Weight.Weight;
-      productORM.imagen_Bundle_Product = product.Image.Url;
-      productORM.quantity_Bundle_Product = product.Quantity.Quantity;
+      productORM.product = { id_Producto: product.Id.Id } as any;
+      productORM.quantity = product.Quantity.Quantity;
       return productORM;
     });
-    bundleORM.bundleEntities = domain.Products.filter(product => product instanceof BundleEntity).map(product => {
-      const bundleEntityORM = new BundleEntityORMEntity();
-      bundleEntityORM.bundleId_Bundle_Entity = product.Id.Id;
-      bundleEntityORM.name_Bundle_Entity = product.Name.Name;
-      bundleEntityORM.price_Bundle_Entity = product.Price.Price;
-      bundleEntityORM.weight_Bundle_Entity = product.Weight.Weight;
-      bundleEntityORM.imagen_Bundle_Entity = product.Image.Url;
-      bundleEntityORM.quantity_Bundle_Entity = product.Quantity.Quantity;
+
+    bundleORM.parentBundles = domain.Products.filter(product => product instanceof BundleEntity).map(product => {
+      const bundleEntityORM = new BundleBundleORMEntity();
+      bundleEntityORM.childBundle = { id: product.Id.Id } as any;
+      bundleEntityORM.quantity = product.Quantity.Quantity;
       return bundleEntityORM;
     });
+
     return bundleORM;
   }
 
   async fromPersistenceToDomain(persistence: BundleORMEntity, includeProducts: boolean = true): Promise<Bundle> {
     const products = includeProducts
-      ? [
-          ...persistence.bundleProducts.map(
-            product =>
-              new BundleProduct(
-                new ProductId(product.productId_Bundle_Product),
-                new ProductName(product.name_Bundle_Product),
-                new ProductPrice(product.price_Bundle_Product),
-                new ProductWeight(product.weight_Bundle_Product),
-                new ProductImage(product.imagen_Bundle_Product),
-                new BundleProductQuantity(product.quantity_Bundle_Product),
-              ),
-          ),
-          ...persistence.bundleEntities.map(
-            bundleEntity =>
-              new BundleEntity(
-                new BundleId(bundleEntity.bundleId_Bundle_Entity),
-                new BundleName(bundleEntity.name_Bundle_Entity),
-                new BundlePrice(bundleEntity.price_Bundle_Entity),
-                new BundleWeight(bundleEntity.weight_Bundle_Entity),
-                new BundleImage(bundleEntity.imagen_Bundle_Entity),
-                new BundleQuantity(bundleEntity.quantity_Bundle_Entity),
-              ),
-          ),
-        ]
+      ? await Promise.all(
+          persistence.bundleProducts.map(async bundleProduct => {
+            const product = bundleProduct.product;
+            if (!product) {
+              throw new Error(`Product with ID ${bundleProduct.product.id_Producto} not found`);
+            }
+            return new BundleProduct(
+              new ProductId(product.id_Producto),
+              new ProductName(product.nombre_Producto),
+              new ProductPrice(product.price_Producto),
+              new ProductWeight(product.weight_Producto),
+              new ProductImage(product.imagen_Producto),
+              new BundleProductQuantity(bundleProduct.quantity),
+            );
+          }),
+        )
+      : [];
+
+    const bundles = includeProducts
+      ? await Promise.all(
+          persistence.parentBundles.map(async bundleBundle => {
+            const childBundle = bundleBundle.childBundle;
+            if (!childBundle) {
+              throw new Error(`Bundle with ID ${bundleBundle.childBundle.id} not found`);
+            }
+            return new BundleEntity(
+              new BundleId(childBundle.id),
+              new BundleName(childBundle.name),
+              new BundlePrice(childBundle.price),
+              new BundleWeight(childBundle.weight),
+              new BundleImage(childBundle.imageUrl),
+              new BundleQuantity(bundleBundle.quantity),
+            );
+          }),
+        )
       : [];
 
     const bundle = new Bundle(
@@ -95,7 +101,7 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
       new BundleWeight(persistence.weight),
       new BundleImage(persistence.imageUrl),
       new BundleCaducityDate(persistence.caducityDate),
-      products,
+      [...products, ...bundles],
     );
     return bundle;
   }

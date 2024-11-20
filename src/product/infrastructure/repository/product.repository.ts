@@ -71,7 +71,6 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
       const resp = await Promise.all(products.map(product => this.productMapper.fromPersistenceToDomain(product)));
       return Result.success<Product[]>(resp, 200);
     } catch (e) {
-      console.error('Error in findAllProducts:', e);
       return Result.fail(null, 500, e.message);
     }
   }

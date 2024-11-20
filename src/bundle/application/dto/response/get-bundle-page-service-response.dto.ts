@@ -1,5 +1,3 @@
-import { BundleProductResponseDto } from './bundle-product-response.dto';
-
 export interface GetBundlePageServiceResponseDto {
   bundles: {
     id: string;

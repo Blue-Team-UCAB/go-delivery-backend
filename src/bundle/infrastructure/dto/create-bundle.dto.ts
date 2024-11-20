@@ -42,7 +42,6 @@ export class CreateBundleDto {
     }
 
     if (Array.isArray(value)) {
-      console.log('Products is already an array:', value);
       return value.map(item => plainToInstance(BundleProductDto, item));
     }
 

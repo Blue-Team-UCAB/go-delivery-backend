@@ -85,12 +85,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
     bundle.calculatePrice();
     bundle.calculateWeight();
 
-    console.log(bundle);
-    console.log(bundle.Products);
-
     const result = await this.bundleRepository.saveBundleAggregate(bundle);
-
-    console.log(result.Value);
 
     const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);
 

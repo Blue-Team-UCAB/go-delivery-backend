@@ -27,35 +27,34 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
 
     const imageUrl: string = await this.s3Service.getFile(bundleResult.Value.ImageUrl.Url);
 
-    const products: BundleProductResponseDto[] = await Promise.all(
-      bundleResult.Value.Products.map(async product => {
-        let imageUrlBundle: string = '';
-        if (product instanceof BundleProduct) {
-          imageUrlBundle = await this.s3Service.getFile(product.Image.Url);
-          return {
-            id: product.Id.Id,
-            name: product.Name.Name,
-            price: product.Price.Price,
-            weight: product.Weight.Weight,
-            imageUrl: imageUrlBundle,
-            quantity: product.Quantity.Quantity,
-            type: 'product' as const,
-          };
-        } else if (product instanceof BundleEntity) {
-          imageUrlBundle = await this.s3Service.getFile(product.Image.Url);
-          return {
-            id: product.Id.Id,
-            name: product.Name.Name,
-            price: product.Price.Price,
-            weight: product.Weight.Weight,
-            imageUrl: imageUrlBundle,
-            quantity: product.Quantity.Quantity,
-            type: 'bundle' as const,
-          };
-        }
-        return null;
-      }).filter(product => product !== null),
-    );
+    const products: BundleProductResponseDto[] = [];
+    const bundles: BundleProductResponseDto[] = [];
+
+    for (const product of bundleResult.Value.Products) {
+      if (product instanceof BundleProduct) {
+        const imageUrlProduct = await this.s3Service.getFile(product.Image.Url);
+        products.push({
+          id: product.Id.Id,
+          name: product.Name.Name,
+          price: product.Price.Price,
+          weight: product.Weight.Weight,
+          quantity: product.Quantity.Quantity,
+          type: 'product',
+          imageUrl: imageUrlProduct,
+        });
+      } else if (product instanceof BundleEntity) {
+        const imageUrlBundle = await this.s3Service.getFile(product.Image.Url);
+        bundles.push({
+          id: product.Id.Id,
+          name: product.Name.Name,
+          price: product.Price.Price,
+          weight: product.Weight.Weight,
+          quantity: product.Quantity.Quantity,
+          type: 'bundle',
+          imageUrl: imageUrlBundle,
+        });
+      }
+    }
 
     const response: GetBundleIdServiceResponseDto = {
       id: bundleResult.Value.Id.Id,
@@ -68,6 +67,7 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
       imageUrl: imageUrl,
       caducityDate: bundleResult.Value.CaducityDate.CaducityDate,
       products: products,
+      bundles: bundles,
     };
 
     return Result.success(response, 200);
