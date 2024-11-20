@@ -21,8 +21,10 @@ export class ChangePasswordCodeUserApplicationService implements IApplicationSer
       return Result.fail<IForgotPasswordResponseApplication>(null, 404, 'User not found');
     }
 
+
     const expirationDate = this.dateService.toUtcMinus4(user.getValue().expirationCodeDate);
 
+  
     if (!expirationDate || expirationDate < this.dateService.now()) {
       return Result.fail<IForgotPasswordResponseApplication>(null, 400, 'Code expired');
     }
