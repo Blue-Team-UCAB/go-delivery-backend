@@ -1,5 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
-
 export class Result<T> {
   private value?: T;
   private error?: Error;
@@ -20,12 +18,12 @@ export class Result<T> {
 
   get Value(): T {
     if (this.isSuccess) return this.value;
-    throw new BadRequestException('The value does not exists');
+    throw new Error('The value does not exists');
   }
 
   get Error(): Error {
     if (this.error) return this.error;
-    throw new BadRequestException('The error does not exists');
+    throw new Error('The error does not exists');
   }
 
   get StatusCode(): number {
@@ -34,7 +32,7 @@ export class Result<T> {
 
   get Message(): string {
     if (this.message) return this.message;
-    throw new BadRequestException('The message does not exists');
+    throw new Error('The message does not exists');
   }
 
   static success<T>(value: T, statusCode: number): Result<T> {
