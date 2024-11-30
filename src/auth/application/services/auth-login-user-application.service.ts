@@ -5,12 +5,14 @@ import { ISignUpResponseApplication } from '../dto/response/sing-up-response.app
 import { IUserRepository } from '../repository/user-repository.interface';
 import { ICrypto } from 'src/common/application/crypto/crypto';
 import { IJwtGenerator } from '../../../common/application/jwt-generator/jwt-generator.interface';
+import { ICostumerRepository } from 'src/costumer/domain/repositories/costumer-repository.interface';
 
 export class AuthLoginUserApplicationService implements IApplicationService<ISignInEntryApplication, ISignUpResponseApplication> {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly passwordHasher: ICrypto,
     private readonly jwtGenerator: IJwtGenerator,
+    private readonly costumerRepository: ICostumerRepository,
   ) {}
 
   async execute(data: ISignInEntryApplication): Promise<Result<ISignUpResponseApplication>> {
@@ -28,10 +30,16 @@ export class AuthLoginUserApplicationService implements IApplicationService<ISig
       return Result.fail<ISignUpResponseApplication>(null, 400, 'Invalid Credentials');
     }
 
+    const costumer = await this.costumerRepository.findById(findUser.getValue().costumerId);
+
+    if (!costumer.isSuccess()) {
+      return Result.fail<ISignUpResponseApplication>(null, 500, 'Costumer not found');
+    }
+
     const token = this.jwtGenerator.generateJwt(findUser.getValue().idUser);
 
     const response: ISignUpResponseApplication = {
-      name: findUser.getValue().nameUser,
+      name: costumer.Value.Name.Name,
       email: findUser.getValue().emailUser,
       token: token,
     };
