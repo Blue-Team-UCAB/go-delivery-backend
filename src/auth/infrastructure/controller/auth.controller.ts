@@ -20,6 +20,7 @@ import { ChangePasswordCodeUserApplicationService } from 'src/auth/application/s
 import { UseAuth } from '../jwt/decorator/useAuth.decorator';
 import { GetUser } from '../jwt/decorator/get-user.decorator';
 import { CostumerRepository } from 'src/costumer/infrastructure/repository/costumer-repository';
+import { AuthCurrentApplicationService } from 'src/auth/application/services/auth-current-user.application.service';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -71,11 +72,7 @@ export class AuthController {
   @Get('current')
   @UseAuth()
   async current(@GetUser() user: any) {
-    return {
-      email: user.emailUser,
-      name: user.nameUser,
-      phone: user.phoneUser,
-      type: user.roleUser,
-    };
+    const service = new AuthCurrentApplicationService(this.costumerRepository);
+    return await service.execute({ idCostumer: user.idCostumer, id: user.idUser, role: user.roleUser, email: user.emailUser });
   }
 }
