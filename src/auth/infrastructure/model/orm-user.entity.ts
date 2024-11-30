@@ -21,7 +21,7 @@ export class UserORMEntity {
   @Column({ nullable: true })
   verification_Code?: string;
 
-  @OneToOne(() => CostumerORMEntity, costumer => costumer.id_Costumer, { cascade: true, nullable: false, eager: true })
+  @OneToOne(() => CostumerORMEntity, costumer => costumer.id_Costumer, { cascade: true, nullable: false })
   @JoinColumn()
   costumer: CostumerORMEntity;
 }
