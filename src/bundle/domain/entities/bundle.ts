@@ -40,10 +40,10 @@ export class BundleEntity extends Entity<BundleId> implements PricableAndWeighta
   }
 
   calculatePrice(): number {
-    return this.price.Price;
+    return this.price.Price * this.quantity.Quantity;
   }
 
   calculateWeight(): number {
-    return this.weight.Weight;
+    return this.weight.Weight * this.quantity.Quantity;
   }
 }
