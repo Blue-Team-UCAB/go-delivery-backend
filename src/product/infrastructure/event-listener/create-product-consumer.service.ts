@@ -23,7 +23,7 @@ export class CreateProductConsumerService<T> implements IListener<T> {
     try {
       const nuevoProducto = await this.saveEvent(data);
       const producto = await this.mapProductCreatedEvent(data);
-      this.mailService.sendEmailforAllUsers(`Excelentes Noticias! ${producto.name} esta aquí!`, await this.getHtml(producto, this.logo, this.nuevoProducto));
+      await this.mailService.sendEmailforAllUsers(`Excelentes Noticias! ${producto.name} esta aquí!`, await this.getHtml(producto, this.logo, this.nuevoProducto));
     } catch (error) {
       throw new Error(error);
     }
