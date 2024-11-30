@@ -8,7 +8,6 @@ export class AuthCurrentApplicationService implements IApplicationService<Curren
   constructor(private readonly costumerRepository: ICostumerRepository) {}
 
   async execute(data: CurrentEntryServiceDto): Promise<Result<CurrentResponseServiceDto>> {
-    console.log('data', data);
     const costumer = await this.costumerRepository.findById(data.idCostumer);
 
     if (!costumer.isSuccess()) {
