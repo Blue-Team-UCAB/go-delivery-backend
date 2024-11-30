@@ -20,6 +20,7 @@ export class CreateProductConsumerService<T> implements IListener<T> {
 
   @EventPattern('ProductCreatedEvent')
   async handle(@Payload() data: T, @Ctx() context: RmqContext) {
+    console.log(data);
     try {
       const nuevoProducto = await this.saveEvent(data);
       const producto = await this.mapProductCreatedEvent(data);
@@ -58,6 +59,7 @@ export class CreateProductConsumerService<T> implements IListener<T> {
   }
 
   async getHtml(producto, logo, nuevoProducto): Promise<string> {
+    console.log(producto, logo, nuevoProducto);
     return await TemplateHandler.generateTemplate('src/templates/newProduct.html', {
       logo: logo,
       nuevoProducto: nuevoProducto,
