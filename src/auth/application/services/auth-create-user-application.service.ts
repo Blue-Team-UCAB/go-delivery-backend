@@ -45,6 +45,10 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
 
     const walletCreate = await this.walletRepository.saveWallet(costumer.Wallet);
 
+    if (!walletCreate.isSuccess()) {
+      return Result.fail<ISignUpResponseApplication>(walletCreate.Error, walletCreate.StatusCode, walletCreate.Message);
+    }
+
     const costumerCreate = await this.costumerRepository.saveCostumer(costumer);
 
     const user = {
