@@ -61,12 +61,12 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
               throw new Error(`Product with ID ${bundleProduct.product.id_Producto} not found`);
             }
             return new BundleProduct(
-              new ProductId(product.id_Producto),
-              new ProductName(product.nombre_Producto),
-              new ProductPrice(product.price_Producto),
-              new ProductWeight(product.weight_Producto),
-              new ProductImage(product.imagen_Producto),
-              new BundleProductQuantity(bundleProduct.quantity),
+              ProductId.create(product.id_Producto),
+              ProductName.create(product.nombre_Producto),
+              ProductPrice.create(product.price_Producto),
+              ProductWeight.create(product.weight_Producto),
+              ProductImage.create(product.imagen_Producto),
+              BundleProductQuantity.create(bundleProduct.quantity),
             );
           }),
         )
@@ -80,27 +80,27 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
               throw new Error(`Bundle with ID ${bundleBundle.childBundle.id} not found`);
             }
             return new BundleEntity(
-              new BundleId(childBundle.id),
-              new BundleName(childBundle.name),
-              new BundlePrice(childBundle.price),
-              new BundleWeight(childBundle.weight),
-              new BundleImage(childBundle.imageUrl),
-              new BundleQuantity(bundleBundle.quantity),
+              BundleId.create(childBundle.id),
+              BundleName.create(childBundle.name),
+              BundlePrice.create(childBundle.price),
+              BundleWeight.create(childBundle.weight),
+              BundleImage.create(childBundle.imageUrl),
+              BundleQuantity.create(bundleBundle.quantity),
             );
           }),
         )
       : [];
 
     const bundle = new Bundle(
-      new BundleId(persistence.id),
-      new BundleName(persistence.name),
-      new BundleDescription(persistence.description),
-      new BundleCurrency(persistence.currency),
-      new BundlePrice(persistence.price),
-      new BundleStock(persistence.stock),
-      new BundleWeight(persistence.weight),
-      new BundleImage(persistence.imageUrl),
-      new BundleCaducityDate(persistence.caducityDate),
+      BundleId.create(persistence.id),
+      BundleName.create(persistence.name),
+      BundleDescription.create(persistence.description),
+      BundleCurrency.create(persistence.currency),
+      BundlePrice.create(persistence.price),
+      BundleStock.create(persistence.stock),
+      BundleWeight.create(persistence.weight),
+      BundleImage.create(persistence.imageUrl),
+      BundleCaducityDate.create(persistence.caducityDate),
       [...products, ...bundles],
     );
     return bundle;

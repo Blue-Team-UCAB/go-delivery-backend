@@ -61,13 +61,13 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
     }
   }
 
-  async findAllBundles(page: number, take: number): Promise<Result<Bundle[]>> {
+  async findAllBundles(page: number, perpage: number): Promise<Result<Bundle[]>> {
     try {
-      const skip = take * page - take;
+      const skip = perpage * page - perpage;
       const bundles = await this.createQueryBuilder('bundle')
         .select(['bundle.id', 'bundle.name', 'bundle.description', 'bundle.currency', 'bundle.price', 'bundle.stock', 'bundle.weight', 'bundle.imageUrl', 'bundle.caducityDate'])
         .skip(skip)
-        .take(take)
+        .take(perpage)
         .getMany();
       const resp = await Promise.all(bundles.map(bundle => this.bundleMapper.fromPersistenceToDomain(bundle, false)));
       return Result.success<Bundle[]>(resp, 200);

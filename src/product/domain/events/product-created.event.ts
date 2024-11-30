@@ -7,7 +7,7 @@ import { ProductCurrency } from '../value-objects/product-currency';
 import { ProductPrice } from '../value-objects/product-price';
 import { ProductStock } from '../value-objects/product-stock';
 import { ProductWeight } from '../value-objects/product-weight';
-import { ProductCategory } from '../value-objects/product-category';
+import { ProductMeasurement } from '../value-objects/product-measurement';
 
 export const PRODUCT_CREATED_EVENT = 'ProductCreatedEvent';
 
@@ -20,8 +20,8 @@ export class ProductCreatedEvent extends DomainEvent {
     public price: ProductPrice,
     public stock: ProductStock,
     public weight: ProductWeight,
+    public measurement: ProductMeasurement,
     public imageUrl: ProductImage,
-    public categories: ProductCategory[],
   ) {
     super();
   }
@@ -34,9 +34,9 @@ export class ProductCreatedEvent extends DomainEvent {
     price: ProductPrice,
     stock: ProductStock,
     weight: ProductWeight,
+    measurement: ProductMeasurement,
     imageUrl: ProductImage,
-    categories: ProductCategory[],
   ): ProductCreatedEvent {
-    return new ProductCreatedEvent(id, name, description, currency, price, stock, weight, imageUrl, categories);
+    return new ProductCreatedEvent(id, name, description, currency, price, stock, weight, measurement, imageUrl);
   }
 }

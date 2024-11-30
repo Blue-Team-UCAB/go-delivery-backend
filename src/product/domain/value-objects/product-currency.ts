@@ -5,10 +5,8 @@ export class ProductCurrency implements ValueObject<ProductCurrency> {
   private readonly _currency: string;
 
   constructor(currency: string) {
-    if (!this.isValidCurrency(currency)) {
-      throw new InvalidProductCurrencyException(`Currency ${currency} is not valid`);
-    }
-    this._currency = currency.toUpperCase();
+    if (!this.isValidCurrency(currency)) throw new InvalidProductCurrencyException(`Currency ${currency} is not valid`);
+    this._currency = currency.toLowerCase();
   }
 
   equals(obj: ProductCurrency): boolean {
@@ -20,8 +18,8 @@ export class ProductCurrency implements ValueObject<ProductCurrency> {
   }
 
   private isValidCurrency(currency: string): boolean {
-    const regex = /^[A-Za-z]{3}$/;
-    return regex.test(currency);
+    const validCurrencies = ['usd', 'bsf', 'eur'];
+    return validCurrencies.includes(currency.toLowerCase());
   }
 
   static create(currency: string): ProductCurrency {

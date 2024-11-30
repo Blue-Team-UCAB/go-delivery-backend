@@ -40,9 +40,9 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
     }
   }
 
-  async findAllProducts(page: number, take: number, category?: string, search?: string): Promise<Result<Product[]>> {
+  async findAllProducts(page: number, perpage: number, category?: string, search?: string): Promise<Result<Product[]>> {
     try {
-      const skip = take * page - take;
+      const skip = perpage * page - perpage;
 
       const query = this.createQueryBuilder('producto')
         .select([
@@ -57,7 +57,7 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
           'producto.categories_Producto',
         ])
         .skip(skip)
-        .take(take);
+        .take(perpage);
 
       if (category) {
         query.andWhere(':category = ANY(producto.categories_Producto)', { category });
