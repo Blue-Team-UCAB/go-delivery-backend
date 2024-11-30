@@ -1,12 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { CostumerORMEntity } from 'src/costumer/infrastructure/model/orm-costumer.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity('User')
 export class UserORMEntity {
   @PrimaryGeneratedColumn('uuid')
   id_User: string;
-
-  @Column()
-  name_User: string;
 
   @Column()
   email_User: string;
@@ -17,12 +15,13 @@ export class UserORMEntity {
   @Column()
   role_User: string;
 
-  @Column()
-  phone_User: string;
-
   @Column({ nullable: true })
   expirationCodeDate: Date;
 
   @Column({ nullable: true })
   verification_Code?: string;
+
+  @OneToOne(() => CostumerORMEntity, costumer => costumer.id_Costumer, { cascade: true, nullable: false, eager: true })
+  @JoinColumn()
+  costumer: CostumerORMEntity;
 }

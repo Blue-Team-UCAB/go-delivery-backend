@@ -1,16 +1,16 @@
 import { User, UserType } from '../../application/model/user-model';
 import { IMapper } from '../../../common//application/mapper/mapper.interface';
 import { UserORMEntity } from '../model/orm-user.entity';
+import { CostumerORMEntity } from 'src/costumer/infrastructure/model/orm-costumer.entity';
 
 export class UserMapper implements IMapper<User, UserORMEntity> {
   async fromDomainToPersistence(domain: User): Promise<UserORMEntity> {
     const user = new UserORMEntity();
     user.id_User = domain.idUser;
-    user.name_User = domain.nameUser;
     user.email_User = domain.emailUser;
     user.password_User = domain.passwordUser;
     user.role_User = domain.roleUser;
-    user.phone_User = domain.phoneUser;
+    user.costumer = { id_Costumer: domain.costumerId } as CostumerORMEntity;
     user.expirationCodeDate = domain.expirationCodeDate;
     user.verification_Code = domain.verificationCode;
     return user;
@@ -19,13 +19,12 @@ export class UserMapper implements IMapper<User, UserORMEntity> {
   async fromPersistenceToDomain(persistence: UserORMEntity): Promise<User> {
     return {
       idUser: persistence.id_User,
-      nameUser: persistence.name_User,
       emailUser: persistence.email_User,
       passwordUser: persistence.password_User,
       roleUser: persistence.role_User as UserType,
-      phoneUser: persistence.phone_User,
       expirationCodeDate: persistence.expirationCodeDate,
       verificationCode: persistence.verification_Code,
+      costumerId: persistence.costumer.id_Costumer,
     } as User;
   }
 }
