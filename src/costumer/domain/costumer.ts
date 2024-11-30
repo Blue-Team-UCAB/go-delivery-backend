@@ -5,10 +5,15 @@ import { CostumerPhone } from './value-objects/costumer-phone';
 import { CostumerCreatedEvent } from './events/costumer-created.event';
 import { InvalidCostumerException } from './exceptions/invalid-costumer.exception';
 import { DomainEvent } from 'src/common/domain/domain-event';
+import { Wallet } from './entities/wallet';
+import { WalletId } from './value-objects/wallet-id';
+import { WalletAmount } from './value-objects/wallet-amount';
+import { WalletCurrency } from './value-objects/wallet-currency';
 
 export class Costumer extends AggregateRoot<CostumerId> {
   private name: CostumerName;
   private phone: CostumerPhone;
+  private wallet: Wallet;
 
   get Name(): CostumerName {
     return this.name;
@@ -18,8 +23,12 @@ export class Costumer extends AggregateRoot<CostumerId> {
     return this.phone;
   }
 
-  constructor(id: CostumerId, name: CostumerName, phone: CostumerPhone) {
-    const costumerCreated = CostumerCreatedEvent.create(id, name, phone);
+  get Wallet(): Wallet {
+    return this.wallet;
+  }
+
+  constructor(id: CostumerId, name: CostumerName, phone: CostumerPhone, idWallet: WalletId, amountWallet: WalletAmount, currencyWallet: WalletCurrency) {
+    const costumerCreated = CostumerCreatedEvent.create(id, name, phone, new Wallet(idWallet, amountWallet, currencyWallet));
     super(id, costumerCreated);
   }
 
@@ -27,6 +36,7 @@ export class Costumer extends AggregateRoot<CostumerId> {
     if (event instanceof CostumerCreatedEvent) {
       this.name = event.name;
       this.phone = event.phone;
+      this.wallet = event.wallet;
     }
   }
 

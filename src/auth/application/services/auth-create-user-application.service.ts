@@ -12,6 +12,10 @@ import { Costumer } from 'src/costumer/domain/costumer';
 import { CostumerId } from 'src/costumer/domain/value-objects/costumer-id';
 import { CostumerName } from 'src/costumer/domain/value-objects/costumer-name';
 import { CostumerPhone } from 'src/costumer/domain/value-objects/costumer-phone';
+import { WalletId } from 'src/costumer/domain/value-objects/wallet-id';
+import { WalletAmount } from 'src/costumer/domain/value-objects/wallet-amount';
+import { WalletCurrency } from 'src/costumer/domain/value-objects/wallet-currency';
+import { IWalletRepository } from 'src/costumer/domain/repositories/wallet-repository.interface';
 
 export class AuthCreateUserApplicationService implements IApplicationService<ISignUpEntryApplication, ISignUpResponseApplication> {
   constructor(
@@ -20,13 +24,13 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
     private readonly passwordHasher: ICrypto,
     private readonly jwtGenerator: IJwtGenerator,
     private readonly costumerRepository: ICostumerRepository,
+    private readonly walletRepository: IWalletRepository,
   ) {}
 
   async execute(data: ISignUpEntryApplication): Promise<Result<ISignUpResponseApplication>> {
     const emailLower = data.email.toLowerCase();
 
     const findUser = await this.userRepository.getByEmail(emailLower);
-
     if (findUser.getAssigned() === true) {
       return Result.fail<ISignUpResponseApplication>(null, 400, 'Email already in use');
     }
@@ -35,7 +39,11 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
     const hashpassword = await this.passwordHasher.encrypt(data.password);
 
     const constumerId = CostumerId.create(await this.idGenerator.generateId());
-    const costumer = new Costumer(constumerId, CostumerName.create(data.name), CostumerPhone.create(data.phone));
+    const walletId = WalletId.create(await this.idGenerator.generateId());
+
+    const costumer = new Costumer(constumerId, CostumerName.create(data.name), CostumerPhone.create(data.phone), walletId, WalletAmount.create(0), WalletCurrency.create('USD'));
+
+    const walletCreate = await this.walletRepository.saveWallet(costumer.Wallet);
 
     const costumerCreate = await this.costumerRepository.saveCostumer(costumer);
 

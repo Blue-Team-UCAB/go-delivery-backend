@@ -15,18 +15,17 @@ export class CostumerRepository extends Repository<CostumerORM> implements ICost
 
   async findById(id: string): Promise<Result<Costumer>> {
     try {
-      const costumer = await this.createQueryBuilder('costumer')
-        .select(['costumer.id_Costumer', 'costumer.name_Costumer', 'costumer.phone_Costumer'])
+      const costumerORM = await this.createQueryBuilder('costumer')
+        .select(['costumer.id_Costumer', 'costumer.name_Costumer', 'costumer.phone_Costumer', 'wallet.id_Wallet', 'wallet.amount_Wallet', 'wallet.currency_Wallet'])
+        .leftJoin('costumer.wallet', 'wallet')
         .where('costumer.id_Costumer = :id', { id })
         .getOne();
 
-      const resp = await this.costumerMapper.fromPersistenceToDomain(costumer);
-
-      if (!resp) {
-        return Result.fail(null, 404, 'Costumer not found');
+      if (!costumerORM) {
+        return Result.fail<Costumer>(null, 404, 'Costumer not found');
       }
-
-      return Result.success<Costumer>(resp, 200);
+      const costumer = await this.costumerMapper.fromPersistenceToDomain(costumerORM);
+      return Result.success<Costumer>(costumer, 200);
     } catch (e) {
       return Result.fail(null, 500, e.message);
     }
