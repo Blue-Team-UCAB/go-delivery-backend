@@ -16,7 +16,7 @@ export class CostumerORMEntity {
   @OneToOne(() => UserORMEntity, user => user.id_User, { cascade: true, nullable: false })
   user: UserORMEntity;
 
-  @OneToOne(() => WalletORMEntity, wallet => wallet.id_Wallet, { cascade: true, nullable: false })
+  @OneToOne(() => WalletORMEntity, wallet => wallet.id_Wallet, { cascade: true, nullable: true })
   @JoinColumn()
   wallet: WalletORMEntity;
 }
