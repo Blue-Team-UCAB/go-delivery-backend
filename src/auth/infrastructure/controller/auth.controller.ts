@@ -12,7 +12,6 @@ import { SignInUserDto } from '../dto/sign-in.user.dto';
 import { AuthLoginUserApplicationService } from '../../application/services/auth-login-user-application.service';
 import { ForgotPasswordUserApplicationService } from '../../application/services/auth-forgotpassword-user-application.service';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
-import { DateService } from '../../../common/infrastructure/providers/services/date.service';
 import { CodeVerificationService } from 'src/common/infrastructure/providers/services/codeGenerator.service';
 import { MailSenderService } from 'src/common/infrastructure/providers/services/emailProvider.service';
 import { ChangePasswordCodeDto } from '../dto/change-password-code.dto';
@@ -37,7 +36,6 @@ export class AuthController {
     @Inject('JwtGenerator')
     private readonly jwtService: JwtService,
     private readonly sha256Service: Sha256Service,
-    private readonly dateService: DateService,
     private readonly uuidGenator: UuidGenerator,
     private readonly codeGenerator: CodeVerificationService,
     private readonly mailService: MailSenderService,
