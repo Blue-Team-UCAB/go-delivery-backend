@@ -32,6 +32,10 @@ export class Payment extends AggregateRoot<PaymentId> {
     return this.reference;
   }
 
+  get CostumerId(): CostumerId {
+    return this.costumerId;
+  }
+
   constructor(id: PaymentId, name: PaymentName, date: PaymentDate, amount: PaymentAmount, reference: PaymentReference, costumerId: CostumerId) {
     const paymentCreate = PaymentCreatedEvent.create(id, name, date, amount, reference, costumerId);
     super(id, paymentCreate);
