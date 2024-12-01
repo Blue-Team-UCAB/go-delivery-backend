@@ -5,7 +5,6 @@ import { Bundle } from '../../domain/bundle';
 import { BundleORMEntity } from '../models/orm-bundle.entity';
 import { BundleMapper } from '../mappers/bundle.mapper';
 import { Result } from '../../../common/domain/result-handler/result';
-import { ProductRepository } from '../../../product/infrastructure/repository/product.repository';
 
 @Injectable()
 export class BundleRepository extends Repository<BundleORMEntity> implements IBundleRepository {
@@ -31,23 +30,23 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
           'bundle.caducityDate',
           'bundleProducts.id',
           'bundleProducts.quantity',
-          'product.id_Producto',
-          'product.nombre_Producto',
-          'product.price_Producto',
-          'product.weight_Producto',
-          'product.imagen_Producto',
-          'bundleBundle.id',
-          'bundleBundle.quantity',
-          'childBundle.id',
-          'childBundle.name',
-          'childBundle.price',
-          'childBundle.weight',
-          'childBundle.imageUrl',
+          'product.id_Product',
+          'product.name_Product',
+          'product.price_Product',
+          'product.weight_Product',
+          'product.image_Product',
+          // 'bundleBundle.id',
+          // 'bundleBundle.quantity',
+          // 'childBundle.id',
+          // 'childBundle.name',
+          // 'childBundle.price',
+          // 'childBundle.weight',
+          // 'childBundle.imageUrl',
         ])
         .leftJoinAndSelect('bundle.bundleProducts', 'bundleProducts')
         .leftJoinAndSelect('bundleProducts.product', 'product')
-        .leftJoinAndSelect('bundle.parentBundles', 'bundleBundle')
-        .leftJoinAndSelect('bundleBundle.childBundle', 'childBundle')
+        // .leftJoinAndSelect('bundle.parentBundles', 'bundleBundle')
+        // .leftJoinAndSelect('bundleBundle.childBundle', 'childBundle')
         .where('bundle.id = :id', { id })
         .getOne();
 
@@ -61,13 +60,13 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
     }
   }
 
-  async findAllBundles(page: number, take: number): Promise<Result<Bundle[]>> {
+  async findAllBundles(page: number, perpage: number): Promise<Result<Bundle[]>> {
     try {
-      const skip = take * page - take;
+      const skip = perpage * page - perpage;
       const bundles = await this.createQueryBuilder('bundle')
         .select(['bundle.id', 'bundle.name', 'bundle.description', 'bundle.currency', 'bundle.price', 'bundle.stock', 'bundle.weight', 'bundle.imageUrl', 'bundle.caducityDate'])
         .skip(skip)
-        .take(take)
+        .take(perpage)
         .getMany();
       const resp = await Promise.all(bundles.map(bundle => this.bundleMapper.fromPersistenceToDomain(bundle, false)));
       return Result.success<Bundle[]>(resp, 200);

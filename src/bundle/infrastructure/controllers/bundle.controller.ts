@@ -51,8 +51,8 @@ export class BundleController {
   @Get()
   @IsClientOrAdmin()
   async getBundleByPage(@Query(ValidationPipe) query: GetBundlePageDto) {
-    const { page, take } = query;
+    const { page, perpage } = query;
     const service = new GetBundleByPageApplicationService(this.bundleRepository, this.s3Service);
-    return (await service.execute({ page, take })).Value;
+    return (await service.execute({ page, perpage })).Value;
   }
 }

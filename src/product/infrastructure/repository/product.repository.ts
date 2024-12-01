@@ -15,23 +15,29 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
 
   async findProductById(id: string): Promise<Result<Product>> {
     try {
-      const produt = await this.createQueryBuilder('producto')
+      const product = await this.createQueryBuilder('product')
         .select([
-          'producto.id_Producto',
-          'producto.nombre_Producto',
-          'producto.descripcion_Producto',
-          'producto.currency_Producto',
-          'producto.price_Producto',
-          'producto.stock_Producto',
-          'producto.weight_Producto',
-          'producto.imagen_Producto',
-          'producto.categories_Producto',
+          'product.id_Product',
+          'product.name_Product',
+          'product.description_Product',
+          'product.currency_Product',
+          'product.price_Product',
+          'product.stock_Product',
+          'product.weight_Product',
+          'product.image_Product',
+          'product.measurement_Product',
+          'productCategory.id_',
+          'category.id_Category',
+          'category.name_Category',
         ])
-        .where('producto.id_Producto = :id', { id })
+        .leftJoin('product.product_Categories', 'productCategory')
+        .leftJoin('productCategory.category', 'category')
+        .where('product.id_Product = :id', { id })
         .getOne();
-      const resp = await this.productMapper.fromPersistenceToDomain(produt);
+
+      const resp = await this.productMapper.fromPersistenceToDomain(product);
       if (!resp) {
-        return Result.fail(null, 404, 'No existe el producto Solicitado');
+        return Result.fail(null, 404, 'The requested product does not exist');
       }
 
       return Result.success<Product>(resp, 200);
@@ -40,31 +46,36 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
     }
   }
 
-  async findAllProducts(page: number, take: number, category?: string, search?: string): Promise<Result<Product[]>> {
+  async findAllProducts(page: number, perpage: number, category?: string, search?: string): Promise<Result<Product[]>> {
     try {
-      const skip = take * page - take;
+      const skip = perpage * page - perpage;
 
-      const query = this.createQueryBuilder('producto')
+      const query = this.createQueryBuilder('product')
         .select([
-          'producto.id_Producto',
-          'producto.nombre_Producto',
-          'producto.descripcion_Producto',
-          'producto.currency_Producto',
-          'producto.price_Producto',
-          'producto.stock_Producto',
-          'producto.weight_Producto',
-          'producto.imagen_Producto',
-          'producto.categories_Producto',
+          'product.id_Product',
+          'product.name_Product',
+          'product.description_Product',
+          'product.currency_Product',
+          'product.price_Product',
+          'product.stock_Product',
+          'product.weight_Product',
+          'product.image_Product',
+          'product.measurement_Product',
+          'productCategory.id_',
+          'category.id_Category',
+          'category.name_Category',
         ])
+        .leftJoin('product.product_Categories', 'productCategory')
+        .leftJoin('productCategory.category', 'category')
         .skip(skip)
-        .take(take);
+        .take(perpage);
 
       if (category) {
-        query.andWhere(':category = ANY(producto.categories_Producto)', { category });
+        query.andWhere('category.name_Category = :category', { category });
       }
 
       if (search) {
-        query.andWhere('producto.nombre_Producto ILIKE :search OR producto.descripcion_Producto ILIKE :search', { search: `%${search}%` });
+        query.andWhere('product.name_Product ILIKE :search OR product.description_Product ILIKE :search', { search: `%${search}%` });
       }
 
       const products = await query.getMany();
@@ -78,6 +89,7 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
   async saveProductAggregate(product: Product): Promise<Result<Product>> {
     try {
       const newProduct = await this.productMapper.fromDomainToPersistence(product);
+      console.log(newProduct.product_Categories);
       await this.save(newProduct);
       return Result.success<Product>(product, 200);
     } catch (error) {

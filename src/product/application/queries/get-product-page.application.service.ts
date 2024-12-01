@@ -1,6 +1,6 @@
 import { IApplicationService } from '../../../common/application/application-services/application-service.interface';
 import { GetProductPageServiceEntryDto } from '../dto/entry/get-product-page-service-entry.dto';
-import { GetProductPageServiceResponseDto } from '../dto/response/get-product-page-service-responde.dto';
+import { GetProductPageServiceResponseDto } from '../dto/response/get-product-page-service-response.dto';
 import { Result } from '../../../common/domain/result-handler/result';
 import { IProductRepository } from '../../domain/repositories/product-repository.interface';
 import { Product } from '../../domain/product';
@@ -13,7 +13,7 @@ export class GetProductByPageApplicationService implements IApplicationService<G
   ) {}
 
   async execute(data: GetProductPageServiceEntryDto): Promise<Result<GetProductPageServiceResponseDto>> {
-    const productResult: Result<Product[]> = await this.productRepository.findAllProducts(data.page, data.take, data.category, data.search);
+    const productResult: Result<Product[]> = await this.productRepository.findAllProducts(data.page, data.perpage, data.category, data.search);
 
     if (!productResult.isSuccess) {
       return Result.fail(productResult.Error, productResult.StatusCode, productResult.Message);
@@ -30,8 +30,9 @@ export class GetProductByPageApplicationService implements IApplicationService<G
           price: product.Price.Price,
           stock: product.Stock.Stock,
           weight: product.Weight.Weight,
+          measurement: product.Measurement.Measurement,
           imageUrl: imageUrl,
-          categories: product.Categories.map(category => category.Category),
+          categories: product.Categories.map(category => category.Name.Name),
         };
       }),
     );

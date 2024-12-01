@@ -10,7 +10,8 @@ import { ProductCurrency } from './value-objects/product-currency';
 import { ProductPrice } from './value-objects/product-price';
 import { ProductStock } from './value-objects/product-stock';
 import { ProductWeight } from './value-objects/product-weight';
-import { ProductCategory } from './value-objects/product-category';
+import { ProductMeasurement } from './value-objects/product-measurement';
+import { ProductCategory } from './entities/product-category';
 
 export class Product extends AggregateRoot<ProductId> {
   private name: ProductName;
@@ -19,6 +20,7 @@ export class Product extends AggregateRoot<ProductId> {
   private price: ProductPrice;
   private stock: ProductStock;
   private weight: ProductWeight;
+  private measurement: ProductMeasurement;
   private imageUrl: ProductImage;
   private categories: ProductCategory[];
 
@@ -28,10 +30,6 @@ export class Product extends AggregateRoot<ProductId> {
 
   get Description(): ProductDescription {
     return this.description;
-  }
-
-  get ImageUrl(): ProductImage {
-    return this.imageUrl;
   }
 
   get Currency(): ProductCurrency {
@@ -50,6 +48,14 @@ export class Product extends AggregateRoot<ProductId> {
     return this.weight;
   }
 
+  get Measurement(): ProductMeasurement {
+    return this.measurement;
+  }
+
+  get ImageUrl(): ProductImage {
+    return this.imageUrl;
+  }
+
   get Categories(): ProductCategory[] {
     return this.categories;
   }
@@ -62,15 +68,17 @@ export class Product extends AggregateRoot<ProductId> {
     price: ProductPrice,
     stock: ProductStock,
     weight: ProductWeight,
+    measurement: ProductMeasurement,
     imageUrl: ProductImage,
     categories: ProductCategory[],
   ) {
-    const productCreated = ProductCreatedEvent.create(id, name, description, currency, price, stock, weight, imageUrl, categories);
+    const productCreated = ProductCreatedEvent.create(id, name, description, currency, price, stock, weight, measurement, imageUrl, categories);
     super(id, productCreated);
   }
 
   protected checkValidState(): void {
-    if (!this.name || !this.description || !this.imageUrl || !this.currency || !this.price || !this.stock || !this.weight || !this.categories) throw new InvalidProductException(`Product not valid`);
+    if (!this.name || !this.description || !this.imageUrl || !this.currency || !this.price || !this.stock || !this.weight || !this.measurement || !this.categories)
+      throw new InvalidProductException(`Product not valid`);
   }
 
   protected when(event: DomainEvent): void {
@@ -81,6 +89,7 @@ export class Product extends AggregateRoot<ProductId> {
       this.price = event.price;
       this.stock = event.stock;
       this.weight = event.weight;
+      this.measurement = event.measurement;
       this.imageUrl = event.imageUrl;
       this.categories = event.categories;
     }

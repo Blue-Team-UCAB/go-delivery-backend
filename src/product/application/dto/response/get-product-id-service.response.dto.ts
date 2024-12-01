@@ -1,4 +1,4 @@
-export interface CreateProductServiceResponseDto {
+export interface GetProductIdServiceResponseDto {
   id: string;
   name: string;
   description: string;
@@ -6,6 +6,7 @@ export interface CreateProductServiceResponseDto {
   price: number;
   stock: number;
   weight: number;
+  measurement: string;
   imageUrl: string;
   categories: string[];
 }

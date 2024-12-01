@@ -5,5 +5,5 @@ export interface BundleProductResponseDto {
   weight: number;
   imageUrl: string;
   quantity: number;
-  type: 'product' | 'bundle';
+  //type: 'product' | 'bundle';
 }

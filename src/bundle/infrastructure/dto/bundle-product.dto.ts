@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsPositive, IsIn } from 'class-validator';
+import { IsString, IsNumber, IsPositive } from 'class-validator';
 
 export class BundleProductDto {
   @IsString()
@@ -8,7 +8,7 @@ export class BundleProductDto {
   @IsPositive()
   quantity: number;
 
-  @IsString()
-  @IsIn(['product', 'bundle'])
-  type: 'product' | 'bundle';
+  // @IsString()
+  // @IsIn(['product', 'bundle'])
+  // type: 'product' | 'bundle';
 }

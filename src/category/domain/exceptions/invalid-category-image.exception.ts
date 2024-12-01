@@ -1,6 +1,6 @@
 import { DomainException } from '../../../common/domain/domain-exception';
 
-export class InvalidProductCategoryException extends DomainException {
+export class InvalidCategoryImageException extends DomainException {
   constructor(message: string) {
     super(message);
   }

@@ -21,7 +21,7 @@ import { BundleProductQuantity } from '../../domain/value-objects/bundle-product
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { PricableAndWeightable } from 'src/bundle/domain/interfaces/bundle-composite';
 import { BundleEntity } from '../../domain/entities/bundle';
-import { BundleQuantity } from '.././../../bundle/domain/value-objects/bundle-quantity';
+//import { BundleQuantity } from '.././../../bundle/domain/value-objects/bundle-quantity';
 import { BundleProductResponseDto } from '../dto/response/bundle-product-response.dto';
 
 @Injectable()
@@ -40,21 +40,21 @@ export class createBundleApplicationService implements IApplicationService<Creat
 
     for (const product of data.products) {
       let productEntity: PricableAndWeightable;
-      if (product.type === 'product') {
-        const productResult = await this.productRepository.findProductById(product.id);
-        if (!productResult.isSuccess || !productResult.Value) {
-          return Result.fail<CreateBundleServiceResponseDto>(productResult.Error, productResult.StatusCode, productResult.Message);
-        }
-        const productDetail = productResult.Value;
-        productEntity = new BundleProduct(productDetail.Id, productDetail.Name, productDetail.Price, productDetail.Weight, productDetail.ImageUrl, BundleProductQuantity.create(product.quantity));
-      } else if (product.type === 'bundle') {
-        const bundleResult = await this.bundleRepository.findBundleById(product.id);
-        if (!bundleResult.isSuccess || !bundleResult.Value) {
-          return Result.fail<CreateBundleServiceResponseDto>(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
-        }
-        const bundleDetail = bundleResult.Value;
-        productEntity = new BundleEntity(bundleDetail.Id, bundleDetail.Name, bundleDetail.Price, bundleDetail.Weight, bundleDetail.ImageUrl, BundleQuantity.create(product.quantity));
+      //if (product.type === 'product') {
+      const productResult = await this.productRepository.findProductById(product.id);
+      if (!productResult.isSuccess || !productResult.Value) {
+        return Result.fail<CreateBundleServiceResponseDto>(productResult.Error, productResult.StatusCode, productResult.Message);
       }
+      const productDetail = productResult.Value;
+      productEntity = new BundleProduct(productDetail.Id, productDetail.Name, productDetail.Price, productDetail.Weight, productDetail.ImageUrl, BundleProductQuantity.create(product.quantity));
+      // } else if (product.type === 'bundle') {
+      //   const bundleResult = await this.bundleRepository.findBundleById(product.id);
+      //   if (!bundleResult.isSuccess || !bundleResult.Value) {
+      //     return Result.fail<CreateBundleServiceResponseDto>(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
+      //   }
+      //   const bundleDetail = bundleResult.Value;
+      //   productEntity = new BundleEntity(bundleDetail.Id, bundleDetail.Name, bundleDetail.Price, bundleDetail.Weight, bundleDetail.ImageUrl, BundleQuantity.create(product.quantity));
+      // }
 
       bundleProducts.push(productEntity);
     }

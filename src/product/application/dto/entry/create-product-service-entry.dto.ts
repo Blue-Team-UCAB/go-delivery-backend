@@ -5,7 +5,13 @@ export interface CreateProductServiceEntryDto {
   price: number;
   stock: number;
   weight: number;
+  measurement: string;
   imageBuffer?: Buffer;
   contentType?: string;
-  categories: string[];
+  categories: ProductCategoryDto[];
+}
+
+export class ProductCategoryDto {
+  id: string;
+  name: string;
 }

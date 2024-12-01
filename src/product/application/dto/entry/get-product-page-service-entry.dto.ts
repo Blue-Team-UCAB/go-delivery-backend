@@ -1,6 +1,6 @@
 export interface GetProductPageServiceEntryDto {
   page: number;
-  take: number;
+  perpage: number;
   category?: string;
   search?: string;
 }

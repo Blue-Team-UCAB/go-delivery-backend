@@ -2,7 +2,7 @@ import { Bundle } from '../../domain/bundle';
 import { BundleORMEntity } from '../models/orm-bundle.entity';
 import { BundleProduct } from '../../domain/entities/bundle-product';
 import { BundleProductORMEntity } from '../models/orm-bundle-product.entity';
-import { BundleBundleORMEntity } from '../models/orm-bundle-bundle.entity';
+// import { BundleBundleORMEntity } from '../models/orm-bundle-bundle.entity';
 import { BundleEntity } from '../../domain/entities/bundle';
 import { BundleId } from '../../domain/value-objects/bundle.id';
 import { BundleName } from '../../domain/value-objects/bundle-name';
@@ -18,7 +18,7 @@ import { ProductName } from '../../../product/domain/value-objects/product-name'
 import { ProductPrice } from '../../../product/domain/value-objects/product-price';
 import { ProductWeight } from '../../../product/domain/value-objects/product-weight';
 import { BundleProductQuantity } from '../../domain/value-objects/bundle-product-quantity';
-import { BundleQuantity } from '../../domain/value-objects/bundle-quantity';
+// import { BundleQuantity } from '../../domain/value-objects/bundle-quantity';
 import { IMapper } from '../../../common/application/mapper/mapper.interface';
 import { ProductImage } from '../../../product/domain/value-objects/product-image';
 
@@ -42,12 +42,12 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
       return productORM;
     });
 
-    bundleORM.parentBundles = domain.Products.filter(product => product instanceof BundleEntity).map(product => {
-      const bundleEntityORM = new BundleBundleORMEntity();
-      bundleEntityORM.childBundle = { id: product.Id.Id } as any;
-      bundleEntityORM.quantity = product.Quantity.Quantity;
-      return bundleEntityORM;
-    });
+    // bundleORM.parentBundles = domain.Products.filter(product => product instanceof BundleEntity).map(product => {
+    //   const bundleEntityORM = new BundleBundleORMEntity();
+    //   bundleEntityORM.childBundle = { id: product.Id.Id } as any;
+    //   bundleEntityORM.quantity = product.Quantity.Quantity;
+    //   return bundleEntityORM;
+    // });
 
     return bundleORM;
   }
@@ -58,50 +58,50 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
           persistence.bundleProducts.map(async bundleProduct => {
             const product = bundleProduct.product;
             if (!product) {
-              throw new Error(`Product with ID ${bundleProduct.product.id_Producto} not found`);
+              throw new Error(`Product with ID ${bundleProduct.product.id_Product} not found`);
             }
             return new BundleProduct(
-              new ProductId(product.id_Producto),
-              new ProductName(product.nombre_Producto),
-              new ProductPrice(product.price_Producto),
-              new ProductWeight(product.weight_Producto),
-              new ProductImage(product.imagen_Producto),
-              new BundleProductQuantity(bundleProduct.quantity),
+              ProductId.create(product.id_Product),
+              ProductName.create(product.name_Product),
+              ProductPrice.create(product.price_Product),
+              ProductWeight.create(product.weight_Product),
+              ProductImage.create(product.image_Product),
+              BundleProductQuantity.create(bundleProduct.quantity),
             );
           }),
         )
       : [];
 
-    const bundles = includeProducts
-      ? await Promise.all(
-          persistence.parentBundles.map(async bundleBundle => {
-            const childBundle = bundleBundle.childBundle;
-            if (!childBundle) {
-              throw new Error(`Bundle with ID ${bundleBundle.childBundle.id} not found`);
-            }
-            return new BundleEntity(
-              new BundleId(childBundle.id),
-              new BundleName(childBundle.name),
-              new BundlePrice(childBundle.price),
-              new BundleWeight(childBundle.weight),
-              new BundleImage(childBundle.imageUrl),
-              new BundleQuantity(bundleBundle.quantity),
-            );
-          }),
-        )
-      : [];
+    // const bundles = includeProducts
+    //   ? await Promise.all(
+    //       persistence.parentBundles.map(async bundleBundle => {
+    //         const childBundle = bundleBundle.childBundle;
+    //         if (!childBundle) {
+    //           throw new Error(`Bundle with ID ${bundleBundle.childBundle.id} not found`);
+    //         }
+    //         return new BundleEntity(
+    //           BundleId.create(childBundle.id),
+    //           BundleName.create(childBundle.name),
+    //           BundlePrice.create(childBundle.price),
+    //           BundleWeight.create(childBundle.weight),
+    //           BundleImage.create(childBundle.imageUrl),
+    //           BundleQuantity.create(bundleBundle.quantity),
+    //         );
+    //       }),
+    //     )
+    //   : [];
 
     const bundle = new Bundle(
-      new BundleId(persistence.id),
-      new BundleName(persistence.name),
-      new BundleDescription(persistence.description),
-      new BundleCurrency(persistence.currency),
-      new BundlePrice(persistence.price),
-      new BundleStock(persistence.stock),
-      new BundleWeight(persistence.weight),
-      new BundleImage(persistence.imageUrl),
-      new BundleCaducityDate(persistence.caducityDate),
-      [...products, ...bundles],
+      BundleId.create(persistence.id),
+      BundleName.create(persistence.name),
+      BundleDescription.create(persistence.description),
+      BundleCurrency.create(persistence.currency),
+      BundlePrice.create(persistence.price),
+      BundleStock.create(persistence.stock),
+      BundleWeight.create(persistence.weight),
+      BundleImage.create(persistence.imageUrl),
+      BundleCaducityDate.create(persistence.caducityDate),
+      [...products /*, ...bundles*/],
     );
     return bundle;
   }

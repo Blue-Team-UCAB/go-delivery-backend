@@ -29,8 +29,9 @@ export class GetProductByIdApplicationService implements IApplicationService<Get
       price: productResult.Value.Price.Price,
       stock: productResult.Value.Stock.Stock,
       weight: productResult.Value.Weight.Weight,
+      measurement: productResult.Value.Measurement.Measurement,
       imageUrl: imageUrl,
-      categories: productResult.Value.Categories.map(category => category.Category),
+      categories: productResult.Value.Categories.map(category => category.Name.Name),
     };
 
     return Result.success(response, 200);

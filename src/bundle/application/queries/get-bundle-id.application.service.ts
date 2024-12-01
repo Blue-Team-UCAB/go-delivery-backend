@@ -1,4 +1,3 @@
-// src/bundle/application/services/get-bundle-id-application.service.ts
 import { Injectable } from '@nestjs/common';
 import { IApplicationService } from '../../../common/application/application-services/application-service.interface';
 import { GetBundleIdServiceResponseDto } from '../dto/response/get-bundle-id-service.response.dto';
@@ -9,7 +8,7 @@ import { Bundle } from '../../domain/bundle';
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { BundleProductResponseDto } from '../dto/response/bundle-product-response.dto';
 import { BundleProduct } from '../../domain/entities/bundle-product';
-import { BundleEntity } from '../../domain/entities/bundle';
+//import { BundleEntity } from '../../domain/entities/bundle';
 
 @Injectable()
 export class GetBundleByIdApplicationService implements IApplicationService<GetBundleIdServiceEntryDto, GetBundleIdServiceResponseDto> {
@@ -39,10 +38,10 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
           price: product.Price.Price,
           weight: product.Weight.Weight,
           quantity: product.Quantity.Quantity,
-          type: 'product',
+          //type: 'product',
           imageUrl: imageUrlProduct,
         });
-      } else if (product instanceof BundleEntity) {
+      } /*else if (product instanceof BundleEntity) {
         const imageUrlBundle = await this.s3Service.getFile(product.Image.Url);
         bundles.push({
           id: product.Id.Id,
@@ -53,7 +52,7 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
           type: 'bundle',
           imageUrl: imageUrlBundle,
         });
-      }
+      }*/
     }
 
     const response: GetBundleIdServiceResponseDto = {
@@ -67,7 +66,7 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
       imageUrl: imageUrl,
       caducityDate: bundleResult.Value.CaducityDate.CaducityDate,
       products: products,
-      bundles: bundles,
+      //bundles: bundles,
     };
 
     return Result.success(response, 200);

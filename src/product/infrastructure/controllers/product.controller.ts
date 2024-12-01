@@ -2,11 +2,11 @@ import { Controller, Post, Body, Inject, Get, Param, ValidationPipe, Query, Uplo
 import { CreateProductDto } from '../dto/create-product.dto';
 import { DataSource } from 'typeorm';
 import { ApiTags } from '@nestjs/swagger';
-import { createProductApplicationService } from '../../aplication/commands/create-product-application.service';
+import { createProductApplicationService } from '../../application/commands/create-product-application.service';
 import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-generator';
 import { ProductRepository } from '../repository/product.repository';
-import { GetProductByIdApplicationService } from '../../aplication/queries/get-product-id.application.service';
-import { GetProductByPageApplicationService } from '../../aplication/queries/get-product-page.application.service';
+import { GetProductByIdApplicationService } from '../../application/queries/get-product-id.application.service';
+import { GetProductByPageApplicationService } from '../../application/queries/get-product-page.application.service';
 import { GetProductPageDto } from '../dto/get-product-page.dto';
 import { S3Service } from '../../../common/infrastructure/providers/services/s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -51,8 +51,8 @@ export class ProductController {
   @Get()
   @IsClientOrAdmin()
   async getProductByPage(@Query(ValidationPipe) query: GetProductPageDto) {
-    const { page, take, category, search } = query;
+    const { page, perpage, category, search } = query;
     const service = new GetProductByPageApplicationService(this.productRepository, this.s3Service);
-    return (await service.execute({ page, take, category, search })).Value;
+    return (await service.execute({ page, perpage, category, search })).Value;
   }
 }
