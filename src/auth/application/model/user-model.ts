@@ -4,11 +4,10 @@ export type UserType = (typeof userTypes)[number];
 
 export type User = {
   idUser: string;
-  nameUser: string;
   emailUser: string;
   passwordUser: string;
   roleUser: UserType;
-  phoneUser: string;
+  costumerId: string;
   expirationCodeDate?: Date | null;
   verificationCode?: string | null;
 };

@@ -17,20 +17,33 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
 
   async getByEmail(email: string): Promise<Optional<User>> {
     try {
-      const user = await this.findOne({ where: { email_User: email } });
+      const user = await this.createQueryBuilder('user')
+        .select(['user.id_User', 'user.email_User', 'user.password_User', 'user.role_User', 'user.expirationCodeDate', 'user.verification_Code'])
+        .leftJoinAndSelect('user.costumer', 'costumer')
+        .addSelect(['costumer.id_Costumer', 'costumer.name_Costumer', 'costumer.phone_Costumer'])
+        .where('user.email_User = :email', { email })
+        .getOne();
+
       if (user) {
         let userDomain = await this.userMapper.fromPersistenceToDomain(user);
         return new Optional<User>(userDomain);
       }
       return new Optional<User>();
     } catch (error) {
+      console.error(error);
       throw new InternalServerErrorException({ error });
     }
   }
 
   async getById(id: string): Promise<Optional<User>> {
     try {
-      const user = await this.findOne({ where: { id_User: id } });
+      const user = await this.createQueryBuilder('user')
+        .select(['user.id_User', 'user.email_User', 'user.password_User', 'user.role_User', 'user.expirationCodeDate', 'user.verification_Code'])
+        .leftJoinAndSelect('user.costumer', 'costumer')
+        .addSelect(['costumer.id_Costumer', 'costumer.name_Costumer', 'costumer.phone_Costumer'])
+        .where('user.id_User = :id', { id })
+        .getOne();
+
       if (user) {
         let userDomain = await this.userMapper.fromPersistenceToDomain(user);
         return new Optional<User>(userDomain);

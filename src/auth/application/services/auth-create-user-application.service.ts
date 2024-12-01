@@ -7,12 +7,24 @@ import { IdGenerator } from '../../../common/application/id-generator/id-generat
 import { User } from '../model/user-model';
 import { ICrypto } from 'src/common/application/crypto/crypto';
 import { IJwtGenerator } from '../../../common/application/jwt-generator/jwt-generator.interface';
+import { ICostumerRepository } from 'src/costumer/domain/repositories/costumer-repository.interface';
+import { Costumer } from 'src/costumer/domain/costumer';
+import { CostumerId } from 'src/costumer/domain/value-objects/costumer-id';
+import { CostumerName } from 'src/costumer/domain/value-objects/costumer-name';
+import { CostumerPhone } from 'src/costumer/domain/value-objects/costumer-phone';
+import { WalletId } from 'src/costumer/domain/value-objects/wallet-id';
+import { WalletAmount } from 'src/costumer/domain/value-objects/wallet-amount';
+import { WalletCurrency } from 'src/costumer/domain/value-objects/wallet-currency';
+import { IWalletRepository } from 'src/costumer/domain/repositories/wallet-repository.interface';
+
 export class AuthCreateUserApplicationService implements IApplicationService<ISignUpEntryApplication, ISignUpResponseApplication> {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly idGenerator: IdGenerator<string>,
     private readonly passwordHasher: ICrypto,
     private readonly jwtGenerator: IJwtGenerator,
+    private readonly costumerRepository: ICostumerRepository,
+    private readonly walletRepository: IWalletRepository,
   ) {}
 
   async execute(data: ISignUpEntryApplication): Promise<Result<ISignUpResponseApplication>> {
@@ -26,13 +38,25 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
     const userId = await this.idGenerator.generateId();
     const hashpassword = await this.passwordHasher.encrypt(data.password);
 
+    const constumerId = CostumerId.create(await this.idGenerator.generateId());
+    const walletId = WalletId.create(await this.idGenerator.generateId());
+
+    const costumer = new Costumer(constumerId, CostumerName.create(data.name), CostumerPhone.create(data.phone), walletId, WalletAmount.create(0), WalletCurrency.create('USD'));
+
+    const walletCreate = await this.walletRepository.saveWallet(costumer.Wallet);
+
+    if (!walletCreate.isSuccess()) {
+      return Result.fail<ISignUpResponseApplication>(walletCreate.Error, walletCreate.StatusCode, walletCreate.Message);
+    }
+
+    const costumerCreate = await this.costumerRepository.saveCostumer(costumer);
+
     const user = {
       idUser: userId,
-      nameUser: data.name,
       emailUser: emailLower,
       passwordUser: hashpassword,
       roleUser: 'CLIENT',
-      phoneUser: data.phone,
+      costumerId: costumerCreate.Value.Id.Id,
     } satisfies User;
 
     const createUser = await this.userRepository.saveUser(user);
@@ -42,7 +66,7 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
     }
 
     const response: ISignUpResponseApplication = {
-      name: user.nameUser,
+      name: costumerCreate.Value.Name.Name,
       email: user.emailUser,
       token: this.jwtGenerator.generateJwt(userId),
     };

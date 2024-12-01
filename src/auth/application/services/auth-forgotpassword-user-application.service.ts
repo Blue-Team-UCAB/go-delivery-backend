@@ -9,6 +9,7 @@ import { IdGenerator } from 'src/common/application/id-generator/id-generator.in
 import { User } from '../model/user-model';
 import { IMailSender } from 'src/common/application/mail-sender/mail-sender.interface';
 import { TemplateHandler } from 'src/common/application/html-formater/html-forgot-password.formater.service';
+import { ICostumerRepository } from 'src/costumer/domain/repositories/costumer-repository.interface';
 
 export class ForgotPasswordUserApplicationService implements IApplicationService<IForgotPasswordEntryApplication, IForgotPasswordResponseApplication> {
   constructor(
@@ -17,6 +18,7 @@ export class ForgotPasswordUserApplicationService implements IApplicationService
     private readonly codeHasher: ICrypto,
     private readonly codeGenerator: IdGenerator<string>,
     private readonly mailSender: IMailSender,
+    private readonly costumerRepository: ICostumerRepository,
   ) {}
 
   async execute(data: IForgotPasswordEntryApplication): Promise<Result<IForgotPasswordResponseApplication>> {
@@ -38,13 +40,19 @@ export class ForgotPasswordUserApplicationService implements IApplicationService
 
     const result = await this.userRepository.updateUser(newUser);
 
-    if (!result) {
+    if (!result.isSuccess()) {
+      return Result.fail<IForgotPasswordResponseApplication>(null, 500, 'Internal server error');
+    }
+
+    const customer = await this.costumerRepository.findById(newUser.costumerId);
+
+    if (!customer.isSuccess()) {
       return Result.fail<IForgotPasswordResponseApplication>(null, 500, 'Internal server error');
     }
 
     const html = TemplateHandler.generateTemplate('src/templates/recoverPassword.html', {
       code: verificationCode,
-      name: newUser.nameUser,
+      name: customer.Value.Name.Name,
       logo: 'https://godely.s3.us-east-1.amazonaws.com/logoGodely.jpg',
     });
     await this.mailSender.sendMail(newUser.emailUser, 'Código para restablecer tu contraseña en GoDely', html);

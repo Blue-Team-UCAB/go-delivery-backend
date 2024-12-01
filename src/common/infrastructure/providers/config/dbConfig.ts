@@ -1,6 +1,8 @@
+import { CostumerRepository } from 'src/costumer/infrastructure/repository/costumer-repository';
 import { UserRepository } from '../../../../auth/infrastructure/repository/user.repository';
 import { ProductRepository } from '../../../../product/infrastructure/repository/product.repository';
 import { DataSource, getMetadataArgsStorage } from 'typeorm';
+import { WalletRepository } from 'src/costumer/infrastructure/repository/wallet-repository';
 
 export const ormDatabaseProviders = [
   {
@@ -45,6 +47,21 @@ export const ormDatabaseProviders = [
     provide: 'UserRepository',
     useFactory: (dataSource: DataSource) => {
       return new UserRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+
+  {
+    provide: 'CostumerRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new CostumerRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'WalletRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new WalletRepository(dataSource);
     },
     inject: ['BaseDeDatos'],
   },
