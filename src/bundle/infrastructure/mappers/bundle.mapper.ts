@@ -2,7 +2,7 @@ import { Bundle } from '../../domain/bundle';
 import { BundleORMEntity } from '../models/orm-bundle.entity';
 import { BundleProduct } from '../../domain/entities/bundle-product';
 import { BundleProductORMEntity } from '../models/orm-bundle-product.entity';
-import { BundleBundleORMEntity } from '../models/orm-bundle-bundle.entity';
+// import { BundleBundleORMEntity } from '../models/orm-bundle-bundle.entity';
 import { BundleEntity } from '../../domain/entities/bundle';
 import { BundleId } from '../../domain/value-objects/bundle.id';
 import { BundleName } from '../../domain/value-objects/bundle-name';
@@ -18,7 +18,7 @@ import { ProductName } from '../../../product/domain/value-objects/product-name'
 import { ProductPrice } from '../../../product/domain/value-objects/product-price';
 import { ProductWeight } from '../../../product/domain/value-objects/product-weight';
 import { BundleProductQuantity } from '../../domain/value-objects/bundle-product-quantity';
-import { BundleQuantity } from '../../domain/value-objects/bundle-quantity';
+// import { BundleQuantity } from '../../domain/value-objects/bundle-quantity';
 import { IMapper } from '../../../common/application/mapper/mapper.interface';
 import { ProductImage } from '../../../product/domain/value-objects/product-image';
 
@@ -42,12 +42,12 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
       return productORM;
     });
 
-    bundleORM.parentBundles = domain.Products.filter(product => product instanceof BundleEntity).map(product => {
-      const bundleEntityORM = new BundleBundleORMEntity();
-      bundleEntityORM.childBundle = { id: product.Id.Id } as any;
-      bundleEntityORM.quantity = product.Quantity.Quantity;
-      return bundleEntityORM;
-    });
+    // bundleORM.parentBundles = domain.Products.filter(product => product instanceof BundleEntity).map(product => {
+    //   const bundleEntityORM = new BundleBundleORMEntity();
+    //   bundleEntityORM.childBundle = { id: product.Id.Id } as any;
+    //   bundleEntityORM.quantity = product.Quantity.Quantity;
+    //   return bundleEntityORM;
+    // });
 
     return bundleORM;
   }
@@ -72,24 +72,24 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
         )
       : [];
 
-    const bundles = includeProducts
-      ? await Promise.all(
-          persistence.parentBundles.map(async bundleBundle => {
-            const childBundle = bundleBundle.childBundle;
-            if (!childBundle) {
-              throw new Error(`Bundle with ID ${bundleBundle.childBundle.id} not found`);
-            }
-            return new BundleEntity(
-              BundleId.create(childBundle.id),
-              BundleName.create(childBundle.name),
-              BundlePrice.create(childBundle.price),
-              BundleWeight.create(childBundle.weight),
-              BundleImage.create(childBundle.imageUrl),
-              BundleQuantity.create(bundleBundle.quantity),
-            );
-          }),
-        )
-      : [];
+    // const bundles = includeProducts
+    //   ? await Promise.all(
+    //       persistence.parentBundles.map(async bundleBundle => {
+    //         const childBundle = bundleBundle.childBundle;
+    //         if (!childBundle) {
+    //           throw new Error(`Bundle with ID ${bundleBundle.childBundle.id} not found`);
+    //         }
+    //         return new BundleEntity(
+    //           BundleId.create(childBundle.id),
+    //           BundleName.create(childBundle.name),
+    //           BundlePrice.create(childBundle.price),
+    //           BundleWeight.create(childBundle.weight),
+    //           BundleImage.create(childBundle.imageUrl),
+    //           BundleQuantity.create(bundleBundle.quantity),
+    //         );
+    //       }),
+    //     )
+    //   : [];
 
     const bundle = new Bundle(
       BundleId.create(persistence.id),
@@ -101,7 +101,7 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
       BundleWeight.create(persistence.weight),
       BundleImage.create(persistence.imageUrl),
       BundleCaducityDate.create(persistence.caducityDate),
-      [...products, ...bundles],
+      [...products /*, ...bundles*/],
     );
     return bundle;
   }

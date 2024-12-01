@@ -8,7 +8,7 @@ export class BundleProductDto {
   @IsPositive()
   quantity: number;
 
-  @IsString()
-  @IsIn(['product', 'bundle'])
-  type: 'product' | 'bundle';
+  // @IsString()
+  // @IsIn(['product', 'bundle'])
+  // type: 'product' | 'bundle';
 }

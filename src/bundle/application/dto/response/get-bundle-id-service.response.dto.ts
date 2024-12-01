@@ -11,5 +11,5 @@ export interface GetBundleIdServiceResponseDto {
   imageUrl: string;
   caducityDate: Date;
   products: BundleProductResponseDto[];
-  bundles: BundleProductResponseDto[];
+  //bundles: BundleProductResponseDto[];
 }

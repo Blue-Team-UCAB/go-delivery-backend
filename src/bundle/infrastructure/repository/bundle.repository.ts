@@ -31,23 +31,23 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
           'bundle.caducityDate',
           'bundleProducts.id',
           'bundleProducts.quantity',
-          'product.id_Producto',
-          'product.nombre_Producto',
-          'product.price_Producto',
-          'product.weight_Producto',
-          'product.imagen_Producto',
-          'bundleBundle.id',
-          'bundleBundle.quantity',
-          'childBundle.id',
-          'childBundle.name',
-          'childBundle.price',
-          'childBundle.weight',
-          'childBundle.imageUrl',
+          'product.id_Product',
+          'product.name_Product',
+          'product.price_Product',
+          'product.weight_Product',
+          'product.image_Product',
+          // 'bundleBundle.id',
+          // 'bundleBundle.quantity',
+          // 'childBundle.id',
+          // 'childBundle.name',
+          // 'childBundle.price',
+          // 'childBundle.weight',
+          // 'childBundle.imageUrl',
         ])
         .leftJoinAndSelect('bundle.bundleProducts', 'bundleProducts')
         .leftJoinAndSelect('bundleProducts.product', 'product')
-        .leftJoinAndSelect('bundle.parentBundles', 'bundleBundle')
-        .leftJoinAndSelect('bundleBundle.childBundle', 'childBundle')
+        // .leftJoinAndSelect('bundle.parentBundles', 'bundleBundle')
+        // .leftJoinAndSelect('bundleBundle.childBundle', 'childBundle')
         .where('bundle.id = :id', { id })
         .getOne();
 
