@@ -1,38 +1,39 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { BundleProductORMEntity } from '../../../bundle/infrastructure/models/orm-bundle-product.entity';
+import { ProductCategoryORMEntity } from './orm-product-category.entity';
 
-@Entity('Producto')
+@Entity('Product')
 export class ProductORMEntity {
   @PrimaryGeneratedColumn('uuid')
-  id_Producto: string;
+  id_Product: string;
 
   @Column()
-  nombre_Producto: string;
+  name_Product: string;
 
   @Column()
-  descripcion_Producto: string;
+  description_Product: string;
 
   @Column()
-  currency_Producto: string;
+  currency_Product: string;
 
   @Column('float')
-  price_Producto: number;
+  price_Product: number;
 
   @Column('float')
-  stock_Producto: number;
+  stock_Product: number;
 
   @Column('float')
-  weight_Producto: number;
+  weight_Product: number;
 
   @Column()
-  imagen_Producto: string;
+  measurement_Product: string;
 
-  @Column('text', {
-    array: true,
-    default: [],
-  })
-  categories_Producto: string[];
+  @Column()
+  image_Product: string;
 
   @OneToMany(() => BundleProductORMEntity, bundleProduct => bundleProduct.product)
   bundleProducts: BundleProductORMEntity[];
+
+  @OneToMany(() => ProductCategoryORMEntity, productCategory => productCategory.product)
+  product_Categories: ProductCategoryORMEntity[];
 }

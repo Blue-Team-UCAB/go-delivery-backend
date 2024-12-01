@@ -11,6 +11,7 @@ import { ProductPrice } from './value-objects/product-price';
 import { ProductStock } from './value-objects/product-stock';
 import { ProductWeight } from './value-objects/product-weight';
 import { ProductMeasurement } from './value-objects/product-measurement';
+import { ProductCategory } from './entities/product-category';
 
 export class Product extends AggregateRoot<ProductId> {
   private name: ProductName;
@@ -21,6 +22,7 @@ export class Product extends AggregateRoot<ProductId> {
   private weight: ProductWeight;
   private measurement: ProductMeasurement;
   private imageUrl: ProductImage;
+  private categories: ProductCategory[];
 
   get Name(): ProductName {
     return this.name;
@@ -54,6 +56,10 @@ export class Product extends AggregateRoot<ProductId> {
     return this.imageUrl;
   }
 
+  get Categories(): ProductCategory[] {
+    return this.categories;
+  }
+
   constructor(
     id: ProductId,
     name: ProductName,
@@ -64,13 +70,15 @@ export class Product extends AggregateRoot<ProductId> {
     weight: ProductWeight,
     measurement: ProductMeasurement,
     imageUrl: ProductImage,
+    categories: ProductCategory[],
   ) {
-    const productCreated = ProductCreatedEvent.create(id, name, description, currency, price, stock, weight, measurement, imageUrl);
+    const productCreated = ProductCreatedEvent.create(id, name, description, currency, price, stock, weight, measurement, imageUrl, categories);
     super(id, productCreated);
   }
 
   protected checkValidState(): void {
-    if (!this.name || !this.description || !this.imageUrl || !this.currency || !this.price || !this.stock || !this.weight || !this.measurement) throw new InvalidProductException(`Product not valid`);
+    if (!this.name || !this.description || !this.imageUrl || !this.currency || !this.price || !this.stock || !this.weight || !this.measurement || !this.categories)
+      throw new InvalidProductException(`Product not valid`);
   }
 
   protected when(event: DomainEvent): void {
@@ -83,6 +91,7 @@ export class Product extends AggregateRoot<ProductId> {
       this.weight = event.weight;
       this.measurement = event.measurement;
       this.imageUrl = event.imageUrl;
+      this.categories = event.categories;
     }
   }
 }

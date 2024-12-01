@@ -1,4 +1,3 @@
-// src/bundle/infrastructure/models/orm-bundle-product.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { BundleORMEntity } from './orm-bundle.entity';
 import { ProductORMEntity } from '../../../product/infrastructure/models/orm-product.entity';

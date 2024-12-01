@@ -1,5 +1,5 @@
-import { IsString, IsNumber, IsPositive, IsOptional, IsArray, ArrayNotEmpty, ArrayMinSize, MinLength } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { IsString, IsNumber, IsPositive, IsOptional, IsArray, ArrayNotEmpty, ArrayMinSize, MinLength, ValidateNested } from 'class-validator';
+import { plainToInstance, Transform, Type } from 'class-transformer';
 
 export class CreateProductDto {
   @IsString()
@@ -29,6 +29,10 @@ export class CreateProductDto {
   @IsPositive()
   weight: number;
 
+  @IsString()
+  @MinLength(2)
+  measurement: string;
+
   @IsOptional()
   imageBuffer?: Buffer;
 
@@ -38,16 +42,32 @@ export class CreateProductDto {
   @IsArray()
   @ArrayNotEmpty()
   @ArrayMinSize(1)
-  @IsString({ each: true })
+  @ValidateNested({ each: true })
+  @Type(() => ProductCategoryDto)
   @Transform(({ value }) => {
     if (typeof value === 'string') {
       try {
-        return JSON.parse(value);
-      } catch {
-        return value.split(',').map(item => item.trim());
+        const parsedValue = JSON.parse(value);
+        return parsedValue.map((item: any) => plainToInstance(ProductCategoryDto, item));
+      } catch (error) {
+        throw new Error('Invalid JSON string for categories');
       }
     }
-    return value;
+
+    if (Array.isArray(value)) {
+      return value.map(item => plainToInstance(ProductCategoryDto, item));
+    }
+
+    throw new Error('Invalid type for categories, expected string or array');
   })
-  categories: string[];
+  categories: ProductCategoryDto[];
+}
+
+export class ProductCategoryDto {
+  @IsString()
+  id: string;
+
+  @IsString()
+  @MinLength(3)
+  name: string;
 }

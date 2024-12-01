@@ -58,14 +58,14 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
           persistence.bundleProducts.map(async bundleProduct => {
             const product = bundleProduct.product;
             if (!product) {
-              throw new Error(`Product with ID ${bundleProduct.product.id_Producto} not found`);
+              throw new Error(`Product with ID ${bundleProduct.product.id_Product} not found`);
             }
             return new BundleProduct(
-              ProductId.create(product.id_Producto),
-              ProductName.create(product.nombre_Producto),
-              ProductPrice.create(product.price_Producto),
-              ProductWeight.create(product.weight_Producto),
-              ProductImage.create(product.imagen_Producto),
+              ProductId.create(product.id_Product),
+              ProductName.create(product.name_Product),
+              ProductPrice.create(product.price_Product),
+              ProductWeight.create(product.weight_Product),
+              ProductImage.create(product.image_Product),
               BundleProductQuantity.create(bundleProduct.quantity),
             );
           }),

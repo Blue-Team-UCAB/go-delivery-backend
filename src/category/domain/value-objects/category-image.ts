@@ -20,7 +20,7 @@ export class CategoryImage implements ValueObject<CategoryImage> {
   }
 
   private isValidUrl(url: string): boolean {
-    const regex = new RegExp(/^(\/?products?\/[a-zA-Z0-9_-]+\.(jpg|jpeg|gif|png))$/i);
+    const regex = new RegExp(/^(\/?categories?\/[a-zA-Z0-9_-]+\.(jpg|jpeg|gif|png))$/i);
     return regex.test(url);
   }
 

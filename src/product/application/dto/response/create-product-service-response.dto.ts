@@ -6,6 +6,12 @@ export interface CreateProductServiceResponseDto {
   price: number;
   stock: number;
   weight: number;
+  measurement: string;
   imageUrl: string;
-  categories: string[];
+  categories: ProductCategoryDto[];
+}
+
+export class ProductCategoryDto {
+  id: string;
+  name: string;
 }

@@ -20,10 +20,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { DateService } from './common/infrastructure/providers/services/date.service';
 import { UuidGenerator } from './common/infrastructure/id-generator/uuid-generator';
 import { CodeVerificationService } from './common/infrastructure/providers/services/codeGenerator.service';
+import { CategoryController } from './category/infrastructure/controllers/category.controller';
 
 @Module({
   imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule],
-  controllers: [ProductController, BundleController, AppController, AuthController, CreateProductConsumerService],
+  controllers: [ProductController, BundleController, CategoryController, AppController, AuthController, CreateProductConsumerService],
   providers: [
     ...ormDatabaseProviders,
     ...s3Provider,
