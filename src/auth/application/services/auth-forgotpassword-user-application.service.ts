@@ -28,7 +28,6 @@ export class ForgotPasswordUserApplicationService implements IApplicationService
     }
 
     const expirationDate = new Date(Date.now() + 15 * 60 * 1000);
-    console.log(expirationDate);
     const verificationCode = await this.codeGenerator.generateId();
     const hashedCode = await this.codeHasher.encrypt(verificationCode);
 
