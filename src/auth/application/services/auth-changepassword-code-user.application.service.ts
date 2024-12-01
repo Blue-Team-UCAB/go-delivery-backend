@@ -10,7 +10,6 @@ import { User } from '../model/user-model';
 export class ChangePasswordCodeUserApplicationService implements IApplicationService<IChangePasswordCodeEntryApplication, IForgotPasswordResponseApplication> {
   constructor(
     private readonly userRepository: IUserRepository,
-    private readonly dateService: IDateService,
     private readonly codeHasher: ICrypto,
   ) {}
 
@@ -21,11 +20,12 @@ export class ChangePasswordCodeUserApplicationService implements IApplicationSer
       return Result.fail<IForgotPasswordResponseApplication>(null, 404, 'User not found');
     }
 
+    const expirationDate = user.getValue().expirationCodeDate;
+    const now = new Date();
 
-    const expirationDate = this.dateService.toUtcMinus4(user.getValue().expirationCodeDate);
+    console.log(expirationDate, now);
 
-  
-    if (!expirationDate || expirationDate < this.dateService.now()) {
+    if (!expirationDate || expirationDate < now) {
       return Result.fail<IForgotPasswordResponseApplication>(null, 400, 'Code expired');
     }
 

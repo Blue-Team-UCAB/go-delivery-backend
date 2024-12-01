@@ -63,13 +63,13 @@ export class AuthController {
 
   @Post('forgot/password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
-    const service = new ForgotPasswordUserApplicationService(this.userRepository, this.dateService, this.sha256Service, this.codeGenerator, this.mailService, this.costumerRepository);
+    const service = new ForgotPasswordUserApplicationService(this.userRepository, this.sha256Service, this.codeGenerator, this.mailService, this.costumerRepository);
     return await service.execute(data);
   }
 
   @Post('change/password')
   async changePassword(@Body() data: ChangePasswordCodeDto) {
-    const service = new ChangePasswordCodeUserApplicationService(this.userRepository, this.dateService, this.sha256Service);
+    const service = new ChangePasswordCodeUserApplicationService(this.userRepository, this.sha256Service);
     return await service.execute(data);
   }
 

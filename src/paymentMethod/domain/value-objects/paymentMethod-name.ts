@@ -5,7 +5,7 @@ class PaymentMethodName implements ValueObject<PaymentMethodName> {
   private readonly _name: string;
 
   constructor(name: string) {
-    if (name.length < 3 || !this.validate) throw new InvalidPaymentMethodNameException(`Name ${name} is not valid`);
+    if (name.length < 4 || !this.validate) throw new InvalidPaymentMethodNameException(`Name ${name} is not valid`);
     this._name = name;
   }
 

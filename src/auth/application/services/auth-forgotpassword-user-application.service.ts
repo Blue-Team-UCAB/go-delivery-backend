@@ -14,7 +14,6 @@ import { ICostumerRepository } from 'src/costumer/domain/repositories/costumer-r
 export class ForgotPasswordUserApplicationService implements IApplicationService<IForgotPasswordEntryApplication, IForgotPasswordResponseApplication> {
   constructor(
     private readonly userRepository: IUserRepository,
-    private readonly dateService: IDateService,
     private readonly codeHasher: ICrypto,
     private readonly codeGenerator: IdGenerator<string>,
     private readonly mailSender: IMailSender,
@@ -28,7 +27,8 @@ export class ForgotPasswordUserApplicationService implements IApplicationService
       return Result.fail<IForgotPasswordResponseApplication>(null, 404, 'User not found');
     }
 
-    const expirationDate = this.dateService.getNowPlusMinutes(30);
+    const expirationDate = new Date(Date.now() + 15 * 60 * 1000);
+    console.log(expirationDate);
     const verificationCode = await this.codeGenerator.generateId();
     const hashedCode = await this.codeHasher.encrypt(verificationCode);
 
