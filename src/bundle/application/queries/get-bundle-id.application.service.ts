@@ -1,4 +1,3 @@
-// src/bundle/application/services/get-bundle-id-application.service.ts
 import { Injectable } from '@nestjs/common';
 import { IApplicationService } from '../../../common/application/application-services/application-service.interface';
 import { GetBundleIdServiceResponseDto } from '../dto/response/get-bundle-id-service.response.dto';
@@ -9,7 +8,7 @@ import { Bundle } from '../../domain/bundle';
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { BundleProductResponseDto } from '../dto/response/bundle-product-response.dto';
 import { BundleProduct } from '../../domain/entities/bundle-product';
-import { BundleEntity } from '../../domain/entities/bundle';
+//import { BundleEntity } from '../../domain/entities/bundle';
 
 @Injectable()
 export class GetBundleByIdApplicationService implements IApplicationService<GetBundleIdServiceEntryDto, GetBundleIdServiceResponseDto> {

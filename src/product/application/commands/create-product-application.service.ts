@@ -65,7 +65,7 @@ export class createProductApplicationService implements IApplicationService<Crea
     }
 
     const imageUrl = await this.s3Service.uploadFile(imageKey, data.imageBuffer, data.contentType);
-    //await this.publisher.publish(PRODUCT_CREATED_EVENT, product.getDomainEvents());
+    await this.publisher.publish(PRODUCT_CREATED_EVENT, product.getDomainEvents());
     const imagenUlr = await this.s3Service.getFile(product.ImageUrl.Url);
 
     const response: CreateProductServiceResponseDto = {

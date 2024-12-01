@@ -5,7 +5,6 @@ import { Bundle } from '../../domain/bundle';
 import { BundleORMEntity } from '../models/orm-bundle.entity';
 import { BundleMapper } from '../mappers/bundle.mapper';
 import { Result } from '../../../common/domain/result-handler/result';
-import { ProductRepository } from '../../../product/infrastructure/repository/product.repository';
 
 @Injectable()
 export class BundleRepository extends Repository<BundleORMEntity> implements IBundleRepository {

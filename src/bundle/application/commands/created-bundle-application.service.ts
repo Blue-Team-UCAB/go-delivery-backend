@@ -21,7 +21,7 @@ import { BundleProductQuantity } from '../../domain/value-objects/bundle-product
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { PricableAndWeightable } from 'src/bundle/domain/interfaces/bundle-composite';
 import { BundleEntity } from '../../domain/entities/bundle';
-import { BundleQuantity } from '.././../../bundle/domain/value-objects/bundle-quantity';
+//import { BundleQuantity } from '.././../../bundle/domain/value-objects/bundle-quantity';
 import { BundleProductResponseDto } from '../dto/response/bundle-product-response.dto';
 
 @Injectable()

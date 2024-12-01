@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsPositive, IsIn } from 'class-validator';
+import { IsString, IsNumber, IsPositive } from 'class-validator';
 
 export class BundleProductDto {
   @IsString()
