@@ -27,6 +27,14 @@ export class Costumer extends AggregateRoot<CostumerId> {
     return this.wallet;
   }
 
+  sumWallet(amount: WalletAmount): void {
+    this.wallet.addAmount(amount);
+  }
+
+  subtractWallet(amount: WalletAmount): void {
+    this.wallet.subtractAmount(amount);
+  }
+
   constructor(id: CostumerId, name: CostumerName, phone: CostumerPhone, idWallet: WalletId, amountWallet: WalletAmount, currencyWallet: WalletCurrency) {
     const costumerCreated = CostumerCreatedEvent.create(id, name, phone, new Wallet(idWallet, amountWallet, currencyWallet));
     super(id, costumerCreated);

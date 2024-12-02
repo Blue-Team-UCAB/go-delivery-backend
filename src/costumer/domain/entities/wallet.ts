@@ -20,11 +20,11 @@ export class Wallet extends Entity<WalletId> {
     return this.currency;
   }
 
-  addAmount(amount: number): void {
-    this.amount = WalletAmount.create(this.amount.Amount + amount);
+  addAmount(amount: WalletAmount): void {
+    this.amount = WalletAmount.create(this.amount.Amount + amount.Amount);
   }
 
-  subtractAmount(amount: number): void {
-    this.amount = WalletAmount.create(this.amount.Amount - amount);
+  subtractAmount(amount: WalletAmount): void {
+    this.amount = WalletAmount.create(this.amount.Amount - amount.Amount);
   }
 }

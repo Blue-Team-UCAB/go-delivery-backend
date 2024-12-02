@@ -14,6 +14,6 @@ export class SignUpUserDto {
   password: string;
 
   @IsString()
-  @Matches(/^58[0-9]{10}$/)
+  @Matches(/^58(412|414|424|416|426)\d{7}$/)
   phone: string;
 }
