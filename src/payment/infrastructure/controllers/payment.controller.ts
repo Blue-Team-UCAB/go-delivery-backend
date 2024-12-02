@@ -12,6 +12,7 @@ import { WalletRepository } from 'src/costumer/infrastructure/repository/wallet-
 import { PagoMovilEntryDto } from '../dto/payment-pago-movil.entry.dto';
 import { ZelleEntryDto } from '../dto/payment-zelle.entry.dto';
 import { PaymentCheckZelle } from 'src/common/infrastructure/payment-check/payment-check-zelle';
+import { IsClientOrAdmin } from 'src/auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
 
 @ApiTags('Payment')
 @Controller('pay')
@@ -32,6 +33,7 @@ export class PaymentController {
   }
 
   @Post('pago-movil')
+  @IsClientOrAdmin()
   @UseAuth()
   async createPaymentPagoMovil(@Body() data: PagoMovilEntryDto, @GetUser() user: any) {
     const service = new CreatePaymentPagoMovilApplicationService(this.paymentCheckPagoMovil, this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
@@ -39,6 +41,7 @@ export class PaymentController {
   }
 
   @Post('zelle')
+  @IsClientOrAdmin()
   @UseAuth()
   async createPaymentZelle(@Body() data: ZelleEntryDto, @GetUser() user: any) {
     const service = new CreatePaymentPagoMovilApplicationService(new PaymentCheckZelle(), this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
