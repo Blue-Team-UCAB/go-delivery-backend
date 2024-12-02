@@ -14,7 +14,7 @@ export class OrderCreatedDate implements ValueObject<OrderCreatedDate> {
     return this._createdDate.getTime() === obj._createdDate.getTime();
   }
 
-  get createdDate(): Date {
+  get CreatedDate(): Date {
     return this._createdDate;
   }
 

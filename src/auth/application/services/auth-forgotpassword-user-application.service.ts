@@ -8,7 +8,7 @@ import { IdGenerator } from 'src/common/application/id-generator/id-generator.in
 import { User } from '../model/user-model';
 import { IMailSender } from 'src/common/application/mail-sender/mail-sender.interface';
 import { TemplateHandler } from 'src/common/application/html-formater/html-forgot-password.formater.service';
-import { ICostumerRepository } from 'src/costumer/domain/repositories/costumer-repository.interface';
+import { ICostumerRepository } from 'src/customer/domain/repositories/customer-repository.interface';
 
 export class ForgotPasswordUserApplicationService implements IApplicationService<IForgotPasswordEntryApplication, IForgotPasswordResponseApplication> {
   constructor(

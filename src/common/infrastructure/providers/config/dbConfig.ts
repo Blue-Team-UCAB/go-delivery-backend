@@ -1,8 +1,8 @@
-import { CostumerRepository } from 'src/costumer/infrastructure/repository/costumer-repository';
+import { CostumerRepository } from 'src/customer/infrastructure/repository/costumer-repository';
 import { UserRepository } from '../../../../auth/infrastructure/repository/user.repository';
 import { ProductRepository } from '../../../../product/infrastructure/repository/product.repository';
 import { DataSource, getMetadataArgsStorage } from 'typeorm';
-import { WalletRepository } from 'src/costumer/infrastructure/repository/wallet-repository';
+import { WalletRepository } from 'src/customer/infrastructure/repository/wallet-repository';
 
 export const ormDatabaseProviders = [
   {

@@ -1,6 +1,6 @@
 import { DomainException } from 'src/common/domain/domain-exception';
 
-export class InvalidCostumerIdException extends DomainException {
+export class InvalidCustomerIdException extends DomainException {
   constructor(message: string) {
     super(message);
   }

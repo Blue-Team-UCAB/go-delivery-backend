@@ -5,7 +5,7 @@ import { ISignUpResponseApplication } from '../dto/response/sing-up-response.app
 import { IUserRepository } from '../repository/user-repository.interface';
 import { ICrypto } from 'src/common/application/crypto/crypto';
 import { IJwtGenerator } from '../../../common/application/jwt-generator/jwt-generator.interface';
-import { ICostumerRepository } from 'src/costumer/domain/repositories/costumer-repository.interface';
+import { ICostumerRepository } from 'src/customer/domain/repositories/customer-repository.interface';
 
 export class AuthLoginUserApplicationService implements IApplicationService<ISignInEntryApplication, ISignUpResponseApplication> {
   constructor(

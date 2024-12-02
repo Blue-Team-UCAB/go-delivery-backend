@@ -1,7 +1,7 @@
 import { User, UserType } from '../../application/model/user-model';
 import { IMapper } from '../../../common//application/mapper/mapper.interface';
 import { UserORMEntity } from '../model/orm-user.entity';
-import { CostumerORMEntity } from 'src/costumer/infrastructure/model/orm-costumer.entity';
+import { CostumerORMEntity } from 'src/customer/infrastructure/model/orm-customer.entity';
 
 export class UserMapper implements IMapper<User, UserORMEntity> {
   async fromDomainToPersistence(domain: User): Promise<UserORMEntity> {

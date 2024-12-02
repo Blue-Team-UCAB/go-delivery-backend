@@ -1,9 +1,9 @@
 import { IMapper } from 'src/common/application/mapper/mapper.interface';
-import { Wallet } from 'src/costumer/domain/entities/wallet';
+import { Wallet } from 'src/customer/domain/entities/wallet';
 import { WalletORMEntity } from '../model/orm-wallet.entity';
-import { WalletId } from 'src/costumer/domain/value-objects/wallet-id';
-import { WalletAmount } from 'src/costumer/domain/value-objects/wallet-amount';
-import { WalletCurrency } from 'src/costumer/domain/value-objects/wallet-currency';
+import { WalletId } from 'src/customer/domain/value-objects/wallet-id';
+import { WalletAmount } from 'src/customer/domain/value-objects/wallet-amount';
+import { WalletCurrency } from 'src/customer/domain/value-objects/wallet-currency';
 
 export class WalletMapper implements IMapper<Wallet, WalletORMEntity> {
   async fromDomainToPersistence(domain: Wallet): Promise<WalletORMEntity> {

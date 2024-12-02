@@ -1,24 +1,33 @@
 import { ValueObject } from '../../../common/domain/value-object';
 import { InvalidOrderStateException } from '../exceptions/invalid-order-state.exception';
 
-export class OrderState implements ValueObject<OrderState> {
-  private readonly _state: string;
-  private static readonly validStates = ['PENDING', 'IN PROCESS', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+export enum OrderStates {
+  CREATED = 'CREATED',
+  PROCESSED = 'PROCESSED',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+}
 
-  constructor(state: string) {
-    if (!OrderState.validStates.includes(state.toUpperCase())) throw new InvalidOrderStateException(`State ${state} is not valid`);
-    this._state = state.toUpperCase();
+export class OrderState implements ValueObject<OrderState> {
+  private readonly _state: OrderStates;
+
+  constructor(state: OrderStates) {
+    if (!Object.values(OrderStates).includes(state)) {
+      throw new InvalidOrderStateException(`State ${state} is not valid`);
+    }
+    this._state = state;
   }
 
   equals(obj: OrderState): boolean {
     return this._state === obj._state;
   }
 
-  get State(): string {
+  get State(): OrderStates {
     return this._state;
   }
 
-  static create(state: string): OrderState {
+  static create(state: OrderStates): OrderState {
     return new OrderState(state);
   }
 }

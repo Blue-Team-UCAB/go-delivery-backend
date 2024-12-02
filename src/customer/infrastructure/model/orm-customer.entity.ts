@@ -3,15 +3,15 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn
 import { WalletORMEntity } from './orm-wallet.entity';
 
 @Entity('Customer')
-export class CostumerORMEntity {
+export class CustomerORMEntity {
   @PrimaryGeneratedColumn('uuid')
-  id_Costumer: string;
+  id_Costumer: string; //todo ARREGLAR LA PALABRA A CUSTOMER
 
   @Column()
-  name_Costumer: string;
+  name_Costumer: string; //todo ARREGLAR LA PALABRA A CUSTOMER
 
   @Column()
-  phone_Costumer: string;
+  phone_Costumer: string; //todo ARREGLAR LA PALABRA A CUSTOMER
 
   @OneToOne(() => UserORMEntity, user => user.id_User, { cascade: true, nullable: false })
   user: UserORMEntity;

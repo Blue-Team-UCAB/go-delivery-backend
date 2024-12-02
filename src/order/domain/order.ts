@@ -13,8 +13,10 @@ import { OrderState } from './value-objects/order-state';
 import { OrderSubtotalAmount } from './value-objects/order-subtotal-amount';
 import { OrderTotalAmount } from './value-objects/order-total-amount';
 import { OrderId } from './value-objects/order.id';
+import { CustomerId } from '../../customer/domain/value-objects/customer-id';
 
 export class Order extends AggregateRoot<OrderId> {
+  private customerId: CustomerId;
   private state: OrderState;
   private createdDate: OrderCreatedDate;
   private receiveDate: OrderReceivedDate;
@@ -25,6 +27,10 @@ export class Order extends AggregateRoot<OrderId> {
   private report: OrderReport;
   private products: OrderProduct[];
   private bundles: OrderBundle[];
+
+  get CustomerId(): CustomerId {
+    return this.customerId;
+  }
 
   get State(): OrderState {
     return this.state;
@@ -68,35 +74,33 @@ export class Order extends AggregateRoot<OrderId> {
 
   constructor(
     id: OrderId,
+    customerId: CustomerId,
     state: OrderState,
     createdDate: OrderCreatedDate,
     totalAmount: OrderTotalAmount,
     subtotalAmount: OrderSubtotalAmount,
     direction: OrderDirection,
-    courier: OrderCourier,
-    report: OrderReport,
     products: OrderProduct[],
     bundles: OrderBundle[],
   ) {
-    const orderCreated = OrderCreatedEvent.create(id, state, createdDate, totalAmount, subtotalAmount, direction, courier, report, products, bundles);
+    const orderCreated = OrderCreatedEvent.create(id, customerId, state, createdDate, totalAmount, subtotalAmount, direction, products, bundles);
     super(id, orderCreated);
   }
 
   protected checkValidState(): void {
-    if (!this.state || !this.createdDate || !this.totalAmount || !this.subtotalAmount || !this.direction || !this.courier || !this.report || !this.products || !this.bundles) {
+    if (!this.customerId || !this.state || !this.createdDate || !this.totalAmount || !this.subtotalAmount || !this.direction || !this.courier || !this.report || !this.products || !this.bundles) {
       throw new InvalidOrderException(`Order not valid`);
     }
   }
 
   protected when(event: DomainEvent): void {
     if (event instanceof OrderCreatedEvent) {
+      this.customerId = event.customerId;
       this.state = event.state;
       this.createdDate = event.createdDate;
       this.totalAmount = event.totalAmount;
       this.subtotalAmount = event.subtotalAmount;
       this.direction = event.direction;
-      this.courier = event.courier;
-      this.report = event.report;
       this.products = event.products;
       this.bundles = event.bundles;
     }

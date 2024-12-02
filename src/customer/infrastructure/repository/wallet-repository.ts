@@ -1,4 +1,4 @@
-import { IWalletRepository } from 'src/costumer/domain/repositories/wallet-repository.interface';
+import { IWalletRepository } from 'src/customer/domain/repositories/wallet-repository.interface';
 import { WalletORMEntity as WalletORM } from '../model/orm-wallet.entity';
 import { DataSource, Repository } from 'typeorm';
 import { Result } from 'src/common/domain/result-handler/result';
