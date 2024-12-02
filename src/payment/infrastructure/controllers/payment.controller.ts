@@ -10,6 +10,8 @@ import { GetUser } from 'src/auth/infrastructure/jwt/decorator/get-user.decorato
 import { UseAuth } from 'src/auth/infrastructure/jwt/decorator/useAuth.decorator';
 import { WalletRepository } from 'src/costumer/infrastructure/repository/wallet-repository';
 import { PagoMovilEntryDto } from '../dto/payment-pago-movil.entry.dto';
+import { ZelleEntryDto } from '../dto/payment-zelle.entry.dto';
+import { PaymentCheckZelle } from 'src/common/infrastructure/payment-check/payment-check-zelle';
 
 @ApiTags('Payment')
 @Controller('pay')
@@ -22,6 +24,7 @@ export class PaymentController {
     @Inject('BaseDeDatos')
     private readonly dataSource: DataSource,
     private readonly uuidGenator: UuidGenerator,
+    private readonly paymentCheckPagoMovil: PaymentCheckPagoMovil,
   ) {
     this.costumerRepository = new CostumerRepository(this.dataSource);
     this.paymentRepository = new PaymentRepository(this.dataSource);
@@ -31,7 +34,14 @@ export class PaymentController {
   @Post('pago-movil')
   @UseAuth()
   async createPaymentPagoMovil(@Body() data: PagoMovilEntryDto, @GetUser() user: any) {
-    const service = new CreatePaymentPagoMovilApplicationService(new PaymentCheckPagoMovil(), this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
-    return await service.execute({ ...data, idCustomer: user.idCostumer });
+    const service = new CreatePaymentPagoMovilApplicationService(this.paymentCheckPagoMovil, this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
+    return await service.execute({ ...data, idCustomer: user.idCostumer, typo: 'Pago Movil' });
+  }
+
+  @Post('zelle')
+  @UseAuth()
+  async createPaymentZelle(@Body() data: ZelleEntryDto, @GetUser() user: any) {
+    const service = new CreatePaymentPagoMovilApplicationService(new PaymentCheckZelle(), this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
+    return await service.execute({ ...data, date: new Date(), idCustomer: user.idCostumer, typo: 'Zelle' });
   }
 }

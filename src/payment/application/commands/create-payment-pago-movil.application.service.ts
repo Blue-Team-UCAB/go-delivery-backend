@@ -32,9 +32,9 @@ export class CreatePaymentPagoMovilApplicationService implements IApplicationSer
       return Result.fail<CreatePaymentResponseDto>(null, 400, 'Customer not found');
     }
 
-    const check = await this.paymentCheck.checkPayment(data);
+    const checkMoney = await this.paymentCheck.checkPayment(data);
 
-    if (!check) {
+    if (checkMoney < 0) {
       return Result.fail<CreatePaymentResponseDto>(null, 400, 'Payment failed');
     }
 
@@ -42,19 +42,28 @@ export class CreatePaymentPagoMovilApplicationService implements IApplicationSer
 
     const payment = new Payment(
       PaymentId.create(paymentId),
-      PaymentName.create('Pago Movil'),
+      PaymentName.create(data.typo),
       PaymentDate.create(data.date),
-      PaymentAmount.create(data.amount),
+      PaymentAmount.create(checkMoney),
       PaymentReference.create(data.reference),
       CostumerId.create(data.idCustomer),
     );
 
-    await costumer.Value.sumWallet(WalletAmount.create(data.amount));
+    costumer.Value.sumWallet(WalletAmount.create(checkMoney));
 
     const updatedWallet = await this.walletRepository.saveWallet(costumer.Value.Wallet);
 
     if (!updatedWallet.isSuccess) {
-      return Result.fail<CreatePaymentResponseDto>(null, 400, 'Payment failed');
+      return Result.fail<CreatePaymentResponseDto>(null, 500, 'Internal server error');
     }
+
+    const createdPayment = await this.paymentRepository.savePayment(payment);
+
+    if (!createdPayment.isSuccess) {
+      return Result.fail<CreatePaymentResponseDto>(null, 500, 'Internal server error');
+    }
+
+    const response: CreatePaymentResponseDto = {};
+    return Result.success<CreatePaymentResponseDto>(response, 200);
   }
 }

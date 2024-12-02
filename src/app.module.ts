@@ -22,9 +22,12 @@ import { UuidGenerator } from './common/infrastructure/id-generator/uuid-generat
 import { CodeVerificationService } from './common/infrastructure/providers/services/codeGenerator.service';
 import { CategoryController } from './category/infrastructure/controllers/category.controller';
 import { PaymentController } from './payment/infrastructure/controllers/payment.controller';
+import { HttpModule } from '@nestjs/axios';
+import { ApiBCV } from './common/infrastructure/providers/services/payment-banco-central.api.service';
+import { PaymentCheckPagoMovil } from './common/infrastructure/payment-check/payment-check-pagoMovil';
 
 @Module({
-  imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule],
+  imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule, HttpModule],
   controllers: [ProductController, BundleController, CategoryController, AppController, AuthController, CreateProductConsumerService, PaymentController],
   providers: [
     ...ormDatabaseProviders,
@@ -40,6 +43,8 @@ import { PaymentController } from './payment/infrastructure/controllers/payment.
     DateService,
     UuidGenerator,
     CodeVerificationService,
+    ApiBCV,
+    PaymentCheckPagoMovil,
   ],
 })
 export class AppModule {}

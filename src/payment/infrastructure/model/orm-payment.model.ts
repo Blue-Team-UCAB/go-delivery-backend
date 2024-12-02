@@ -1,5 +1,5 @@
 import { CostumerORMEntity } from 'src/costumer/infrastructure/model/orm-costumer.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity('Payment')
 export class PaymentORMEntity {
@@ -19,5 +19,6 @@ export class PaymentORMEntity {
   reference_Payment: string;
 
   @ManyToOne(() => CostumerORMEntity, costumer => costumer.id_Costumer)
-  costumer: PaymentORMEntity[];
+  @JoinColumn()
+  costumer: CostumerORMEntity;
 }

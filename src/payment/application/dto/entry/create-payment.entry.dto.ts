@@ -7,4 +7,5 @@ export interface CreatePaymentEntryDto {
   reference: string;
   date?: Date;
   email?: string;
+  typo: string;
 }

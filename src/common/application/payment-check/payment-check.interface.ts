@@ -1,5 +1,5 @@
 import { PaymentDtoEntry } from './payment-entry.dto';
 
 export interface IPaymentCheck {
-  checkPayment(data: PaymentDtoEntry): Promise<boolean>;
+  checkPayment(data: PaymentDtoEntry): Promise<number>;
 }
