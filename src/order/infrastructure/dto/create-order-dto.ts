@@ -7,15 +7,13 @@ export class CreateOrderDto {
   direction: string;
 
   @IsNumber()
-  @IsPositive()
   longitude: number;
 
   @IsNumber()
-  @IsPositive()
   latitude: number;
 
   @IsString()
-  customer: string;
+  token: string;
 
   @IsArray()
   @ArrayNotEmpty()
@@ -42,7 +40,7 @@ export class CreateOrderDto {
 
   @IsArray()
   @ArrayNotEmpty()
-  @ArrayMinSize(0)
+  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => ProductBundleDto)
   @Transform(({ value }) => {

@@ -91,7 +91,7 @@ export class Order extends AggregateRoot<OrderId> {
   }
 
   protected checkValidState(): void {
-    if (!this.customerId || !this.state || !this.createdDate || !this.totalAmount || !this.subtotalAmount || !this.direction || !this.courier || !this.report || !this.products || !this.bundles) {
+    if (!this.customerId || !this.state || !this.createdDate || !this.totalAmount || !this.subtotalAmount || !this.direction || !this.products || !this.bundles) {
       throw new InvalidOrderException(`Order not valid`);
     }
   }

@@ -1,6 +1,5 @@
 export interface CreateOrderServiceResponseDto {
   id: string;
-  customerId: string;
   state: string;
   createdDate: Date;
   totalAmount: number;

@@ -2,7 +2,7 @@ export interface CreateOrderServiceEntryDto {
   direction: string;
   longitude: number;
   latitude: number;
-  customer: string;
+  token: string;
   products: ProductBundleDto[];
   bundles: ProductBundleDto[];
 }

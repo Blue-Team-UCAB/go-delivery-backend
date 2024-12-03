@@ -77,7 +77,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     const totalAmount = subtotalAmount; //todo Aqui hay que agregar los cupones o descuentos
 
     const dataOrder = {
-      customerId: CustomerId.create(data.customer),
+      customerId: CustomerId.create(data.token),
       state: OrderState.create(OrderStates.CREATED),
       createdDate: OrderCreatedDate.create(new Date()),
       direction: OrderDirection.create(data.direction, data.longitude, data.latitude),
@@ -110,7 +110,6 @@ export class CreateOrderApplicationService implements IApplicationService<Create
 
     const response: CreateOrderServiceResponseDto = {
       id: order.Id.Id,
-      customerId: order.CustomerId.Id,
       state: order.State.State,
       createdDate: order.CreatedDate.CreatedDate,
       totalAmount: order.TotalAmount.Amount,
