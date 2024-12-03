@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { BundleProductORMEntity } from './orm-bundle-product.entity';
+import { OrderBundleORMEntity } from 'src/order/infrastructure/models/orm-order-bundle.entity';
 // import { BundleBundleORMEntity } from './orm-bundle-bundle.entity';
 
 @Entity('Bundle')
@@ -33,6 +34,9 @@ export class BundleORMEntity {
 
   @OneToMany(() => BundleProductORMEntity, bundleProduct => bundleProduct.bundle, { cascade: true })
   bundleProducts: BundleProductORMEntity[];
+
+  @OneToMany(() => OrderBundleORMEntity, orderBundle => orderBundle.bundle, { cascade: true })
+  orders_Bundles: OrderBundleORMEntity[];
 
   // @OneToMany(() => BundleBundleORMEntity, bundleBundle => bundleBundle.parentBundle, { cascade: true })
   // parentBundles: BundleBundleORMEntity[];

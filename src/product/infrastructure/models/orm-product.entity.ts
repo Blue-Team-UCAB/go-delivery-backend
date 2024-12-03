@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { BundleProductORMEntity } from '../../../bundle/infrastructure/models/orm-bundle-product.entity';
 import { ProductCategoryORMEntity } from './orm-product-category.entity';
+import { OrderProductORMEntity } from '../../../order/infrastructure/models/orm-order-product.entity';
 
 @Entity('Product')
 export class ProductORMEntity {
@@ -36,4 +37,7 @@ export class ProductORMEntity {
 
   @OneToMany(() => ProductCategoryORMEntity, productCategory => productCategory.product)
   product_Categories: ProductCategoryORMEntity[];
+
+  @OneToMany(() => OrderProductORMEntity, orderProduct => orderProduct.product, { cascade: true })
+  order_Products: OrderProductORMEntity[];
 }
