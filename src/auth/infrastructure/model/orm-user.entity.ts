@@ -16,6 +16,9 @@ export class UserORMEntity {
   role_User: string;
 
   @Column({ nullable: true })
+  stripeId: string;
+
+  @Column({ nullable: true })
   expirationCodeDate: Date;
 
   @Column({ nullable: true })
