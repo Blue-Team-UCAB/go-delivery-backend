@@ -1,4 +1,4 @@
-import { CostumerORMEntity } from 'src/costumer/infrastructure/model/orm-costumer.entity';
+import { CustomerORMEntity } from 'src/customer/infrastructure/model/orm-customer.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity('User')
@@ -21,7 +21,7 @@ export class UserORMEntity {
   @Column({ nullable: true })
   verification_Code?: string;
 
-  @OneToOne(() => CostumerORMEntity, costumer => costumer.id_Costumer, { cascade: true, nullable: false })
+  @OneToOne(() => CustomerORMEntity, costumer => costumer.id_Costumer, { cascade: true, nullable: false })
   @JoinColumn()
-  costumer: CostumerORMEntity;
+  costumer: CustomerORMEntity;
 }

@@ -1,7 +1,7 @@
 import { User, UserType } from '../../application/model/user-model';
 import { IMapper } from '../../../common//application/mapper/mapper.interface';
 import { UserORMEntity } from '../model/orm-user.entity';
-import { CostumerORMEntity } from 'src/costumer/infrastructure/model/orm-costumer.entity';
+import { CustomerORMEntity } from 'src/customer/infrastructure/model/orm-customer.entity';
 
 export class UserMapper implements IMapper<User, UserORMEntity> {
   async fromDomainToPersistence(domain: User): Promise<UserORMEntity> {
@@ -10,7 +10,7 @@ export class UserMapper implements IMapper<User, UserORMEntity> {
     user.email_User = domain.emailUser;
     user.password_User = domain.passwordUser;
     user.role_User = domain.roleUser;
-    user.costumer = { id_Costumer: domain.costumerId } as CostumerORMEntity;
+    user.costumer = { id_Costumer: domain.costumerId } as CustomerORMEntity;
     user.expirationCodeDate = domain.expirationCodeDate;
     user.verification_Code = domain.verificationCode;
     return user;
