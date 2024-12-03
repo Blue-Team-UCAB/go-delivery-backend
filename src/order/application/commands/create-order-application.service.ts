@@ -1,9 +1,9 @@
 import { IOrderRepository } from '../../domain/repositories/order-repository.interface';
 import { IApplicationService } from '../../../common/application/application-services/application-service.interface';
-import { CreateOrderServiceEntryDto } from '../dto/entry/create-order-service-entry.dto';
+import { CreateOrderServiceEntryDto } from '../dto/entry/create-order-service.entry.dto';
 import { IdGenerator } from '../../../common/application/id-generator/id-generator.interface';
 import { Result } from '../../../common/domain/result-handler/result';
-import { CreateOrderServiceResponseDto } from '../dto/response/create-order-service-response.dto';
+import { CreateOrderServiceResponseDto, ProductBundleDto } from '../dto/response/create-order-service.response.dto';
 import { OrderDirection } from '../../domain/value-objects/order-direction';
 import { OrderId } from '../../domain/value-objects/order.id';
 import { OrderState, OrderStates } from '../../domain/value-objects/order-state';
@@ -22,17 +22,26 @@ import { OrderBundleName } from '../../domain/value-objects/order-bundle-name';
 import { OrderBundlePrice } from '../../domain/value-objects/order-bundle-price';
 import { OrderBundleImage } from '../../domain/value-objects/order-bundle-image';
 import { OrderBundleQuantity } from '../../domain/value-objects/order-bundle-quantity';
-import { CustomerId } from 'src/customer/domain/value-objects/customer-id';
-import { Order } from 'src/order/domain/order';
-import { OrderTotalAmount } from 'src/order/domain/value-objects/order-total-amount';
-import { OrderSubtotalAmount } from 'src/order/domain/value-objects/order-subtotal-amount';
+import { CustomerId } from '../../../customer/domain/value-objects/customer-id';
+import { Order } from '../../domain/order';
+import { OrderTotalAmount } from '../../domain/value-objects/order-total-amount';
+import { OrderSubtotalAmount } from '../../domain/value-objects/order-subtotal-amount';
+import { ICustomerRepository } from '../../../customer/domain/repositories/customer-repository.interface';
+import { WalletAmount } from '../../../customer/domain/value-objects/wallet-amount';
+import { IWalletRepository } from '../../../customer/domain/repositories/wallet-repository.interface';
+import { StripeService } from '../../../common/infrastructure/providers/services/stripe.service';
+import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 
 export class CreateOrderApplicationService implements IApplicationService<CreateOrderServiceEntryDto, CreateOrderServiceResponseDto> {
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly productRepository: IProductRepository,
     private readonly bundleRepository: IBundleRepository,
+    private readonly customerRepository: ICustomerRepository,
+    private readonly walletRepository: IWalletRepository,
+    private readonly stripeService: StripeService,
     private readonly idGenerator: IdGenerator<string>,
+    private readonly s3Service: IStorageS3Service,
   ) {}
 
   async execute(data: CreateOrderServiceEntryDto): Promise<Result<CreateOrderServiceResponseDto>> {
@@ -55,7 +64,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     }
 
     const orderBundles: OrderBundle[] = [];
-    for (const bundleDto of data.bundles) {
+    for (const bundleDto of data.bundles ?? []) {
       const bundleResult = await this.bundleRepository.findBundleById(bundleDto.id);
       if (!bundleResult.isSuccess) {
         return Result.fail<CreateOrderServiceResponseDto>(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
@@ -77,8 +86,8 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     const totalAmount = subtotalAmount; //todo Aqui hay que agregar los cupones o descuentos
 
     const dataOrder = {
-      customerId: CustomerId.create(data.token),
-      state: OrderState.create(OrderStates.CREATED),
+      customerId: CustomerId.create(data.id_customer),
+      stateHistory: [OrderState.create(OrderStates.CREATED, new Date())],
       createdDate: OrderCreatedDate.create(new Date()),
       direction: OrderDirection.create(data.direction, data.longitude, data.latitude),
       totalAmount: OrderTotalAmount.create(totalAmount),
@@ -90,7 +99,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     const order = new Order(
       OrderId.create(await this.idGenerator.generateId()),
       dataOrder.customerId,
-      dataOrder.state,
+      dataOrder.stateHistory,
       dataOrder.createdDate,
       dataOrder.totalAmount,
       dataOrder.subtotalAmount,
@@ -99,8 +108,29 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       dataOrder.bundles,
       null,
       null,
-      null,
     );
+
+    if (data.token_stripe && /^pm_[a-zA-Z0-9]{25}$/.test(data.token_stripe)) {
+      const paymentSuccess = await this.stripeService.PaymentIntent(totalAmount, data.token_stripe, data.id_stripe_customer);
+      if (!paymentSuccess) {
+        return Result.fail<CreateOrderServiceResponseDto>(new Error('Payment failed'), 400, 'Payment failed');
+      }
+    } else {
+      const customerResult = await this.customerRepository.findById(data.id_customer);
+      if (!customerResult.isSuccess) {
+        return Result.fail<CreateOrderServiceResponseDto>(customerResult.Error, customerResult.StatusCode, customerResult.Message);
+      }
+      const customer = customerResult.Value;
+      if (customer.Wallet.Amount.Amount < totalAmount) {
+        return Result.fail<CreateOrderServiceResponseDto>(null, 400, 'Insufficient funds in wallet');
+      }
+      customer.subtractWallet(WalletAmount.create(totalAmount));
+      const updatedWallet = await this.walletRepository.saveWallet(customer.Wallet);
+
+      if (!updatedWallet.isSuccess) {
+        return Result.fail<CreateOrderServiceResponseDto>(updatedWallet.Error, updatedWallet.StatusCode, updatedWallet.Message);
+      }
+    }
 
     const result = await this.orderRepository.saveOrderAggregate(order);
 
@@ -108,9 +138,38 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       return Result.fail<CreateOrderServiceResponseDto>(result.Error, result.StatusCode, result.Message);
     }
 
+    const products: ProductBundleDto[] = await Promise.all(
+      order.Products.map(async product => {
+        let imageUrlProduct = await this.s3Service.getFile(product.Image.Url);
+        return {
+          id: product.Id.Id,
+          name: product.Name.Name,
+          price: product.Price.Price,
+          imageUrl: imageUrlProduct,
+          quantity: product.Quantity.Quantity,
+        };
+      }),
+    );
+
+    const bundles: ProductBundleDto[] = await Promise.all(
+      order.Bundles.map(async bundle => {
+        let imageUrlBundle = await this.s3Service.getFile(bundle.Image.Url);
+        return {
+          id: bundle.Id.Id,
+          name: bundle.Name.Name,
+          price: bundle.Price.Price,
+          imageUrl: imageUrlBundle,
+          quantity: bundle.Quantity.Quantity,
+        };
+      }),
+    );
+
     const response: CreateOrderServiceResponseDto = {
       id: order.Id.Id,
-      state: order.State.State,
+      state: order.StateHistory.map(state => ({
+        state: state.State,
+        date: state.Date,
+      })),
       createdDate: order.CreatedDate.CreatedDate,
       totalAmount: order.TotalAmount.Amount,
       subtotalAmount: order.SubtotalAmount.Amount,
@@ -119,20 +178,8 @@ export class CreateOrderApplicationService implements IApplicationService<Create
         longitude: order.Direction.Longitude,
         latitude: order.Direction.Latitude,
       },
-      products: order.Products.map(product => ({
-        id: product.Id.Id,
-        name: product.Name.Name,
-        price: product.Price.Price,
-        imageUrl: product.Image.Url,
-        quantity: product.Quantity.Quantity,
-      })),
-      bundles: order.Bundles.map(bundle => ({
-        id: bundle.Id.Id,
-        name: bundle.Name.Name,
-        price: bundle.Price.Price,
-        imageUrl: bundle.Image.Url,
-        quantity: bundle.Quantity.Quantity,
-      })),
+      products: products,
+      bundles: bundles,
     };
 
     return Result.success<CreateOrderServiceResponseDto>(response, 200);

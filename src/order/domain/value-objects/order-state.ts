@@ -3,7 +3,7 @@ import { InvalidOrderStateException } from '../exceptions/invalid-order-state.ex
 
 export enum OrderStates {
   CREATED = 'CREATED',
-  PROCESSED = 'PROCESSED',
+  IN_PROCESS = 'IN PROCESS',
   SHIPPED = 'SHIPPED',
   DELIVERED = 'DELIVERED',
   CANCELLED = 'CANCELLED',
@@ -11,23 +11,32 @@ export enum OrderStates {
 
 export class OrderState implements ValueObject<OrderState> {
   private readonly _state: OrderStates;
+  private readonly _date: Date;
 
-  constructor(state: OrderStates) {
+  constructor(state: OrderStates, date: Date) {
     if (!Object.values(OrderStates).includes(state)) {
       throw new InvalidOrderStateException(`State ${state} is not valid`);
     }
+    if (isNaN(date.getTime())) {
+      throw new InvalidOrderStateException(`Date ${date} is not valid`);
+    }
     this._state = state;
+    this._date = date;
   }
 
   equals(obj: OrderState): boolean {
-    return this._state === obj._state;
+    return this._state === obj._state && this._date.getTime() === obj._date.getTime();
   }
 
   get State(): OrderStates {
     return this._state;
   }
 
-  static create(state: OrderStates): OrderState {
-    return new OrderState(state);
+  get Date(): Date {
+    return this._date;
+  }
+
+  static create(state: OrderStates, date: Date): OrderState {
+    return new OrderState(state, date);
   }
 }

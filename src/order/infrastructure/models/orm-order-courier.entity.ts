@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { OrderORMEntity } from './orm-order.entity';
 
-@Entity('OrderCourier')
+@Entity('Courier')
 export class OrderCourierORMEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

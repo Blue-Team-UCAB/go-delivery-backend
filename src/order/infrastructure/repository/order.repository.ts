@@ -20,9 +20,7 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
       const order = await this.createQueryBuilder('order')
         .select([
           'order.id_Order',
-          'order.state_Order',
           'order.createdDate_Order',
-          'order.receiveDate_Order',
           'order.totalAmount_Order',
           'order.subtotalAmount_Order',
           'order.direction_Order',
@@ -48,6 +46,9 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
           'bundle.price',
           'bundle.weight',
           'bundle.imageUrl',
+          'orderStateHistory.id',
+          'orderStateHistory.state',
+          'orderStateHistory.date',
         ])
         .leftJoinAndSelect('order.customer_Orders', 'customer_Orders')
         .leftJoinAndSelect('order.courier_Orders', 'courier_Orders')
@@ -55,6 +56,7 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
         .leftJoinAndSelect('orderProducts.product', 'product')
         .leftJoinAndSelect('order.order_Bundles', 'orderBundles')
         .leftJoinAndSelect('orderBundles.bundle', 'bundle')
+        .leftJoinAndSelect('order.order_StateHistory', 'orderStateHistory')
         .where('order.id_Order = :id', { id })
         .getOne();
 

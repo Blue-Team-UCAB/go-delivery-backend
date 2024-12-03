@@ -3,6 +3,7 @@ import { CustomerORMEntity } from '../../../customer/infrastructure/model/orm-cu
 import { OrderProductORMEntity } from './orm-order-product.entity';
 import { OrderBundleORMEntity } from './orm-order-bundle.entity';
 import { OrderCourierORMEntity } from './orm-order-courier.entity';
+import { OrderStateHistoryORMEntity } from './orm-order-state.entity';
 
 @Entity('Order')
 export class OrderORMEntity {
@@ -10,13 +11,7 @@ export class OrderORMEntity {
   id_Order: string;
 
   @Column()
-  state_Order: string;
-
-  @Column()
   createdDate_Order: Date;
-
-  @Column({ nullable: true })
-  receiveDate_Order: Date;
 
   @Column('float')
   totalAmount_Order: number;
@@ -51,4 +46,7 @@ export class OrderORMEntity {
 
   @OneToMany(() => OrderBundleORMEntity, orderBundle => orderBundle.order, { cascade: true })
   order_Bundles: OrderBundleORMEntity[];
+
+  @OneToMany(() => OrderStateHistoryORMEntity, orderStateHistory => orderStateHistory.order, { cascade: true })
+  order_StateHistory: OrderStateHistoryORMEntity[];
 }

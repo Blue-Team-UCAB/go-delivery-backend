@@ -7,7 +7,6 @@ import { OrderCreatedEvent } from './events/order-created.event';
 import { InvalidOrderException } from './exceptions/invalid-order.exception';
 import { OrderCreatedDate } from './value-objects/order-created-date';
 import { OrderDirection } from './value-objects/order-direction';
-import { OrderReceivedDate } from './value-objects/order-received-date';
 import { OrderReport } from './value-objects/order-report';
 import { OrderState } from './value-objects/order-state';
 import { OrderSubtotalAmount } from './value-objects/order-subtotal-amount';
@@ -17,9 +16,8 @@ import { CustomerId } from '../../customer/domain/value-objects/customer-id';
 
 export class Order extends AggregateRoot<OrderId> {
   private customerId: CustomerId;
-  private state: OrderState;
+  private stateHistory: OrderState[];
   private createdDate: OrderCreatedDate;
-  private receivedDate: OrderReceivedDate | null;
   private totalAmount: OrderTotalAmount;
   private subtotalAmount: OrderSubtotalAmount;
   private direction: OrderDirection;
@@ -32,16 +30,12 @@ export class Order extends AggregateRoot<OrderId> {
     return this.customerId;
   }
 
-  get State(): OrderState {
-    return this.state;
+  get StateHistory(): OrderState[] {
+    return this.stateHistory;
   }
 
   get CreatedDate(): OrderCreatedDate {
     return this.createdDate;
-  }
-
-  get ReceivedDate(): OrderReceivedDate {
-    return this.receivedDate;
   }
 
   get TotalAmount(): OrderTotalAmount {
@@ -75,23 +69,22 @@ export class Order extends AggregateRoot<OrderId> {
   constructor(
     id: OrderId,
     customerId: CustomerId,
-    state: OrderState,
+    stateHistory: OrderState[],
     createdDate: OrderCreatedDate,
     totalAmount: OrderTotalAmount,
     subtotalAmount: OrderSubtotalAmount,
     direction: OrderDirection,
     products: OrderProduct[],
     bundles: OrderBundle[],
-    receivedDate: OrderReceivedDate | null,
     courier: OrderCourier | null,
     report: OrderReport | null,
   ) {
-    const orderCreated = OrderCreatedEvent.create(id, customerId, state, createdDate, totalAmount, subtotalAmount, direction, products, bundles, receivedDate, courier, report);
+    const orderCreated = OrderCreatedEvent.create(id, customerId, stateHistory, createdDate, totalAmount, subtotalAmount, direction, products, bundles, courier, report);
     super(id, orderCreated);
   }
 
   protected checkValidState(): void {
-    if (!this.customerId || !this.state || !this.createdDate || !this.totalAmount || !this.subtotalAmount || !this.direction || !this.products || !this.bundles) {
+    if (!this.customerId || !this.stateHistory || !this.createdDate || !this.totalAmount || !this.subtotalAmount || !this.direction || !this.products || !this.bundles) {
       throw new InvalidOrderException(`Order not valid`);
     }
   }
@@ -99,14 +92,13 @@ export class Order extends AggregateRoot<OrderId> {
   protected when(event: DomainEvent): void {
     if (event instanceof OrderCreatedEvent) {
       this.customerId = event.customerId;
-      this.state = event.state;
+      this.stateHistory = event.stateHistory;
       this.createdDate = event.createdDate;
       this.totalAmount = event.totalAmount;
       this.subtotalAmount = event.subtotalAmount;
       this.direction = event.direction;
       this.products = event.products;
       this.bundles = event.bundles;
-      this.receivedDate = event.receivedDate;
       this.courier = event.courier;
       this.report = event.report;
     }

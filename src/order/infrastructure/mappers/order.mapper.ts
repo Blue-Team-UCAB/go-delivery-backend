@@ -22,20 +22,18 @@ import { OrderBundleName } from '../../domain/value-objects/order-bundle-name';
 import { OrderBundlePrice } from '../../domain/value-objects/order-bundle-price';
 import { OrderBundleImage } from '../../domain/value-objects/order-bundle-image';
 import { OrderBundleQuantity } from '../../domain/value-objects/order-bundle-quantity';
-import { OrderReceivedDate } from '../../domain/value-objects/order-received-date';
 import { OrderReport } from '../../domain/value-objects/order-report';
 import { OrderCourierId } from '../../domain/value-objects/order-courier.id';
 import { OrderCourier } from '../../domain/entities/order-courier';
 import { OrderCourierName } from '../../domain/value-objects/order-courier-name';
 import { OrderCourierPhone } from '../../domain/value-objects/order-courier-phone';
+import { OrderStateHistoryORMEntity } from '../models/orm-order-state.entity';
 
 export class OrderMapper implements IMapper<Order, OrderORMEntity> {
   async fromDomainToPersistence(domain: Order): Promise<OrderORMEntity> {
     const orderORM = new OrderORMEntity();
     orderORM.id_Order = domain.Id.Id;
-    orderORM.state_Order = domain.State.State;
     orderORM.createdDate_Order = domain.CreatedDate.CreatedDate;
-    orderORM.receiveDate_Order = domain.ReceivedDate?.ReceivedDate || null;
     orderORM.totalAmount_Order = domain.TotalAmount.Amount;
     orderORM.subtotalAmount_Order = domain.SubtotalAmount.Amount;
     orderORM.direction_Order = domain.Direction.Direction;
@@ -56,6 +54,12 @@ export class OrderMapper implements IMapper<Order, OrderORMEntity> {
       bundleORM.bundle = { id: bundle.Id.Id } as any;
       bundleORM.quantity = bundle.Quantity.Quantity;
       return bundleORM;
+    });
+    orderORM.order_StateHistory = domain.StateHistory.map(state => {
+      const stateORM = new OrderStateHistoryORMEntity();
+      stateORM.state = state.State;
+      stateORM.date = state.Date;
+      return stateORM;
     });
     return orderORM;
   }
@@ -95,20 +99,22 @@ export class OrderMapper implements IMapper<Order, OrderORMEntity> {
           }),
         )
       : [];
+    const stateHistory = persistence.order_StateHistory.map(state => {
+      return OrderState.create(state.state as OrderStates, state.date);
+    });
     const courier = persistence.courier_Orders
       ? new OrderCourier(OrderCourierId.create(persistence.courier_Orders.id), OrderCourierName.create(persistence.courier_Orders.name), OrderCourierPhone.create(persistence.courier_Orders.phone))
       : null;
     const order = new Order(
       OrderId.create(persistence.id_Order),
       CustomerId.create(persistence.customer_Orders.id_Costumer),
-      OrderState.create(persistence.state_Order as OrderStates),
+      stateHistory,
       OrderCreatedDate.create(persistence.createdDate_Order),
       OrderTotalAmount.create(persistence.totalAmount_Order),
       OrderSubtotalAmount.create(persistence.subtotalAmount_Order),
       OrderDirection.create(persistence.direction_Order, persistence.longitude_Order, persistence.latitude_Order),
       products,
       bundles,
-      persistence.receiveDate_Order ? OrderReceivedDate.create(persistence.receiveDate_Order) : null,
       courier,
       persistence.claimDate_Order ? OrderReport.create(persistence.claimDate_Order, persistence.claim_Order) : null,
     );
