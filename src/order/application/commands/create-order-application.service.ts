@@ -86,7 +86,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     const totalAmount = subtotalAmount; //todo Aqui hay que agregar los cupones o descuentos
 
     const dataOrder = {
-      customerId: CustomerId.create(data.token_customer),
+      customerId: CustomerId.create(data.id_customer),
       stateHistory: [OrderState.create(OrderStates.CREATED, new Date())],
       createdDate: OrderCreatedDate.create(new Date()),
       direction: OrderDirection.create(data.direction, data.longitude, data.latitude),
@@ -111,12 +111,12 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     );
 
     if (data.token_stripe && /^pm_[a-zA-Z0-9]{25}$/.test(data.token_stripe)) {
-      const paymentSuccess = await this.stripeService.PaymentIntent(totalAmount, data.token_stripe, data.token_stripe_customer);
+      const paymentSuccess = await this.stripeService.PaymentIntent(totalAmount, data.token_stripe, data.id_stripe_customer);
       if (!paymentSuccess) {
         return Result.fail<CreateOrderServiceResponseDto>(new Error('Payment failed'), 400, 'Payment failed');
       }
     } else {
-      const customerResult = await this.customerRepository.findById(data.token_customer);
+      const customerResult = await this.customerRepository.findById(data.id_customer);
       if (!customerResult.isSuccess) {
         return Result.fail<CreateOrderServiceResponseDto>(customerResult.Error, customerResult.StatusCode, customerResult.Message);
       }

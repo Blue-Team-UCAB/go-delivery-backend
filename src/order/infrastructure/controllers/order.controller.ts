@@ -56,8 +56,8 @@ export class OrderController {
       this.uuidCreator,
       this.s3Service,
     );
-    createOrderDto.token_customer = user.idCostumer;
-    createOrderDto.token_stripe_customer = user.idStripe;
+    createOrderDto.id_customer = user.idCostumer;
+    createOrderDto.id_stripe_customer = user.idStripe;
     return (await service.execute(createOrderDto)).Value;
   }
 

@@ -12,8 +12,9 @@ export class CreateOrderDto {
   @IsNumber()
   latitude: number;
 
+  @IsOptional()
   @IsString()
-  token_customer: string;
+  id_customer: string;
 
   @IsOptional()
   @IsString()
@@ -21,7 +22,7 @@ export class CreateOrderDto {
 
   @IsOptional()
   @IsString()
-  token_stripe_customer: string;
+  id_stripe_customer: string;
 
   @IsArray()
   @ArrayNotEmpty()
