@@ -16,9 +16,9 @@ export class CustomerRepository extends Repository<CustomerORM> implements ICust
   async findById(id: string): Promise<Result<Customer>> {
     try {
       const CustomerORM = await this.createQueryBuilder('Customer')
-        .select(['Customer.id_Customer', 'Customer.name_Customer', 'Customer.phone_Customer', 'wallet.id_Wallet', 'wallet.amount_Wallet', 'wallet.currency_Wallet'])
+        .select(['Customer.id_Costumer', 'Customer.name_Costumer', 'Customer.phone_Costumer', 'wallet.id_Wallet', 'wallet.amount_Wallet', 'wallet.currency_Wallet'])
         .leftJoin('Customer.wallet', 'wallet')
-        .where('Customer.id_Customer = :id', { id })
+        .where('Customer.id_Costumer = :id', { id })
         .getOne();
 
       if (!CustomerORM) {
