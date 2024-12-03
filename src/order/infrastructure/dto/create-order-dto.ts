@@ -14,15 +14,7 @@ export class CreateOrderDto {
 
   @IsOptional()
   @IsString()
-  id_customer: string;
-
-  @IsOptional()
-  @IsString()
   token_stripe: string;
-
-  @IsOptional()
-  @IsString()
-  id_stripe_customer: string;
 
   @IsArray()
   @ArrayNotEmpty()

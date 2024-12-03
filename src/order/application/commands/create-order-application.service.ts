@@ -110,7 +110,8 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       null,
     );
 
-    if (data.token_stripe && /^pm_[a-zA-Z0-9]{25}$/.test(data.token_stripe)) {
+    const regex = new RegExp('^pm_[a-zA-Z0-9]{24}$');
+    if (data.token_stripe && regex.test(data.token_stripe)) {
       const paymentSuccess = await this.stripeService.PaymentIntent(totalAmount, data.token_stripe, data.id_stripe_customer);
       if (!paymentSuccess) {
         return Result.fail<CreateOrderServiceResponseDto>(new Error('Payment failed'), 400, 'Payment failed');
