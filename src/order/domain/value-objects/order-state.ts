@@ -3,7 +3,7 @@ import { InvalidOrderStateException } from '../exceptions/invalid-order-state.ex
 
 export enum OrderStates {
   CREATED = 'CREATED',
-  PROCESSED = 'PROCESSED',
+  IN_PROCESS = 'IN PROCESS',
   SHIPPED = 'SHIPPED',
   DELIVERED = 'DELIVERED',
   CANCELLED = 'CANCELLED',

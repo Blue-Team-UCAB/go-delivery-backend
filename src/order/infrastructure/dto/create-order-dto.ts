@@ -13,11 +13,15 @@ export class CreateOrderDto {
   latitude: number;
 
   @IsString()
-  token: string;
+  token_customer: string;
 
   @IsOptional()
   @IsString()
   token_stripe: string;
+
+  @IsOptional()
+  @IsString()
+  token_stripe_customer: string;
 
   @IsArray()
   @ArrayNotEmpty()

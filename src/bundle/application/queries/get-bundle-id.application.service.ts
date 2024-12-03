@@ -27,7 +27,7 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
     const imageUrl: string = await this.s3Service.getFile(bundleResult.Value.ImageUrl.Url);
 
     const products: BundleProductResponseDto[] = [];
-    const bundles: BundleProductResponseDto[] = [];
+    //const bundles: BundleProductResponseDto[] = [];
 
     for (const product of bundleResult.Value.Products) {
       if (product instanceof BundleProduct) {
