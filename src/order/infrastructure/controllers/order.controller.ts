@@ -66,14 +66,14 @@ export class OrderController {
       this.s3Service,
       this.dateService,
     );
-    return (await service.execute({ ...createOrderDto, id_customer: user.idCostumer, id_stripe_customer: user.idStripe })).Value;
+    return await service.execute({ ...createOrderDto, id_customer: user.idCostumer, id_stripe_customer: user.idStripe });
   }
 
   @Get(':id')
   @IsClientOrAdmin()
   async getOrderId(@Param('id') id: string) {
     const service = new GetOrderByIdApplicationService(this.orderRepository, this.s3Service, this.dateService);
-    return (await service.execute({ id: id })).Value;
+    return await service.execute({ id: id });
   }
 
   @Get()
@@ -82,7 +82,7 @@ export class OrderController {
   async getOrderPage(@Query(ValidationPipe) query: GetOrderPageDto, @GetUser() user: any) {
     const { page, perpage, status } = query;
     const service = new GetOrderByPageApplicationService(this.orderRepository, this.dateService);
-    return (await service.execute({ page, perpage, id_customer: user.idCostumer, status })).Value;
+    return await service.execute({ page, perpage, id_customer: user.idCostumer, status });
   }
 
   @Post('change-status')
