@@ -13,6 +13,7 @@ import { OrderSubtotalAmount } from './value-objects/order-subtotal-amount';
 import { OrderTotalAmount } from './value-objects/order-total-amount';
 import { OrderId } from './value-objects/order.id';
 import { CustomerId } from '../../customer/domain/value-objects/customer-id';
+import { OrderStatusChangeEvent } from './events/order-status-change.event';
 
 export class Order extends AggregateRoot<OrderId> {
   private customerId: CustomerId;
@@ -101,6 +102,13 @@ export class Order extends AggregateRoot<OrderId> {
       this.bundles = event.bundles;
       this.courier = event.courier;
       this.report = event.report;
+    } else if (event instanceof OrderStatusChangeEvent) {
+      this.stateHistory.push(event.state);
     }
+  }
+
+  public changeStatus(state: OrderState): void {
+    const lastState = OrderStatusChangeEvent.create(this.Id, state);
+    this.apply(lastState);
   }
 }

@@ -5,6 +5,7 @@ import { OrderORMEntity } from '../models/orm-order.entity';
 import { OrderMapper } from '../mappers/order.mapper';
 import { Result } from '../../../common/domain/result-handler/result';
 import { Order } from '../../domain/order';
+import { OrderStateHistoryORMEntity } from '../models/orm-order-state.entity';
 
 @Injectable()
 export class OrderRepository extends Repository<OrderORMEntity> implements IOrderRepository {
@@ -117,6 +118,31 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
       return Result.success<Order>(order, 200);
     } catch (error) {
       return Result.fail<Order>(new Error(error.message), error.code, error.message);
+    }
+  }
+
+  async updateOrderStatus(id: string, status: string, date: Date): Promise<Result<boolean>> {
+    try {
+      const order = await this.findOne({ where: { id_Order: id }, relations: ['order_StateHistory'] });
+
+      if (!order) {
+        return Result.fail<boolean>(null, 404, 'No existe la orden solicitada');
+      }
+
+      const existingState = order.order_StateHistory.find(state => state.state === status);
+
+      if (existingState) {
+        return Result.fail<boolean>(null, 400, 'El estado ya existe');
+      }
+      const newStateHistory = new OrderStateHistoryORMEntity();
+
+      newStateHistory.state = status;
+      newStateHistory.date = date;
+      order.order_StateHistory.push(newStateHistory);
+      await this.save(order);
+      return Result.success<boolean>(true, 200);
+    } catch (e) {
+      return Result.fail<boolean>(null, 500, e.message);
     }
   }
 }
