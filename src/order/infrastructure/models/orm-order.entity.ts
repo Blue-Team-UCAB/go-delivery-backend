@@ -39,7 +39,7 @@ export class OrderORMEntity {
   @Column({ nullable: true })
   claim_Order: string;
 
-  @ManyToOne(() => CustomerORMEntity, customer => customer.order, { cascade: true, nullable: false })
+  @ManyToOne(() => CustomerORMEntity, customer => customer.order, { nullable: false })
   customer_Orders: CustomerORMEntity;
 
   @ManyToOne(() => OrderCourierORMEntity, courier => courier.orders, { nullable: true })

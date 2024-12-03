@@ -2,10 +2,10 @@ import { IApplicationService } from 'src/common/application/application-services
 import { CurrentEntryServiceDto } from '../dto/entry/current.entry.application.dto';
 import { CurrentResponseServiceDto } from '../dto/response/current.response.application.dto';
 import { Result } from 'src/common/domain/result-handler/result';
-import { ICostumerRepository } from 'src/customer/domain/repositories/customer-repository.interface';
+import { ICustomerRepository } from 'src/customer/domain/repositories/customer-repository.interface';
 
 export class AuthCurrentApplicationService implements IApplicationService<CurrentEntryServiceDto, CurrentResponseServiceDto> {
-  constructor(private readonly costumerRepository: ICostumerRepository) {}
+  constructor(private readonly costumerRepository: ICustomerRepository) {}
 
   async execute(data: CurrentEntryServiceDto): Promise<Result<CurrentResponseServiceDto>> {
     const costumer = await this.costumerRepository.findById(data.idCostumer);

@@ -97,6 +97,9 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       dataOrder.direction,
       dataOrder.products,
       dataOrder.bundles,
+      null,
+      null,
+      null,
     );
 
     const result = await this.orderRepository.saveOrderAggregate(order);

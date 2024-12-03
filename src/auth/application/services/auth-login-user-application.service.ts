@@ -5,14 +5,14 @@ import { ISignUpResponseApplication } from '../dto/response/sing-up-response.app
 import { IUserRepository } from '../repository/user-repository.interface';
 import { ICrypto } from 'src/common/application/crypto/crypto';
 import { IJwtGenerator } from '../../../common/application/jwt-generator/jwt-generator.interface';
-import { ICostumerRepository } from 'src/customer/domain/repositories/customer-repository.interface';
+import { ICustomerRepository } from 'src/customer/domain/repositories/customer-repository.interface';
 
 export class AuthLoginUserApplicationService implements IApplicationService<ISignInEntryApplication, ISignUpResponseApplication> {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly passwordHasher: ICrypto,
     private readonly jwtGenerator: IJwtGenerator,
-    private readonly costumerRepository: ICostumerRepository,
+    private readonly costumerRepository: ICustomerRepository,
   ) {}
 
   async execute(data: ISignInEntryApplication): Promise<Result<ISignUpResponseApplication>> {
