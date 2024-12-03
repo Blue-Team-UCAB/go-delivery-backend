@@ -8,6 +8,8 @@ export type User = {
   passwordUser: string;
   roleUser: UserType;
   costumerId: string;
+  stripeId?: string;
+  linkedDivices?: string[];
   expirationCodeDate?: Date | null;
   verificationCode?: string | null;
 };

@@ -28,6 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       emailUser: resp.getValue().emailUser,
       roleUser: resp.getValue().roleUser,
       idCostumer: resp.getValue().costumerId,
+      idStripe: resp.getValue().stripeId,
     };
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-generator';
 import { PaymentCheckPagoMovil } from 'src/common/infrastructure/payment-check/payment-check-pagoMovil';
@@ -13,6 +13,8 @@ import { PagoMovilEntryDto } from '../dto/payment-pago-movil.entry.dto';
 import { ZelleEntryDto } from '../dto/payment-zelle.entry.dto';
 import { PaymentCheckZelle } from 'src/common/infrastructure/payment-check/payment-check-zelle';
 import { IsClientOrAdmin } from 'src/auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
+import { StripeService } from 'src/common/infrastructure/providers/services/stripe.service';
+import { PaymentRegisterStripeEntryDto } from '../dto/payment-register-stripe.entry.dto';
 
 @ApiTags('Payment')
 @Controller('pay')
@@ -20,6 +22,7 @@ export class PaymentController {
   private readonly costumerRepository: CustomerRepository;
   private readonly paymentRepository: PaymentRepository;
   private readonly walletRepository: WalletRepository;
+  private readonly stripe: StripeService;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -30,6 +33,7 @@ export class PaymentController {
     this.costumerRepository = new CustomerRepository(this.dataSource);
     this.paymentRepository = new PaymentRepository(this.dataSource);
     this.walletRepository = new WalletRepository(this.dataSource);
+    this.stripe = new StripeService();
   }
 
   @Post('pago-movil')
@@ -46,5 +50,19 @@ export class PaymentController {
   async createPaymentZelle(@Body() data: ZelleEntryDto, @GetUser() user: any) {
     const service = new CreatePaymentPagoMovilApplicationService(new PaymentCheckZelle(), this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
     return await service.execute({ ...data, date: new Date(), idCustomer: user.idCostumer, typo: 'Zelle' });
+  }
+
+  @Post('card')
+  @IsClientOrAdmin()
+  @UseAuth()
+  async createPaymentStripe(@Body() data: PaymentRegisterStripeEntryDto, @GetUser() user: any) {
+    return await this.stripe.saveCard(user.idStripe, data.idCard);
+  }
+
+  @Get('card')
+  @IsClientOrAdmin()
+  @UseAuth()
+  async getCards(@GetUser() user: any) {
+    return await this.stripe.getCards(user.idStripe);
   }
 }
