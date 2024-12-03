@@ -15,6 +15,11 @@ import { WalletRepository } from '../../../customer/infrastructure/repository/wa
 import { StripeService } from '../../../common/infrastructure/providers/services/stripe.service';
 import { S3Service } from '../../../common/infrastructure/providers/services/s3.service';
 import { GetOrderByIdApplicationService } from '../../application/queries/get-order-id.application.service';
+import { IsAdmin } from 'src/auth/infrastructure/jwt/decorator/isAdmin.decorator';
+import { ChangeOrderStatusApplicationService } from 'src/order/application/commands/chage-order-status.application.service';
+import { ChangeOrderStatusDto } from '../dto/change-order-status.dto';
+import { EventPublisher } from 'src/common/infrastructure/Event-Publisher/eventPublisher.service';
+import { DomainEventBase } from 'src/common/domain/domain-event';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -32,6 +37,7 @@ export class OrderController {
     @Inject('BaseDeDatos')
     private readonly dataSource: DataSource,
     private readonly s3Service: S3Service,
+    private readonly publisher: EventPublisher<DomainEventBase>,
   ) {
     this.uuidCreator = new UuidGenerator();
     this.productRepository = new ProductRepository(this.dataSource);
@@ -64,5 +70,13 @@ export class OrderController {
   async getOrderId(@Param('id') id: string) {
     const service = new GetOrderByIdApplicationService(this.orderRepository, this.s3Service);
     return (await service.execute({ id: id })).Value;
+  }
+
+  @Post('change-status')
+  @IsAdmin()
+  @UseAuth()
+  async changeOrderStatus(@Body() data: ChangeOrderStatusDto, @GetUser() user: any) {
+    const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher);
+    return await service.execute({ ...data, linkedDivices: user.linkedDivices });
   }
 }

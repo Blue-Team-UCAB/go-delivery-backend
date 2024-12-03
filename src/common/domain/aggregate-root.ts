@@ -14,6 +14,7 @@ export abstract class AggregateRoot<T extends ValueObject<T>> extends Entity<T> 
   protected apply(event: DomainEvent): void {
     this.when(event);
     this.checkValidState();
+    this.event = event;
   }
 
   protected abstract when(event: DomainEvent): void;
@@ -21,7 +22,6 @@ export abstract class AggregateRoot<T extends ValueObject<T>> extends Entity<T> 
   protected abstract checkValidState(): void;
 
   public getDomainEvents(): DomainEvent {
-    const events = this.event;
     return this.event;
   }
 }
