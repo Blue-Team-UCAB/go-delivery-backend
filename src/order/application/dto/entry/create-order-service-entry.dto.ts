@@ -3,8 +3,9 @@ export interface CreateOrderServiceEntryDto {
   longitude: number;
   latitude: number;
   token: string;
+  token_stripe?: string;
   products: ProductBundleDto[];
-  bundles: ProductBundleDto[];
+  bundles?: ProductBundleDto[];
 }
 
 export class ProductBundleDto {

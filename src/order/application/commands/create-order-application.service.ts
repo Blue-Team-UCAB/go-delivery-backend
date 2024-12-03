@@ -22,16 +22,21 @@ import { OrderBundleName } from '../../domain/value-objects/order-bundle-name';
 import { OrderBundlePrice } from '../../domain/value-objects/order-bundle-price';
 import { OrderBundleImage } from '../../domain/value-objects/order-bundle-image';
 import { OrderBundleQuantity } from '../../domain/value-objects/order-bundle-quantity';
-import { CustomerId } from 'src/customer/domain/value-objects/customer-id';
-import { Order } from 'src/order/domain/order';
-import { OrderTotalAmount } from 'src/order/domain/value-objects/order-total-amount';
-import { OrderSubtotalAmount } from 'src/order/domain/value-objects/order-subtotal-amount';
+import { CustomerId } from '../../../customer/domain/value-objects/customer-id';
+import { Order } from '../../domain/order';
+import { OrderTotalAmount } from '../../domain/value-objects/order-total-amount';
+import { OrderSubtotalAmount } from '../../domain/value-objects/order-subtotal-amount';
+import { ICustomerRepository } from '../../../customer/domain/repositories/customer-repository.interface';
+import { WalletAmount } from '../../../customer/domain/value-objects/wallet-amount';
+import { IWalletRepository } from '../../../customer/domain/repositories/wallet-repository.interface';
 
 export class CreateOrderApplicationService implements IApplicationService<CreateOrderServiceEntryDto, CreateOrderServiceResponseDto> {
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly productRepository: IProductRepository,
     private readonly bundleRepository: IBundleRepository,
+    private readonly customerRepository: ICustomerRepository,
+    private readonly walletRepository: IWalletRepository,
     private readonly idGenerator: IdGenerator<string>,
   ) {}
 
@@ -55,7 +60,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     }
 
     const orderBundles: OrderBundle[] = [];
-    for (const bundleDto of data.bundles) {
+    for (const bundleDto of data.bundles ?? []) {
       const bundleResult = await this.bundleRepository.findBundleById(bundleDto.id);
       if (!bundleResult.isSuccess) {
         return Result.fail<CreateOrderServiceResponseDto>(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
@@ -78,7 +83,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
 
     const dataOrder = {
       customerId: CustomerId.create(data.token),
-      state: OrderState.create(OrderStates.CREATED),
+      stateHistory: [OrderState.create(OrderStates.CREATED, new Date())],
       createdDate: OrderCreatedDate.create(new Date()),
       direction: OrderDirection.create(data.direction, data.longitude, data.latitude),
       totalAmount: OrderTotalAmount.create(totalAmount),
@@ -90,7 +95,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     const order = new Order(
       OrderId.create(await this.idGenerator.generateId()),
       dataOrder.customerId,
-      dataOrder.state,
+      dataOrder.stateHistory,
       dataOrder.createdDate,
       dataOrder.totalAmount,
       dataOrder.subtotalAmount,
@@ -99,8 +104,26 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       dataOrder.bundles,
       null,
       null,
-      null,
     );
+
+    if (data.token_stripe) {
+      //todo Implementar lógica de pago con Stripe
+    } else {
+      const customerResult = await this.customerRepository.findById(data.token);
+      if (!customerResult.isSuccess) {
+        return Result.fail<CreateOrderServiceResponseDto>(customerResult.Error, customerResult.StatusCode, customerResult.Message);
+      }
+      const customer = customerResult.Value;
+      if (customer.Wallet.Amount.Amount < totalAmount) {
+        return Result.fail<CreateOrderServiceResponseDto>(null, 400, 'Insufficient funds in wallet');
+      }
+      customer.subtractWallet(WalletAmount.create(totalAmount));
+      const updatedWallet = await this.walletRepository.saveWallet(customer.Wallet);
+
+      if (!updatedWallet.isSuccess) {
+        return Result.fail<CreateOrderServiceResponseDto>(updatedWallet.Error, updatedWallet.StatusCode, updatedWallet.Message);
+      }
+    }
 
     const result = await this.orderRepository.saveOrderAggregate(order);
 
@@ -110,7 +133,10 @@ export class CreateOrderApplicationService implements IApplicationService<Create
 
     const response: CreateOrderServiceResponseDto = {
       id: order.Id.Id,
-      state: order.State.State,
+      state: order.StateHistory.map(state => ({
+        state: state.State,
+        date: state.Date,
+      })),
       createdDate: order.CreatedDate.CreatedDate,
       totalAmount: order.TotalAmount.Amount,
       subtotalAmount: order.SubtotalAmount.Amount,

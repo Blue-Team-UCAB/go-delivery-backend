@@ -1,5 +1,5 @@
 import { plainToInstance, Transform, Type } from 'class-transformer';
-import { ArrayMinSize, ArrayNotEmpty, IsArray, IsNumber, IsPositive, IsString, MinLength, ValidateNested } from 'class-validator';
+import { ArrayMinSize, ArrayNotEmpty, IsArray, IsNumber, IsOptional, IsPositive, IsString, MinLength, ValidateNested } from 'class-validator';
 
 export class CreateOrderDto {
   @IsString()
@@ -14,6 +14,10 @@ export class CreateOrderDto {
 
   @IsString()
   token: string;
+
+  @IsOptional()
+  @IsString()
+  token_stripe: string;
 
   @IsArray()
   @ArrayNotEmpty()
@@ -38,9 +42,8 @@ export class CreateOrderDto {
   })
   products: ProductBundleDto[];
 
+  @IsOptional()
   @IsArray()
-  @ArrayNotEmpty()
-  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => ProductBundleDto)
   @Transform(({ value }) => {
@@ -59,7 +62,7 @@ export class CreateOrderDto {
 
     throw new Error('Invalid type for bundles, expected string or array');
   })
-  bundles: ProductBundleDto[];
+  bundles?: ProductBundleDto[];
 }
 
 export class ProductBundleDto {

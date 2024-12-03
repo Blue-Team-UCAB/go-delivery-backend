@@ -10,6 +10,8 @@ import { OrderRepository } from '../repository/order.repository';
 import { IsClientOrAdmin } from '../../../auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
 import { UseAuth } from '../../../auth/infrastructure/jwt/decorator/useAuth.decorator';
 import { GetUser } from '../../../auth/infrastructure/jwt/decorator/get-user.decorator';
+import { CustomerRepository } from '../../../customer/infrastructure/repository/costumer-repository';
+import { WalletRepository } from '../../../customer/infrastructure/repository/wallet-repository';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -17,6 +19,8 @@ export class OrderController {
   private readonly orderRepository: OrderRepository;
   private readonly productRepository: ProductRepository;
   private readonly bundleRepository: BundleRepository;
+  private readonly customerRepository: CustomerRepository;
+  private readonly walletRepository: WalletRepository;
   private readonly uuidCreator: UuidGenerator;
 
   constructor(
@@ -27,13 +31,15 @@ export class OrderController {
     this.productRepository = new ProductRepository(this.dataSource);
     this.bundleRepository = new BundleRepository(this.dataSource);
     this.orderRepository = new OrderRepository(this.dataSource);
+    this.customerRepository = new CustomerRepository(this.dataSource);
+    this.walletRepository = new WalletRepository(this.dataSource);
   }
 
   @Post()
   @UseAuth()
   @IsClientOrAdmin()
   async createOrder(@Body() createOrderDto: CreateOrderDto, @GetUser() user: any) {
-    const service = new CreateOrderApplicationService(this.orderRepository, this.productRepository, this.bundleRepository, this.uuidCreator);
+    const service = new CreateOrderApplicationService(this.orderRepository, this.productRepository, this.bundleRepository, this.customerRepository, this.walletRepository, this.uuidCreator);
     createOrderDto.token = user.idCostumer;
     return (await service.execute(createOrderDto)).Value;
   }

@@ -1,12 +1,17 @@
 export interface CreateOrderServiceResponseDto {
   id: string;
-  state: string;
+  state: StateHistoryDto[];
   createdDate: Date;
   totalAmount: number;
   subtotalAmount: number;
   direction: DirectionDto;
   products: ProductBundleDto[];
   bundles: ProductBundleDto[];
+}
+
+export class StateHistoryDto {
+  state: string;
+  date: Date;
 }
 
 export class DirectionDto {
