@@ -1,6 +1,7 @@
 import { UserORMEntity } from 'src/auth/infrastructure/model/orm-user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { WalletORMEntity } from './orm-wallet.entity';
+import { OrderORMEntity } from '../../../order/infrastructure/models/orm-order.entity';
 
 @Entity('Customer')
 export class CustomerORMEntity {
@@ -19,4 +20,7 @@ export class CustomerORMEntity {
   @OneToOne(() => WalletORMEntity, wallet => wallet.id_Wallet, { cascade: true, nullable: false })
   @JoinColumn()
   wallet: WalletORMEntity;
+
+  @OneToMany(() => OrderORMEntity, order => order.customer_Orders, { cascade: true, nullable: false })
+  order: OrderORMEntity[];
 }

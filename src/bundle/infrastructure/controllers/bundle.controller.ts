@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Inject, UploadedFile, UseInterceptors, Get, Param, ValidationPipe, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BundleRepository } from '../repository/bundle.repository';
-import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-generator';
+import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-generator';
 import { DataSource } from 'typeorm';
 import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
 import { CreateBundleDto } from '../dto/create-bundle.dto';

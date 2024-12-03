@@ -19,12 +19,12 @@ export class Order extends AggregateRoot<OrderId> {
   private customerId: CustomerId;
   private state: OrderState;
   private createdDate: OrderCreatedDate;
-  private receiveDate: OrderReceivedDate;
+  private receivedDate: OrderReceivedDate | null;
   private totalAmount: OrderTotalAmount;
   private subtotalAmount: OrderSubtotalAmount;
   private direction: OrderDirection;
-  private courier: OrderCourier;
-  private report: OrderReport;
+  private courier: OrderCourier | null;
+  private report: OrderReport | null;
   private products: OrderProduct[];
   private bundles: OrderBundle[];
 
@@ -40,8 +40,8 @@ export class Order extends AggregateRoot<OrderId> {
     return this.createdDate;
   }
 
-  get ReceiveDate(): OrderReceivedDate {
-    return this.receiveDate;
+  get ReceivedDate(): OrderReceivedDate {
+    return this.receivedDate;
   }
 
   get TotalAmount(): OrderTotalAmount {
@@ -82,8 +82,11 @@ export class Order extends AggregateRoot<OrderId> {
     direction: OrderDirection,
     products: OrderProduct[],
     bundles: OrderBundle[],
+    receivedDate: OrderReceivedDate | null,
+    courier: OrderCourier | null,
+    report: OrderReport | null,
   ) {
-    const orderCreated = OrderCreatedEvent.create(id, customerId, state, createdDate, totalAmount, subtotalAmount, direction, products, bundles);
+    const orderCreated = OrderCreatedEvent.create(id, customerId, state, createdDate, totalAmount, subtotalAmount, direction, products, bundles, receivedDate, courier, report);
     super(id, orderCreated);
   }
 
@@ -103,6 +106,9 @@ export class Order extends AggregateRoot<OrderId> {
       this.direction = event.direction;
       this.products = event.products;
       this.bundles = event.bundles;
+      this.receivedDate = event.receivedDate;
+      this.courier = event.courier;
+      this.report = event.report;
     }
   }
 }

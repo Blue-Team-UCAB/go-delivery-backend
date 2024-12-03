@@ -16,11 +16,11 @@ export class OrderReport implements ValueObject<OrderReport> {
     return this._claimDate.getTime() === obj._claimDate.getTime() && this._claim === obj._claim;
   }
 
-  get claimDate(): Date {
+  get ClaimDate(): Date {
     return this._claimDate;
   }
 
-  get claim(): string {
+  get Claim(): string {
     return this._claim;
   }
 
