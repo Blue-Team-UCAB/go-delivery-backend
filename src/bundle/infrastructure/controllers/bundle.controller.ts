@@ -13,6 +13,7 @@ import { IsClientOrAdmin } from '../../../auth/infrastructure/jwt/decorator/isCl
 import { GetBundleByIdApplicationService } from '../../application/queries/get-bundle-id.application.service';
 import { GetBundlePageDto } from '../dto/get-bundle-page.dto';
 import { GetBundleByPageApplicationService } from 'src/bundle/application/queries/get-bundle-page.application.service';
+import { DateService } from '../../../common/infrastructure/providers/services/date.service';
 
 @ApiTags('Bundles')
 @Controller('bundle')
@@ -25,6 +26,7 @@ export class BundleController {
     @Inject('BaseDeDatos')
     private readonly dataSource: DataSource,
     private readonly s3Service: S3Service,
+    private readonly dateService: DateService,
   ) {
     this.uuidCreator = new UuidGenerator();
     this.productRepository = new ProductRepository(this.dataSource);
@@ -35,7 +37,7 @@ export class BundleController {
   @IsAdmin()
   @UseInterceptors(FileInterceptor('image'))
   async createBundle(@Body() createBundleDto: CreateBundleDto, @UploadedFile() image: Express.Multer.File) {
-    const service = new createBundleApplicationService(this.bundleRepository, this.productRepository, this.uuidCreator, this.s3Service);
+    const service = new createBundleApplicationService(this.bundleRepository, this.productRepository, this.uuidCreator, this.s3Service, this.dateService);
     createBundleDto.imageBuffer = image.buffer;
     createBundleDto.contentType = image.mimetype;
     return (await service.execute(createBundleDto)).Value;
@@ -44,7 +46,7 @@ export class BundleController {
   @Get(':id')
   @IsClientOrAdmin()
   async getBundleId(@Param('id') id: string) {
-    const service = new GetBundleByIdApplicationService(this.bundleRepository, this.s3Service);
+    const service = new GetBundleByIdApplicationService(this.bundleRepository, this.s3Service, this.dateService);
     return (await service.execute({ id: id })).Value;
   }
 
@@ -52,7 +54,7 @@ export class BundleController {
   @IsClientOrAdmin()
   async getBundleByPage(@Query(ValidationPipe) query: GetBundlePageDto) {
     const { page, perpage } = query;
-    const service = new GetBundleByPageApplicationService(this.bundleRepository, this.s3Service);
+    const service = new GetBundleByPageApplicationService(this.bundleRepository, this.s3Service, this.dateService);
     return (await service.execute({ page, perpage })).Value;
   }
 }

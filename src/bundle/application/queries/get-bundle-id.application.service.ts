@@ -8,6 +8,7 @@ import { Bundle } from '../../domain/bundle';
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { BundleProductResponseDto } from '../dto/response/bundle-product-response.dto';
 import { BundleProduct } from '../../domain/entities/bundle-product';
+import { IDateService } from '../../../common/application/date-service/date-service.interface';
 //import { BundleEntity } from '../../domain/entities/bundle';
 
 @Injectable()
@@ -15,6 +16,7 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
   constructor(
     private readonly bundleRepository: IBundleRepository,
     private readonly s3Service: IStorageS3Service,
+    private readonly dateService: IDateService,
   ) {}
 
   async execute(data: GetBundleIdServiceEntryDto): Promise<Result<GetBundleIdServiceResponseDto>> {
@@ -64,7 +66,7 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
       stock: bundleResult.Value.Stock.Stock,
       weight: bundleResult.Value.Weight.Weight,
       imageUrl: imageUrl,
-      caducityDate: bundleResult.Value.CaducityDate.CaducityDate,
+      caducityDate: await this.dateService.toUtcMinus4(bundleResult.Value.CaducityDate.CaducityDate),
       products: products,
       //bundles: bundles,
     };

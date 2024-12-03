@@ -22,6 +22,7 @@ import { ChangeOrderStatusApplicationService } from 'src/order/application/comma
 import { ChangeOrderStatusDto } from '../dto/change-order-status.dto';
 import { EventPublisher } from 'src/common/infrastructure/Event-Publisher/eventPublisher.service';
 import { DomainEventBase } from 'src/common/domain/domain-event';
+import { DateService } from '../../../common/infrastructure/providers/services/date.service';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -33,12 +34,12 @@ export class OrderController {
   private readonly walletRepository: WalletRepository;
   private readonly stripeService: StripeService;
   private readonly uuidCreator: UuidGenerator;
-  private;
 
   constructor(
     @Inject('BaseDeDatos')
     private readonly dataSource: DataSource,
     private readonly s3Service: S3Service,
+    private readonly dateService: DateService,
     private readonly publisher: EventPublisher<DomainEventBase>,
   ) {
     this.uuidCreator = new UuidGenerator();
@@ -63,6 +64,7 @@ export class OrderController {
       this.stripeService,
       this.uuidCreator,
       this.s3Service,
+      this.dateService,
     );
     return (await service.execute({ ...createOrderDto, id_customer: user.idCostumer, id_stripe_customer: user.idStripe })).Value;
   }
@@ -70,7 +72,7 @@ export class OrderController {
   @Get(':id')
   @IsClientOrAdmin()
   async getOrderId(@Param('id') id: string) {
-    const service = new GetOrderByIdApplicationService(this.orderRepository, this.s3Service);
+    const service = new GetOrderByIdApplicationService(this.orderRepository, this.s3Service, this.dateService);
     return (await service.execute({ id: id })).Value;
   }
 
@@ -79,7 +81,7 @@ export class OrderController {
   @IsClientOrAdmin()
   async getOrderPage(@Query(ValidationPipe) query: GetOrderPageDto, @GetUser() user: any) {
     const { page, perpage, status } = query;
-    const service = new GetOrderByPageApplicationService(this.orderRepository);
+    const service = new GetOrderByPageApplicationService(this.orderRepository, this.dateService);
     return (await service.execute({ page, perpage, id_customer: user.idCostumer, status })).Value;
   }
 

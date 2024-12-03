@@ -23,6 +23,7 @@ import { PricableAndWeightable } from 'src/bundle/domain/interfaces/bundle-compo
 import { BundleEntity } from '../../domain/entities/bundle';
 //import { BundleQuantity } from '.././../../bundle/domain/value-objects/bundle-quantity';
 import { BundleProductResponseDto } from '../dto/response/bundle-product-response.dto';
+import { IDateService } from '../../../common/application/date-service/date-service.interface';
 
 @Injectable()
 export class createBundleApplicationService implements IApplicationService<CreateBundleServiceEntryDto, CreateBundleServiceResponseDto> {
@@ -31,6 +32,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
     private readonly productRepository: IProductRepository,
     private readonly idGenerator: IdGenerator<string>,
     private readonly s3Service: IStorageS3Service,
+    private readonly dateService: IDateService,
   ) {}
 
   async execute(data: CreateBundleServiceEntryDto): Promise<Result<CreateBundleServiceResponseDto>> {
@@ -134,7 +136,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
       stock: bundle.Stock.Stock,
       weight: bundle.Weight.Weight,
       imageUrl: imagenUlr,
-      caducityDate: bundle.CaducityDate.CaducityDate,
+      caducityDate: await this.dateService.toUtcMinus4(bundle.CaducityDate.CaducityDate),
       products: products,
     };
 

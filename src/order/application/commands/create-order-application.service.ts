@@ -31,6 +31,7 @@ import { WalletAmount } from '../../../customer/domain/value-objects/wallet-amou
 import { IWalletRepository } from '../../../customer/domain/repositories/wallet-repository.interface';
 import { StripeService } from '../../../common/infrastructure/providers/services/stripe.service';
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
+import { IDateService } from '../../../common/application/date-service/date-service.interface';
 
 export class CreateOrderApplicationService implements IApplicationService<CreateOrderServiceEntryDto, CreateOrderServiceResponseDto> {
   constructor(
@@ -42,6 +43,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     private readonly stripeService: StripeService,
     private readonly idGenerator: IdGenerator<string>,
     private readonly s3Service: IStorageS3Service,
+    private readonly dateService: IDateService,
   ) {}
 
   async execute(data: CreateOrderServiceEntryDto): Promise<Result<CreateOrderServiceResponseDto>> {
@@ -165,13 +167,16 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       }),
     );
 
+    const stateHistory = await Promise.all(
+      order.StateHistory.map(async state => ({
+        state: state.State,
+        date: await this.dateService.toUtcMinus4(state.Date),
+      })),
+    );
+
     const response: CreateOrderServiceResponseDto = {
       id: order.Id.Id,
-      state: order.StateHistory.map(state => ({
-        state: state.State,
-        date: state.Date,
-      })),
-      createdDate: order.CreatedDate.CreatedDate,
+      state: stateHistory,
       totalAmount: order.TotalAmount.Amount,
       subtotalAmount: order.SubtotalAmount.Amount,
       direction: {

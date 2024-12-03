@@ -1,7 +1,6 @@
 export interface GetOrderIdServiceResponseDto {
   id: string;
   state: StateHistoryDto[];
-  createdDate: Date;
   totalAmount: number;
   subtotalAmount: number;
   courier?: CourierDto;

@@ -5,12 +5,14 @@ import { GetOrderIdServiceResponseDto, CourierDto, OrderReportDto, StateHistoryD
 import { IOrderRepository } from '../../domain/repositories/order-repository.interface';
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { Result } from '../../../common/domain/result-handler/result';
+import { IDateService } from '../../../common/application/date-service/date-service.interface';
 
 @Injectable()
 export class GetOrderByIdApplicationService implements IApplicationService<GetOrderIdServiceEntryDto, GetOrderIdServiceResponseDto> {
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly s3Service: IStorageS3Service,
+    private readonly dateService: IDateService,
   ) {}
 
   async execute(data: GetOrderIdServiceEntryDto): Promise<Result<GetOrderIdServiceResponseDto>> {
@@ -48,10 +50,12 @@ export class GetOrderByIdApplicationService implements IApplicationService<GetOr
       }),
     );
 
-    const stateHistory: StateHistoryDto[] = order.StateHistory.map(state => ({
-      state: state.State,
-      date: state.Date,
-    }));
+    const stateHistory = await Promise.all(
+      order.StateHistory.map(async state => ({
+        state: state.State,
+        date: await this.dateService.toUtcMinus4(state.Date),
+      })),
+    );
 
     const courier: CourierDto | null = order.Courier
       ? {
@@ -77,7 +81,6 @@ export class GetOrderByIdApplicationService implements IApplicationService<GetOr
     const response: GetOrderIdServiceResponseDto = {
       id: order.Id.Id,
       state: stateHistory,
-      createdDate: order.CreatedDate.CreatedDate,
       totalAmount: order.TotalAmount.Amount,
       subtotalAmount: order.SubtotalAmount.Amount,
       courier: courier,

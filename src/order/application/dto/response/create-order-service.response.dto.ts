@@ -1,7 +1,6 @@
 export interface CreateOrderServiceResponseDto {
   id: string;
   state: StateHistoryDto[];
-  createdDate: Date;
   totalAmount: number;
   subtotalAmount: number;
   direction: DirectionDto;
