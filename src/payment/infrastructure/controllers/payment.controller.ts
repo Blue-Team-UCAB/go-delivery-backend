@@ -2,13 +2,13 @@ import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-generator';
 import { PaymentCheckPagoMovil } from 'src/common/infrastructure/payment-check/payment-check-pagoMovil';
-import { CostumerRepository } from 'src/costumer/infrastructure/repository/costumer-repository';
+import { CustomerRepository } from 'src/customer/infrastructure/repository/costumer-repository';
 import { CreatePaymentPagoMovilApplicationService } from 'src/payment/application/commands/create-payment-pago-movil.application.service';
 import { DataSource } from 'typeorm';
 import { PaymentRepository } from '../repository/payment-repository';
 import { GetUser } from 'src/auth/infrastructure/jwt/decorator/get-user.decorator';
 import { UseAuth } from 'src/auth/infrastructure/jwt/decorator/useAuth.decorator';
-import { WalletRepository } from 'src/costumer/infrastructure/repository/wallet-repository';
+import { WalletRepository } from 'src/customer/infrastructure/repository/wallet-repository';
 import { PagoMovilEntryDto } from '../dto/payment-pago-movil.entry.dto';
 import { ZelleEntryDto } from '../dto/payment-zelle.entry.dto';
 import { PaymentCheckZelle } from 'src/common/infrastructure/payment-check/payment-check-zelle';
@@ -17,7 +17,7 @@ import { IsClientOrAdmin } from 'src/auth/infrastructure/jwt/decorator/isClientO
 @ApiTags('Payment')
 @Controller('pay')
 export class PaymentController {
-  private readonly costumerRepository: CostumerRepository;
+  private readonly costumerRepository: CustomerRepository;
   private readonly paymentRepository: PaymentRepository;
   private readonly walletRepository: WalletRepository;
 
@@ -27,7 +27,7 @@ export class PaymentController {
     private readonly uuidGenator: UuidGenerator,
     private readonly paymentCheckPagoMovil: PaymentCheckPagoMovil,
   ) {
-    this.costumerRepository = new CostumerRepository(this.dataSource);
+    this.costumerRepository = new CustomerRepository(this.dataSource);
     this.paymentRepository = new PaymentRepository(this.dataSource);
     this.walletRepository = new WalletRepository(this.dataSource);
   }

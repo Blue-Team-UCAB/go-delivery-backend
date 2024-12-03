@@ -3,7 +3,7 @@ import { CreatePaymentEntryDto } from '../dto/entry/create-payment.entry.dto';
 import { CreatePaymentResponseDto } from '../dto/response/create-payment.response.dto';
 import { Result } from 'src/common/domain/result-handler/result';
 import { IPaymentCheck } from 'src/common/application/payment-check/payment-check.interface';
-import { ICostumerRepository } from '../../../costumer/domain/repositories/costumer-repository.interface';
+import { ICustomerRepository } from '../../../customer/domain/repositories/customer-repository.interface';
 import { IPaymentRepository } from 'src/payment/domain/repositories/payment-repository.interface';
 import { Payment } from 'src/payment/domain/payment';
 import { IdGenerator } from 'src/common/application/id-generator/id-generator.interface';
@@ -12,14 +12,14 @@ import { PaymentName } from 'src/payment/domain/value-objects/payment-name';
 import { PaymentDate } from 'src/payment/domain/value-objects/payment-date';
 import { PaymentAmount } from 'src/payment/domain/value-objects/payment-amount';
 import { PaymentReference } from 'src/payment/domain/value-objects/payment-reference';
-import { CostumerId } from 'src/costumer/domain/value-objects/costumer-id';
-import { WalletAmount } from 'src/costumer/domain/value-objects/wallet-amount';
-import { IWalletRepository } from 'src/costumer/domain/repositories/wallet-repository.interface';
+import { CustomerId } from 'src/customer/domain/value-objects/customer-id';
+import { WalletAmount } from 'src/customer/domain/value-objects/wallet-amount';
+import { IWalletRepository } from 'src/customer/domain/repositories/wallet-repository.interface';
 
 export class CreatePaymentPagoMovilApplicationService implements IApplicationService<CreatePaymentEntryDto, CreatePaymentResponseDto> {
   constructor(
     private readonly paymentCheck: IPaymentCheck,
-    private readonly customerRepository: ICostumerRepository,
+    private readonly customerRepository: ICustomerRepository,
     private readonly walletRepository: IWalletRepository,
     private readonly paymentRepository: IPaymentRepository,
     private readonly uuidGenerator: IdGenerator<string>,
@@ -46,7 +46,7 @@ export class CreatePaymentPagoMovilApplicationService implements IApplicationSer
       PaymentDate.create(data.date),
       PaymentAmount.create(checkMoney),
       PaymentReference.create(data.reference),
-      CostumerId.create(data.idCustomer),
+      CustomerId.create(data.idCustomer),
     );
 
     costumer.Value.sumWallet(WalletAmount.create(checkMoney));
