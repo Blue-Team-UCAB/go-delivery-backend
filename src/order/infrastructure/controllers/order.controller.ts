@@ -1,10 +1,10 @@
-import { Body, Controller, Inject, Post, Get, Param } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Get, Param, Query, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BundleRepository } from '../../../bundle/infrastructure/repository/bundle.repository';
 import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-generator';
 import { ProductRepository } from '../../../product/infrastructure/repository/product.repository';
 import { DataSource } from 'typeorm';
-import { CreateOrderApplicationService } from 'src/order/application/commands/create-order-application.service';
+import { CreateOrderApplicationService } from '../../application/commands/create-order-application.service';
 import { CreateOrderDto } from '../dto/create-order-dto';
 import { OrderRepository } from '../repository/order.repository';
 import { IsClientOrAdmin } from '../../../auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
@@ -15,6 +15,8 @@ import { WalletRepository } from '../../../customer/infrastructure/repository/wa
 import { StripeService } from '../../../common/infrastructure/providers/services/stripe.service';
 import { S3Service } from '../../../common/infrastructure/providers/services/s3.service';
 import { GetOrderByIdApplicationService } from '../../application/queries/get-order-id.application.service';
+import { GetOrderPageDto } from '../dto/get-order-page.dto';
+import { GetOrderByPageApplicationService } from '../../application/queries/get-order-page.application.service';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -64,5 +66,14 @@ export class OrderController {
   async getOrderId(@Param('id') id: string) {
     const service = new GetOrderByIdApplicationService(this.orderRepository, this.s3Service);
     return (await service.execute({ id: id })).Value;
+  }
+
+  @Get()
+  @UseAuth()
+  @IsClientOrAdmin()
+  async getOrderPage(@Query(ValidationPipe) query: GetOrderPageDto, @GetUser() user: any) {
+    const { page, perpage, status } = query;
+    const service = new GetOrderByPageApplicationService(this.orderRepository);
+    return (await service.execute({ page, perpage, id_customer: user.idCostumer, status })).Value;
   }
 }

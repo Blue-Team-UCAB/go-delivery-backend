@@ -71,15 +71,13 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
     }
   }
 
-  async findAllOrders(page: number, perpage: number, state?: string): Promise<Result<Order[]>> {
+  async findAllOrders(page: number, perpage: number, idCustomer: string, state?: 'active' | 'past'): Promise<Result<Order[]>> {
     try {
-      const skip = perpage * (page - 1);
+      const skip = perpage * page - perpage;
       const query = this.createQueryBuilder('order')
         .select([
           'order.id_Order',
-          'order.state_Order',
           'order.createdDate_Order',
-          'order.receiveDate_Order',
           'order.totalAmount_Order',
           'order.subtotalAmount_Order',
           'order.direction_Order',
@@ -91,19 +89,43 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
           'courier_Orders.id',
           'courier_Orders.name',
           'courier_Orders.phone',
+          'orderProducts.id',
+          'orderProducts.quantity',
+          'product.id_Product',
+          'product.name_Product',
+          'product.price_Product',
+          'product.weight_Product',
+          'product.image_Product',
+          'orderBundles.id',
+          'orderBundles.quantity',
+          'bundle.id',
+          'bundle.name',
+          'bundle.price',
+          'bundle.weight',
+          'bundle.imageUrl',
+          'orderStateHistory.id',
+          'orderStateHistory.state',
+          'orderStateHistory.date',
         ])
         .leftJoinAndSelect('order.customer_Orders', 'customer_Orders')
         .leftJoinAndSelect('order.courier_Orders', 'courier_Orders')
+        .leftJoinAndSelect('order.order_Products', 'orderProducts')
+        .leftJoinAndSelect('orderProducts.product', 'product')
+        .leftJoinAndSelect('order.order_Bundles', 'orderBundles')
+        .leftJoinAndSelect('orderBundles.bundle', 'bundle')
+        .leftJoinAndSelect('order.order_StateHistory', 'orderStateHistory')
+        .where('customer_Orders.id_Costumer = :idCustomer', { idCustomer })
         .skip(skip)
         .take(perpage);
 
-      if (state) {
-        query.andWhere('order.state_Order = :state', { state });
+      if (state === 'active') {
+        query.andWhere('orderStateHistory.state NOT IN (:...states)', { states: ['DELIVERED', 'CANCELLED'] });
+      } else if (state === 'past') {
+        query.andWhere('orderStateHistory.state IN (:...states)', { states: ['DELIVERED', 'CANCELLED'] });
       }
 
       const orders = await query.getMany();
-
-      const resp = await Promise.all(orders.map(order => this.orderMapper.fromPersistenceToDomain(order, false)));
+      const resp = await Promise.all(orders.map(order => this.orderMapper.fromPersistenceToDomain(order, true)));
       return Result.success<Order[]>(resp, 200);
     } catch (e) {
       return Result.fail(null, 500, e.message);
