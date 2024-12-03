@@ -26,10 +26,21 @@ import { HttpModule } from '@nestjs/axios';
 import { ApiBCV } from './common/infrastructure/providers/services/payment-banco-central.api.service';
 import { PaymentCheckPagoMovil } from './common/infrastructure/payment-check/payment-check-pagoMovil';
 import { OrderController } from './order/infrastructure/controllers/order.controller';
+import { OrderStatusChangeCosumerService } from './order/infrastructure/event-listener/change-order-status.service';
 
 @Module({
   imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule, HttpModule],
-  controllers: [OrderController, ProductController, BundleController, CategoryController, AppController, AuthController, CreateProductConsumerService, PaymentController],
+  controllers: [
+    OrderController,
+    ProductController,
+    BundleController,
+    CategoryController,
+    AppController,
+    AuthController,
+    CreateProductConsumerService,
+    PaymentController,
+    OrderStatusChangeCosumerService,
+  ],
   providers: [
     ...ormDatabaseProviders,
     ...s3Provider,

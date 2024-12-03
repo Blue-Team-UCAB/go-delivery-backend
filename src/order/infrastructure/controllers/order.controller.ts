@@ -17,6 +17,11 @@ import { S3Service } from '../../../common/infrastructure/providers/services/s3.
 import { GetOrderByIdApplicationService } from '../../application/queries/get-order-id.application.service';
 import { GetOrderPageDto } from '../dto/get-order-page.dto';
 import { GetOrderByPageApplicationService } from '../../application/queries/get-order-page.application.service';
+import { IsAdmin } from 'src/auth/infrastructure/jwt/decorator/isAdmin.decorator';
+import { ChangeOrderStatusApplicationService } from 'src/order/application/commands/chage-order-status.application.service';
+import { ChangeOrderStatusDto } from '../dto/change-order-status.dto';
+import { EventPublisher } from 'src/common/infrastructure/Event-Publisher/eventPublisher.service';
+import { DomainEventBase } from 'src/common/domain/domain-event';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -34,6 +39,7 @@ export class OrderController {
     @Inject('BaseDeDatos')
     private readonly dataSource: DataSource,
     private readonly s3Service: S3Service,
+    private readonly publisher: EventPublisher<DomainEventBase>,
   ) {
     this.uuidCreator = new UuidGenerator();
     this.productRepository = new ProductRepository(this.dataSource);
@@ -75,5 +81,13 @@ export class OrderController {
     const { page, perpage, status } = query;
     const service = new GetOrderByPageApplicationService(this.orderRepository);
     return (await service.execute({ page, perpage, id_customer: user.idCostumer, status })).Value;
+  }
+
+  @Post('change-status')
+  @IsAdmin()
+  @UseAuth()
+  async changeOrderStatus(@Body() data: ChangeOrderStatusDto, @GetUser() user: any) {
+    const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher);
+    return await service.execute({ ...data, linkedDivices: user.linkedDivices });
   }
 }
