@@ -21,6 +21,7 @@ import { GetUser } from '../jwt/decorator/get-user.decorator';
 import { CustomerRepository } from 'src/customer/infrastructure/repository/costumer-repository';
 import { AuthCurrentApplicationService } from 'src/auth/application/services/auth-current-user.application.service';
 import { WalletRepository } from 'src/customer/infrastructure/repository/wallet-repository';
+import { StripeService } from 'src/common/infrastructure/providers/services/stripe.service';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -29,6 +30,7 @@ export class AuthController {
   private readonly jwtGenerator: JwtGenerator;
   private readonly costumerRepository: CustomerRepository;
   private readonly walletRepository: WalletRepository;
+  private readonly stripe: StripeService;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -44,12 +46,12 @@ export class AuthController {
     this.jwtGenerator = new JwtGenerator(this.jwtService);
     this.costumerRepository = new CustomerRepository(this.dataSource);
     this.walletRepository = new WalletRepository(this.dataSource);
+    this.stripe = new StripeService();
   }
 
   @Post('register')
   async create(@Body() createUser: SignUpUserDto) {
-    const service = new AuthCreateUserApplicationService(this.userRepository, this.uuidGenator, this.sha256Service, this.jwtGenerator, this.costumerRepository, this.walletRepository);
-
+    const service = new AuthCreateUserApplicationService(this.userRepository, this.uuidGenator, this.sha256Service, this.jwtGenerator, this.costumerRepository, this.walletRepository, this.stripe);
     return await service.execute(createUser);
   }
 

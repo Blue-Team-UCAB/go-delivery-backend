@@ -16,6 +16,7 @@ import { WalletId } from 'src/customer/domain/value-objects/wallet-id';
 import { WalletAmount } from 'src/customer/domain/value-objects/wallet-amount';
 import { WalletCurrency } from 'src/customer/domain/value-objects/wallet-currency';
 import { IWalletRepository } from 'src/customer/domain/repositories/wallet-repository.interface';
+import { IStripeService } from 'src/common/application/stripe-service/stripe-service.interface';
 
 export class AuthCreateUserApplicationService implements IApplicationService<ISignUpEntryApplication, ISignUpResponseApplication> {
   constructor(
@@ -25,6 +26,7 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
     private readonly jwtGenerator: IJwtGenerator,
     private readonly costumerRepository: ICustomerRepository,
     private readonly walletRepository: IWalletRepository,
+    private readonly stripeService: IStripeService,
   ) {}
 
   async execute(data: ISignUpEntryApplication): Promise<Result<ISignUpResponseApplication>> {
@@ -57,6 +59,7 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
       passwordUser: hashpassword,
       roleUser: 'CLIENT',
       costumerId: costumerCreate.Value.Id.Id,
+      stripeId: await this.stripeService.saveUser(costumerCreate.Value.Id.Id, emailLower),
     } satisfies User;
 
     const createUser = await this.userRepository.saveUser(user);
