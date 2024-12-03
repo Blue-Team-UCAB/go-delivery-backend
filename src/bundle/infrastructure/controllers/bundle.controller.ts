@@ -40,14 +40,14 @@ export class BundleController {
     const service = new createBundleApplicationService(this.bundleRepository, this.productRepository, this.uuidCreator, this.s3Service, this.dateService);
     createBundleDto.imageBuffer = image.buffer;
     createBundleDto.contentType = image.mimetype;
-    return (await service.execute(createBundleDto)).Value;
+    return await service.execute(createBundleDto);
   }
 
   @Get(':id')
   @IsClientOrAdmin()
   async getBundleId(@Param('id') id: string) {
     const service = new GetBundleByIdApplicationService(this.bundleRepository, this.s3Service, this.dateService);
-    return (await service.execute({ id: id })).Value;
+    return await service.execute({ id: id });
   }
 
   @Get()
@@ -55,6 +55,6 @@ export class BundleController {
   async getBundleByPage(@Query(ValidationPipe) query: GetBundlePageDto) {
     const { page, perpage } = query;
     const service = new GetBundleByPageApplicationService(this.bundleRepository, this.s3Service, this.dateService);
-    return (await service.execute({ page, perpage })).Value;
+    return await service.execute({ page, perpage });
   }
 }

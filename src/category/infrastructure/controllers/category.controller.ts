@@ -34,7 +34,7 @@ export class CategoryController {
     const service = new CreateCategoryApplicationService(this.categoryRepository, this.uuidCreator, this.s3Service);
     createCategoryDto.imageBuffer = image.buffer;
     createCategoryDto.contentType = image.mimetype;
-    return (await service.execute(createCategoryDto)).Value;
+    return await service.execute(createCategoryDto);
   }
 
   @Get()
@@ -42,6 +42,6 @@ export class CategoryController {
   async getCategoryByPage(@Query(ValidationPipe) query: GetCategoryPageDto) {
     const { page, perpage } = query;
     const service = new GetCategoryByPageApplicationService(this.categoryRepository, this.s3Service);
-    return (await service.execute({ page, perpage })).Value;
+    return await service.execute({ page, perpage });
   }
 }
