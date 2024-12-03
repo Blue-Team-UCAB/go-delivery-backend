@@ -56,9 +56,7 @@ export class OrderController {
       this.uuidCreator,
       this.s3Service,
     );
-    createOrderDto.id_customer = user.idCostumer;
-    createOrderDto.id_stripe_customer = user.idStripe;
-    return (await service.execute(createOrderDto)).Value;
+    return (await service.execute({ ...createOrderDto, id_customer: user.idCostumer, id_stripe_customer: user.idStripe })).Value;
   }
 
   @Get(':id')
