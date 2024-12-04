@@ -6,6 +6,7 @@ import { OrderMapper } from '../mappers/order.mapper';
 import { Result } from '../../../common/domain/result-handler/result';
 import { Order } from '../../domain/order';
 import { OrderStateHistoryORMEntity } from '../models/orm-order-state.entity';
+import { OrderCourierORMEntity } from '../models/orm-order-courier.entity';
 
 @Injectable()
 export class OrderRepository extends Repository<OrderORMEntity> implements IOrderRepository {
@@ -143,7 +144,7 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
     }
   }
 
-  async updateOrderStatus(id: string, status: string, date: Date): Promise<Result<boolean>> {
+  async updateOrderStatus(id: string, status: string, date: Date, courierAsign: string | null): Promise<Result<boolean>> {
     try {
       const order = await this.findOne({ where: { id_Order: id }, relations: ['order_StateHistory'] });
 
@@ -155,6 +156,10 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
 
       if (existingState) {
         return Result.fail<boolean>(null, 400, 'El estado ya existe');
+      }
+
+      if (courierAsign) {
+        order.courier_Orders = { id: courierAsign } as OrderCourierORMEntity;
       }
       const newStateHistory = new OrderStateHistoryORMEntity();
 

@@ -7,11 +7,16 @@ import { IOrderRepository } from 'src/order/domain/repositories/order-repository
 import { DomainEventBase } from 'src/common/domain/domain-event';
 import { IPublisher } from 'src/common/application/events/eventPublisher.interface';
 import { ORDER_STATUS_CHANGE_EVENT } from '../../domain/events/order-status-change.event';
+import { ICourierRepository } from '../repositories/courier-repository.interface';
+import { OrderCourierId } from 'src/order/domain/value-objects/order-courier.id';
+import { OrderCourierPhone } from 'src/order/domain/value-objects/order-courier-phone';
+import { OrderCourierName } from 'src/order/domain/value-objects/order-courier-name';
 
 export class ChangeOrderStatusApplicationService implements IApplicationService<ChangeOrderStatusEntryDto, ChangeOrderStatuResponseDto> {
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly publisher: IPublisher<DomainEventBase>,
+    private readonly courierRepository: ICourierRepository,
   ) {}
 
   async execute(data: ChangeOrderStatusEntryDto): Promise<Result<ChangeOrderStatuResponseDto>> {
@@ -27,9 +32,22 @@ export class ChangeOrderStatusApplicationService implements IApplicationService<
 
     const order = orderResult.Value;
     const newStatus = OrderState.create(OrderStates[data.status], new Date());
+
     order.changeStatus(newStatus);
 
-    const update = await this.orderRepository.updateOrderStatus(order.Id.Id, newStatus.State, newStatus.Date);
+    let randomCourier = null;
+
+    if (data.status === OrderStates.SHIPPED) {
+      const courier = await this.courierRepository.findAllCourier();
+      if (!courier.isSuccess()) {
+        return Result.fail<ChangeOrderStatuResponseDto>(null, courier.StatusCode, courier.Message);
+      }
+      const random = Math.floor(Math.random() * courier.Value.length);
+      randomCourier = courier.Value[random];
+      order.assignCourier(OrderCourierId.create(randomCourier.id), OrderCourierName.create(randomCourier.name), OrderCourierPhone.create(randomCourier.phone));
+    }
+
+    const update = await this.orderRepository.updateOrderStatus(order.Id.Id, newStatus.State, newStatus.Date, randomCourier ? randomCourier.id : null);
     if (!update.isSuccess()) {
       return Result.fail<ChangeOrderStatuResponseDto>(null, update.StatusCode, update.Message);
     }

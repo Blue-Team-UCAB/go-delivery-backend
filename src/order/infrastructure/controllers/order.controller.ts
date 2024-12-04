@@ -23,6 +23,7 @@ import { ChangeOrderStatusDto } from '../dto/change-order-status.dto';
 import { EventPublisher } from 'src/common/infrastructure/Event-Publisher/eventPublisher.service';
 import { DomainEventBase } from 'src/common/domain/domain-event';
 import { DateService } from '../../../common/infrastructure/providers/services/date.service';
+import { CourierRepository } from '../repository/courier.repository';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -34,6 +35,7 @@ export class OrderController {
   private readonly walletRepository: WalletRepository;
   private readonly stripeService: StripeService;
   private readonly uuidCreator: UuidGenerator;
+  private readonly courierRepository: CourierRepository;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -49,6 +51,7 @@ export class OrderController {
     this.customerRepository = new CustomerRepository(this.dataSource);
     this.walletRepository = new WalletRepository(this.dataSource);
     this.stripeService = new StripeService();
+    this.courierRepository = new CourierRepository(this.dataSource);
   }
 
   @Post()
@@ -89,7 +92,7 @@ export class OrderController {
   @IsAdmin()
   @UseAuth()
   async changeOrderStatus(@Body() data: ChangeOrderStatusDto, @GetUser() user: any) {
-    const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher);
+    const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher, this.courierRepository);
     return await service.execute({ ...data, linkedDivices: user.linkedDivices });
   }
 }
