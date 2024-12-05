@@ -15,6 +15,7 @@ import { PaymentCheckZelle } from 'src/common/infrastructure/payment-check/payme
 import { IsClientOrAdmin } from 'src/auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
 import { StripeService } from 'src/common/infrastructure/providers/services/stripe.service';
 import { PaymentRegisterStripeEntryDto } from '../dto/payment-register-stripe.entry.dto';
+import { GetWalletAmountApplicationService } from 'src/payment/application/response/get-wallet-amount.application.service';
 
 @ApiTags('Payment')
 @Controller('pay')
@@ -64,5 +65,13 @@ export class PaymentController {
   @UseAuth()
   async getCards(@GetUser() user: any) {
     return await this.stripe.getCards(user.idStripe);
+  }
+
+  @Get('wallet-amount')
+  @IsClientOrAdmin()
+  @UseAuth()
+  async getWalletAmount(@GetUser() user: any) {
+    const service = new GetWalletAmountApplicationService(this.walletRepository, this.costumerRepository);
+    return await service.execute({ idCustomer: user.idCostumer });
   }
 }
