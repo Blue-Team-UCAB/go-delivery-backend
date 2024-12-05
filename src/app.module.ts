@@ -28,6 +28,7 @@ import { PaymentCheckPagoMovil } from './common/infrastructure/payment-check/pay
 import { OrderController } from './order/infrastructure/controllers/order.controller';
 import { OrderStatusChangeCosumerService } from './order/infrastructure/event-listener/change-order-status.service';
 import { CouponController } from './coupon/infrastructure/controllers/coupon.controller';
+import { FirebaseNotifierService } from './common/infrastructure/providers/services/push.notification.service';
 
 @Module({
   imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule, HttpModule],
@@ -59,6 +60,7 @@ import { CouponController } from './coupon/infrastructure/controllers/coupon.con
     CodeVerificationService,
     ApiBCV,
     PaymentCheckPagoMovil,
+    FirebaseNotifierService,
   ],
 })
 export class AppModule {}

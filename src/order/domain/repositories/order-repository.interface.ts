@@ -5,5 +5,5 @@ export interface IOrderRepository {
   findOrderById(id: string): Promise<Result<Order>>;
   findAllOrders(page: number, perpage: number, idCustomer: string, state?: 'active' | 'past'): Promise<Result<Order[]>>;
   saveOrderAggregate(order: Order): Promise<Result<Order>>;
-  updateOrderStatus(id: string, status: string, date: Date): Promise<Result<boolean>>;
+  updateOrderStatus(id: string, status: string, date: Date, courier: string | null): Promise<Result<boolean>>;
 }

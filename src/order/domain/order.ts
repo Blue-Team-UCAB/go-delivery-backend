@@ -14,6 +14,9 @@ import { OrderTotalAmount } from './value-objects/order-total-amount';
 import { OrderId } from './value-objects/order.id';
 import { CustomerId } from '../../customer/domain/value-objects/customer-id';
 import { OrderStatusChangeEvent } from './events/order-status-change.event';
+import { OrderCourierId } from './value-objects/order-courier.id';
+import { OrderCourierName } from './value-objects/order-courier-name';
+import { OrderCourierPhone } from './value-objects/order-courier-phone';
 
 export class Order extends AggregateRoot<OrderId> {
   private customerId: CustomerId;
@@ -110,5 +113,9 @@ export class Order extends AggregateRoot<OrderId> {
   public changeStatus(state: OrderState): void {
     const lastState = OrderStatusChangeEvent.create(this.Id, state);
     this.apply(lastState);
+  }
+
+  public assignCourier(id: OrderCourierId, name: OrderCourierName, phone: OrderCourierPhone): void {
+    this.courier = new OrderCourier(id, name, phone);
   }
 }
