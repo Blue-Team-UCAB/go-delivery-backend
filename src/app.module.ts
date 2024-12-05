@@ -27,10 +27,12 @@ import { ApiBCV } from './common/infrastructure/providers/services/payment-banco
 import { PaymentCheckPagoMovil } from './common/infrastructure/payment-check/payment-check-pagoMovil';
 import { OrderController } from './order/infrastructure/controllers/order.controller';
 import { OrderStatusChangeCosumerService } from './order/infrastructure/event-listener/change-order-status.service';
+import { CouponController } from './coupon/infrastructure/controllers/coupon.controller';
 
 @Module({
   imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule, HttpModule],
   controllers: [
+    CouponController,
     OrderController,
     ProductController,
     BundleController,

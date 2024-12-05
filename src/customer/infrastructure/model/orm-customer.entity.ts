@@ -2,7 +2,6 @@ import { UserORMEntity } from 'src/auth/infrastructure/model/orm-user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { WalletORMEntity } from './orm-wallet.entity';
 import { OrderORMEntity } from '../../../order/infrastructure/models/orm-order.entity';
-import { CustomerCouponORMEntity } from '../../../coupon/infrastructure/models/orm-coupon-customer.entity';
 
 @Entity('Customer')
 export class CustomerORMEntity {
@@ -24,7 +23,4 @@ export class CustomerORMEntity {
 
   @OneToMany(() => OrderORMEntity, order => order.customer_Orders, { cascade: true, nullable: false })
   order: OrderORMEntity[];
-
-  @OneToMany(() => CustomerCouponORMEntity, customerCoupon => customerCoupon.customer)
-  customerCoupons: CustomerCouponORMEntity[];
 }

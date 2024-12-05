@@ -9,9 +9,6 @@ export class CouponStartDate implements ValueObject<CouponStartDate> {
     if (isNaN(date.getTime())) {
       throw new InvalidCouponStartDateException(`Start date ${startDate} is not valid`);
     }
-    if (date < new Date(Date.now())) {
-      throw new InvalidCouponStartDateException(`Start date ${startDate} cannot be before the current date`);
-    }
     this._startDate = startDate;
   }
 

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { CustomerCouponORMEntity } from './orm-coupon-customer.entity';
+import { OrderORMEntity } from '../../../order/infrastructure/models/orm-order.entity';
 
 @Entity('Coupon')
 export class CouponORMEntity {
@@ -27,6 +27,6 @@ export class CouponORMEntity {
   @Column('int')
   numberUses: number;
 
-  @OneToMany(() => CustomerCouponORMEntity, customerCoupon => customerCoupon.coupon)
-  customerCoupons: CustomerCouponORMEntity[];
+  @OneToMany(() => OrderORMEntity, order => order.coupon)
+  orders: OrderORMEntity[];
 }

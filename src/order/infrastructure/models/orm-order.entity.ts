@@ -4,6 +4,7 @@ import { OrderProductORMEntity } from './orm-order-product.entity';
 import { OrderBundleORMEntity } from './orm-order-bundle.entity';
 import { OrderCourierORMEntity } from './orm-order-courier.entity';
 import { OrderStateHistoryORMEntity } from './orm-order-state.entity';
+import { CouponORMEntity } from '../../../coupon/infrastructure/models/orm-coupon.entity';
 
 @Entity('Order')
 export class OrderORMEntity {
@@ -40,6 +41,10 @@ export class OrderORMEntity {
   @ManyToOne(() => OrderCourierORMEntity, courier => courier.orders, { nullable: true })
   @JoinColumn()
   courier_Orders: OrderCourierORMEntity;
+
+  @ManyToOne(() => CouponORMEntity, coupon => coupon.orders, { nullable: true })
+  @JoinColumn()
+  coupon: CouponORMEntity;
 
   @OneToMany(() => OrderProductORMEntity, orderProduct => orderProduct.order, { cascade: true })
   order_Products: OrderProductORMEntity[];
