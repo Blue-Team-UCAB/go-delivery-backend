@@ -120,14 +120,47 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
         .skip(skip)
         .take(perpage);
 
-      if (state === 'active') {
-        query.andWhere('orderStateHistory.state NOT IN (:...states)', { states: ['DELIVERED', 'CANCELLED'] });
-      } else if (state === 'past') {
-        query.andWhere('orderStateHistory.state IN (:...states)', { states: ['DELIVERED', 'CANCELLED'] });
-      }
-
       const orders = await query.getMany();
-      const resp = await Promise.all(orders.map(order => this.orderMapper.fromPersistenceToDomain(order, true)));
+
+      const filteredOrders = orders.map(order => {
+        const lastState = order.order_StateHistory?.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+        if (!lastState) return null;
+
+        const isActive = lastState.state !== 'CANCELLED' && lastState.state !== 'DELIVERED';
+        const isPast = lastState.state === 'CANCELLED' || lastState.state === 'DELIVERED';
+
+        if (!state || (state === 'active' && isActive) || (state === 'past' && isPast)) {
+          return {
+            ...order,
+            order_StateHistory: [
+              {
+                id: lastState.id,
+                state: lastState.state,
+                date: lastState.date,
+              },
+            ],
+          };
+        }
+        return null;
+      });
+
+      const finalOrders = filteredOrders.filter(order => order !== null);
+
+      const resp = await Promise.all(
+        finalOrders.map(async order => {
+          const orderStateHistory = order.order_StateHistory.map(state => {
+            const stateHistory = new OrderStateHistoryORMEntity();
+            stateHistory.id = state.id;
+            stateHistory.state = state.state;
+            stateHistory.date = state.date;
+            stateHistory.order = order as OrderORMEntity;
+            return stateHistory;
+          });
+          return this.orderMapper.fromPersistenceToDomain({ ...order, order_StateHistory: orderStateHistory }, true);
+        }),
+      );
+
       return Result.success<Order[]>(resp, 200);
     } catch (e) {
       return Result.fail(null, 500, e.message);
