@@ -32,6 +32,9 @@ import { IWalletRepository } from '../../../customer/domain/repositories/wallet-
 import { StripeService } from '../../../common/infrastructure/providers/services/stripe.service';
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { IDateService } from '../../../common/application/date-service/date-service.interface';
+import { ICouponRepository } from '../../../coupon/domain/repositories/coupon-repository.interface';
+import { Coupon } from '../../../coupon/domain/coupon';
+import { CouponId } from '../../../coupon/domain/value-objects/coupon.id';
 
 export class CreateOrderApplicationService implements IApplicationService<CreateOrderServiceEntryDto, CreateOrderServiceResponseDto> {
   constructor(
@@ -40,6 +43,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     private readonly bundleRepository: IBundleRepository,
     private readonly customerRepository: ICustomerRepository,
     private readonly walletRepository: IWalletRepository,
+    private readonly couponRepository: ICouponRepository,
     private readonly stripeService: StripeService,
     private readonly idGenerator: IdGenerator<string>,
     private readonly s3Service: IStorageS3Service,
@@ -85,7 +89,17 @@ export class CreateOrderApplicationService implements IApplicationService<Create
 
     const subtotalAmount =
       orderProducts.reduce((sum, product) => sum + product.Price.Price * product.Quantity.Quantity, 0) + orderBundles.reduce((sum, bundle) => sum + bundle.Price.Price * bundle.Quantity.Quantity, 0);
-    const totalAmount = subtotalAmount; //todo Aqui hay que agregar los cupones o descuentos
+    let totalAmount = subtotalAmount;
+    let coupon: Coupon | null = null;
+
+    if (data.id_coupon) {
+      const couponResult = await this.couponRepository.findCouponById(data.id_coupon);
+      if (!couponResult.isSuccess) {
+        return Result.fail<CreateOrderServiceResponseDto>(couponResult.Error, couponResult.StatusCode, couponResult.Message);
+      }
+      coupon = couponResult.Value;
+      totalAmount = subtotalAmount - (subtotalAmount * coupon.Porcentage.Porcentage) / 100;
+    }
 
     const dataOrder = {
       customerId: CustomerId.create(data.id_customer),
@@ -110,6 +124,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       dataOrder.bundles,
       null,
       null,
+      coupon ? CouponId.create(coupon.Id.Id) : null,
     );
 
     const regex = new RegExp('^pm_[a-zA-Z0-9]{24}$');

@@ -28,6 +28,7 @@ import { OrderCourier } from '../../domain/entities/order-courier';
 import { OrderCourierName } from '../../domain/value-objects/order-courier-name';
 import { OrderCourierPhone } from '../../domain/value-objects/order-courier-phone';
 import { OrderStateHistoryORMEntity } from '../models/orm-order-state.entity';
+import { CouponId } from '../../../coupon/domain/value-objects/coupon.id';
 
 export class OrderMapper implements IMapper<Order, OrderORMEntity> {
   async fromDomainToPersistence(domain: Order): Promise<OrderORMEntity> {
@@ -43,6 +44,7 @@ export class OrderMapper implements IMapper<Order, OrderORMEntity> {
     orderORM.claim_Order = domain.Report?.Claim || null;
     orderORM.customer_Orders = { id_Costumer: domain.CustomerId.Id } as any;
     orderORM.courier_Orders = domain.Courier ? ({ id: domain.Courier.Id.Id } as any) : null;
+    orderORM.coupon = domain.CouponId ? ({ id: domain.CouponId.Id } as any) : null;
     orderORM.order_Products = domain.Products.map(product => {
       const productORM = new OrderProductORMEntity();
       productORM.product = { id_Product: product.Id.Id } as any;
@@ -117,6 +119,7 @@ export class OrderMapper implements IMapper<Order, OrderORMEntity> {
       bundles,
       courier,
       persistence.claimDate_Order ? OrderReport.create(persistence.claimDate_Order, persistence.claim_Order) : null,
+      persistence.coupon ? CouponId.create(persistence.coupon.id) : null,
     );
     return order;
   }

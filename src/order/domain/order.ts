@@ -17,6 +17,7 @@ import { OrderStatusChangeEvent } from './events/order-status-change.event';
 import { OrderCourierId } from './value-objects/order-courier.id';
 import { OrderCourierName } from './value-objects/order-courier-name';
 import { OrderCourierPhone } from './value-objects/order-courier-phone';
+import { CouponId } from 'src/coupon/domain/value-objects/coupon.id';
 
 export class Order extends AggregateRoot<OrderId> {
   private customerId: CustomerId;
@@ -27,6 +28,7 @@ export class Order extends AggregateRoot<OrderId> {
   private direction: OrderDirection;
   private courier: OrderCourier | null;
   private report: OrderReport | null;
+  private couponId: CouponId | null;
   private products: OrderProduct[];
   private bundles: OrderBundle[];
 
@@ -62,6 +64,10 @@ export class Order extends AggregateRoot<OrderId> {
     return this.report;
   }
 
+  get CouponId(): CouponId {
+    return this.couponId;
+  }
+
   get Products(): OrderProduct[] {
     return this.products;
   }
@@ -82,8 +88,9 @@ export class Order extends AggregateRoot<OrderId> {
     bundles: OrderBundle[],
     courier: OrderCourier | null,
     report: OrderReport | null,
+    couponId: CouponId | null,
   ) {
-    const orderCreated = OrderCreatedEvent.create(id, customerId, stateHistory, createdDate, totalAmount, subtotalAmount, direction, products, bundles, courier, report);
+    const orderCreated = OrderCreatedEvent.create(id, customerId, stateHistory, createdDate, totalAmount, subtotalAmount, direction, products, bundles, courier, report, couponId);
     super(id, orderCreated);
   }
 
@@ -105,6 +112,7 @@ export class Order extends AggregateRoot<OrderId> {
       this.bundles = event.bundles;
       this.courier = event.courier;
       this.report = event.report;
+      this.couponId = event.couponId;
     } else if (event instanceof OrderStatusChangeEvent) {
       this.stateHistory.push(event.state);
     }

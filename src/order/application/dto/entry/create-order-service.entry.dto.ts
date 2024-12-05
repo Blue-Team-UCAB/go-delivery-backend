@@ -5,6 +5,7 @@ export interface CreateOrderServiceEntryDto {
   id_customer: string;
   token_stripe?: string;
   id_stripe_customer?: string;
+  id_coupon?: string;
   products: ProductBundleDto[];
   bundles?: ProductBundleDto[];
 }

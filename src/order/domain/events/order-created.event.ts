@@ -10,6 +10,7 @@ import { OrderTotalAmount } from '../value-objects/order-total-amount';
 import { OrderId } from '../value-objects/order.id';
 import { OrderCourier } from '../entities/order-courier';
 import { OrderReport } from '../value-objects/order-report';
+import { CouponId } from '../../../coupon/domain/value-objects/coupon.id';
 
 export class OrderCreatedEvent extends DomainEvent {
   protected constructor(
@@ -24,6 +25,7 @@ export class OrderCreatedEvent extends DomainEvent {
     public bundles: OrderBundle[],
     public courier: OrderCourier | null,
     public report: OrderReport | null,
+    public couponId: CouponId | null,
   ) {
     super();
   }
@@ -40,7 +42,8 @@ export class OrderCreatedEvent extends DomainEvent {
     bundles: OrderBundle[],
     courier: OrderCourier | null,
     report: OrderReport | null,
+    couponId: CouponId | null,
   ): OrderCreatedEvent {
-    return new OrderCreatedEvent(id, customerId, stateHistory, createdDate, totalAmount, subtotalAmount, direction, products, bundles, courier, report);
+    return new OrderCreatedEvent(id, customerId, stateHistory, createdDate, totalAmount, subtotalAmount, direction, products, bundles, courier, report, couponId);
   }
 }

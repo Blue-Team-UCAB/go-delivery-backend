@@ -16,6 +16,10 @@ export class CreateOrderDto {
   @IsString()
   token_stripe: string;
 
+  @IsOptional()
+  @IsString()
+  id_coupon: string;
+
   @IsArray()
   @ArrayNotEmpty()
   @ArrayMinSize(1)

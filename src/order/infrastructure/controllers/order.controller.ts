@@ -24,6 +24,7 @@ import { EventPublisher } from 'src/common/infrastructure/Event-Publisher/eventP
 import { DomainEventBase } from 'src/common/domain/domain-event';
 import { DateService } from '../../../common/infrastructure/providers/services/date.service';
 import { CourierRepository } from '../repository/courier.repository';
+import { CouponRepository } from '../../../coupon/infrastructure/repository/coupon.repository';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -36,6 +37,7 @@ export class OrderController {
   private readonly stripeService: StripeService;
   private readonly uuidCreator: UuidGenerator;
   private readonly courierRepository: CourierRepository;
+  private readonly couponRepository: CouponRepository;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -52,6 +54,7 @@ export class OrderController {
     this.walletRepository = new WalletRepository(this.dataSource);
     this.stripeService = new StripeService();
     this.courierRepository = new CourierRepository(this.dataSource);
+    this.couponRepository = new CouponRepository(this.dataSource);
   }
 
   @Post()
@@ -64,6 +67,7 @@ export class OrderController {
       this.bundleRepository,
       this.customerRepository,
       this.walletRepository,
+      this.couponRepository,
       this.stripeService,
       this.uuidCreator,
       this.s3Service,
