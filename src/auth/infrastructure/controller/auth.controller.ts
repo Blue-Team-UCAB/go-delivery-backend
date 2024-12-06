@@ -22,6 +22,10 @@ import { CustomerRepository } from 'src/customer/infrastructure/repository/costu
 import { AuthCurrentApplicationService } from 'src/auth/application/services/auth-current-user.application.service';
 import { WalletRepository } from 'src/customer/infrastructure/repository/wallet-repository';
 import { StripeService } from 'src/common/infrastructure/providers/services/stripe.service';
+import { IsClientOrAdmin } from '../jwt/decorator/isClientOrAdmin.decorator';
+import { PushTokenDto } from '../dto/push-token.dto';
+import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
+import { AuthPushTokenUserApplicationService } from 'src/auth/application/services/auth-push-token.user.application.service';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -75,8 +79,16 @@ export class AuthController {
 
   @Get('current')
   @UseAuth()
-  async current(@GetUser() user: any) {
+  async current(@GetUser() user: AuthInterface) {
     const service = new AuthCurrentApplicationService(this.costumerRepository);
     return await service.execute({ idCostumer: user.idCostumer, id: user.idUser, role: user.roleUser, email: user.emailUser });
+  }
+
+  @Post('push-token')
+  @UseAuth()
+  @IsClientOrAdmin()
+  async pushToken(@GetUser() user: AuthInterface, @Body() data: PushTokenDto) {
+    const service = new AuthPushTokenUserApplicationService(this.userRepository);
+    return await service.execute({ ...data, idUser: user.idUser });
   }
 }

@@ -14,6 +14,7 @@ export class UserMapper implements IMapper<User, UserORMEntity> {
     user.costumer = { id_Costumer: domain.costumerId } as CustomerORMEntity;
     user.expirationCodeDate = domain.expirationCodeDate;
     user.verification_Code = domain.verificationCode;
+    user.linkedDivices = domain.linkedDivices;
     return user;
   }
 
@@ -27,6 +28,7 @@ export class UserMapper implements IMapper<User, UserORMEntity> {
       verificationCode: persistence.verification_Code,
       costumerId: persistence.costumer.id_Costumer,
       stripeId: persistence.stripeId,
+      linkedDivices: persistence.linkedDivices,
     } as User;
   }
 }

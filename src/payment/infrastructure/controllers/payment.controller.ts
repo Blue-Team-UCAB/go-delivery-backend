@@ -16,6 +16,7 @@ import { IsClientOrAdmin } from 'src/auth/infrastructure/jwt/decorator/isClientO
 import { StripeService } from 'src/common/infrastructure/providers/services/stripe.service';
 import { PaymentRegisterStripeEntryDto } from '../dto/payment-register-stripe.entry.dto';
 import { GetWalletAmountApplicationService } from 'src/payment/application/response/get-wallet-amount.application.service';
+import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
 
 @ApiTags('Payment')
 @Controller('pay')
@@ -40,7 +41,7 @@ export class PaymentController {
   @Post('pago-movil')
   @IsClientOrAdmin()
   @UseAuth()
-  async createPaymentPagoMovil(@Body() data: PagoMovilEntryDto, @GetUser() user: any) {
+  async createPaymentPagoMovil(@Body() data: PagoMovilEntryDto, @GetUser() user: AuthInterface) {
     const service = new CreatePaymentPagoMovilApplicationService(this.paymentCheckPagoMovil, this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
     return await service.execute({ ...data, idCustomer: user.idCostumer, typo: 'Pago Movil' });
   }
@@ -48,7 +49,7 @@ export class PaymentController {
   @Post('zelle')
   @IsClientOrAdmin()
   @UseAuth()
-  async createPaymentZelle(@Body() data: ZelleEntryDto, @GetUser() user: any) {
+  async createPaymentZelle(@Body() data: ZelleEntryDto, @GetUser() user: AuthInterface) {
     const service = new CreatePaymentPagoMovilApplicationService(new PaymentCheckZelle(), this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
     return await service.execute({ ...data, date: new Date(), idCustomer: user.idCostumer, typo: 'Zelle' });
   }
@@ -56,21 +57,21 @@ export class PaymentController {
   @Post('card')
   @IsClientOrAdmin()
   @UseAuth()
-  async createPaymentStripe(@Body() data: PaymentRegisterStripeEntryDto, @GetUser() user: any) {
+  async createPaymentStripe(@Body() data: PaymentRegisterStripeEntryDto, @GetUser() user: AuthInterface) {
     return await this.stripe.saveCard(user.idStripe, data.idCard);
   }
 
   @Get('card')
   @IsClientOrAdmin()
   @UseAuth()
-  async getCards(@GetUser() user: any) {
+  async getCards(@GetUser() user: AuthInterface) {
     return await this.stripe.getCards(user.idStripe);
   }
 
   @Get('wallet-amount')
   @IsClientOrAdmin()
   @UseAuth()
-  async getWalletAmount(@GetUser() user: any) {
+  async getWalletAmount(@GetUser() user: AuthInterface) {
     const service = new GetWalletAmountApplicationService(this.walletRepository, this.costumerRepository);
     return await service.execute({ idCustomer: user.idCostumer });
   }

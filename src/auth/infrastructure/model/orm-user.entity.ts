@@ -24,6 +24,9 @@ export class UserORMEntity {
   @Column({ nullable: true })
   verification_Code?: string;
 
+  @Column({ nullable: false, array: true, type: 'varchar', default: '{}' })
+  linkedDivices: string[];
+
   @OneToOne(() => CustomerORMEntity, costumer => costumer.id_Costumer, { cascade: true, nullable: false })
   @JoinColumn()
   costumer: CustomerORMEntity;

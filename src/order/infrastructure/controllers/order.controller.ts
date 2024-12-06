@@ -25,6 +25,7 @@ import { DomainEventBase } from 'src/common/domain/domain-event';
 import { DateService } from '../../../common/infrastructure/providers/services/date.service';
 import { CourierRepository } from '../repository/courier.repository';
 import { CouponRepository } from '../../../coupon/infrastructure/repository/coupon.repository';
+import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -60,7 +61,7 @@ export class OrderController {
   @Post()
   @UseAuth()
   @IsClientOrAdmin()
-  async createOrder(@Body() createOrderDto: CreateOrderDto, @GetUser() user: any) {
+  async createOrder(@Body() createOrderDto: CreateOrderDto, @GetUser() user: AuthInterface) {
     const service = new CreateOrderApplicationService(
       this.orderRepository,
       this.productRepository,
@@ -86,7 +87,7 @@ export class OrderController {
   @Get()
   @UseAuth()
   @IsClientOrAdmin()
-  async getOrderPage(@Query(ValidationPipe) query: GetOrderPageDto, @GetUser() user: any) {
+  async getOrderPage(@Query(ValidationPipe) query: GetOrderPageDto, @GetUser() user: AuthInterface) {
     const { page, perpage, status } = query;
     const service = new GetOrderByPageApplicationService(this.orderRepository, this.dateService);
     return await service.execute({ page, perpage, id_customer: user.idCostumer, status });
@@ -95,7 +96,7 @@ export class OrderController {
   @Post('change-status')
   @IsAdmin()
   @UseAuth()
-  async changeOrderStatus(@Body() data: ChangeOrderStatusDto, @GetUser() user: any) {
+  async changeOrderStatus(@Body() data: ChangeOrderStatusDto, @GetUser() user: AuthInterface) {
     const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher, this.courierRepository);
     return await service.execute({ ...data, linkedDivices: user.linkedDivices });
   }

@@ -38,7 +38,7 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
   async getById(id: string): Promise<Optional<User>> {
     try {
       const user = await this.createQueryBuilder('user')
-        .select(['user.id_User', 'user.email_User', 'user.password_User', 'user.role_User', 'user.expirationCodeDate', 'user.verification_Code', 'user.stripeId'])
+        .select(['user.id_User', 'user.email_User', 'user.password_User', 'user.role_User', 'user.expirationCodeDate', 'user.verification_Code', 'user.stripeId', 'user.linkedDivices'])
         .leftJoinAndSelect('user.costumer', 'costumer')
         .addSelect(['costumer.id_Costumer', 'costumer.name_Costumer', 'costumer.phone_Costumer'])
         .where('user.id_User = :id', { id })

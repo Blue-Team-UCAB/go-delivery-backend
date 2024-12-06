@@ -14,6 +14,7 @@ import { UseAuth } from '../../../auth/infrastructure/jwt/decorator/useAuth.deco
 import { IsAdmin } from '../../../auth/infrastructure/jwt/decorator/isAdmin.decorator';
 import { IsClientOrAdmin } from '../../../auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
 import { GetUser } from '../../../auth/infrastructure/jwt/decorator/get-user.decorator';
+import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
 
 @ApiTags('Coupons')
 @Controller('coupon')
@@ -47,7 +48,7 @@ export class CouponController {
   @Post('validate-coupon')
   @UseAuth()
   @IsClientOrAdmin()
-  async validateCoupon(@Body() validateCouponDto: ValidateCouponDto, @GetUser() user: any) {
+  async validateCoupon(@Body() validateCouponDto: ValidateCouponDto, @GetUser() user: AuthInterface) {
     const service = new ValidateCouponApplicationService(this.couponRepository, this.dateService);
     return await service.execute({ ...validateCouponDto, id_customer: user.idCostumer });
   }
