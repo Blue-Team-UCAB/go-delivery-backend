@@ -14,7 +14,7 @@ export class OrderStatusChangeCosumerService<T extends DataDto> implements IList
       const msg: PushNotificationDto = {
         token: token,
         title: 'Order status changed',
-        body: `Your order status has been changed to : ${data.data.state._state.toLowerCase()}`,
+        body: `Your order status has been changed to: ${data.data.state._state.toLowerCase()}`,
       };
       this.firebaseNotifierService.sendNotification(msg);
     });
