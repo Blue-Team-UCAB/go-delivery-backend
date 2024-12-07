@@ -11,12 +11,16 @@ import { ICourierRepository } from '../repositories/courier-repository.interface
 import { OrderCourierId } from 'src/order/domain/value-objects/order-courier.id';
 import { OrderCourierPhone } from 'src/order/domain/value-objects/order-courier-phone';
 import { OrderCourierName } from 'src/order/domain/value-objects/order-courier-name';
+import { ICustomerRepository } from 'src/customer/domain/repositories/customer-repository.interface';
+import { IUserRepository } from 'src/auth/application/repository/user-repository.interface';
 
 export class ChangeOrderStatusApplicationService implements IApplicationService<ChangeOrderStatusEntryDto, ChangeOrderStatuResponseDto> {
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly publisher: IPublisher<DomainEventBase>,
     private readonly courierRepository: ICourierRepository,
+    private readonly costumerRepository: ICustomerRepository,
+    private readonly userRepository: IUserRepository,
   ) {}
 
   async execute(data: ChangeOrderStatusEntryDto): Promise<Result<ChangeOrderStatuResponseDto>> {
@@ -56,12 +60,26 @@ export class ChangeOrderStatusApplicationService implements IApplicationService<
       return Result.fail<ChangeOrderStatuResponseDto>(null, update.StatusCode, update.Message);
     }
 
+    const customer = await this.costumerRepository.findById(order.CustomerId.Id);
+
+    if (!customer.isSuccess()) {
+      return Result.fail<ChangeOrderStatuResponseDto>(null, 500, 'Internal server error');
+    }
+
+    const user = await this.userRepository.getById(customer.Value.Id.Id);
+
+    if (!user.getAssigned()) {
+      return Result.fail<ChangeOrderStatuResponseDto>(null, 500, 'Internal server error');
+    }
+
+    const linkedDivices = user.getValue().linkedDivices;
+
     const event = order.getDomainEvents();
 
     const rest = {
       idOrder: event['id'],
       state: event['state'],
-      linkedDivices: data.linkedDivices,
+      linkedDivices: linkedDivices,
     };
 
     await this.publisher.publish(ORDER_STATUS_CHANGE_EVENT, { name: event.getEventName, timestamp: event.getOcurredOn, data: rest });

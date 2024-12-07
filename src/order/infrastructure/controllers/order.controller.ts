@@ -28,6 +28,8 @@ import { CouponRepository } from '../../../coupon/infrastructure/repository/coup
 import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
 import { CancelOrderDto } from '../dto/cancel-oder.dto';
 import { CancelOrderApplicationService } from 'src/order/application/commands/cancel-oder.application.service';
+import { IUserRepository } from 'src/auth/application/repository/user-repository.interface';
+import { UserRepository } from 'src/auth/infrastructure/repository/user.repository';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -41,6 +43,7 @@ export class OrderController {
   private readonly uuidCreator: UuidGenerator;
   private readonly courierRepository: CourierRepository;
   private readonly couponRepository: CouponRepository;
+  private readonly userRepository: IUserRepository;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -58,6 +61,7 @@ export class OrderController {
     this.stripeService = new StripeService();
     this.courierRepository = new CourierRepository(this.dataSource);
     this.couponRepository = new CouponRepository(this.dataSource);
+    this.userRepository = new UserRepository(this.dataSource);
   }
 
   @Post()
@@ -97,10 +101,9 @@ export class OrderController {
 
   @Post('change-status')
   @IsAdmin()
-  @UseAuth()
-  async changeOrderStatus(@Body() data: ChangeOrderStatusDto, @GetUser() user: AuthInterface) {
-    const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher, this.courierRepository);
-    return await service.execute({ ...data, linkedDivices: user.linkedDivices });
+  async changeOrderStatus(@Body() data: ChangeOrderStatusDto) {
+    const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher, this.courierRepository, this.customerRepository, this.userRepository);
+    return await service.execute({ ...data });
   }
 
   @Post('cancel')
