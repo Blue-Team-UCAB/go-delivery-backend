@@ -15,7 +15,7 @@ export class ValidateCouponApplicationService implements IApplicationService<Val
 
   async execute(data: ValidateCouponServiceEntryDto): Promise<Result<ValidateCouponServiceResponseDto>> {
     const currentDate = await this.dateService.now();
-    const couponResult = await this.couponRepository.validateCoupon(data.code, currentDate, data.id_customer);
+    const couponResult = await this.couponRepository.validateCoupon(data.code.toUpperCase(), currentDate, data.id_customer);
 
     if (!couponResult.isSuccess || couponResult.Value === null) {
       return Result.fail<ValidateCouponServiceResponseDto>(null, couponResult.StatusCode, couponResult.Message);
