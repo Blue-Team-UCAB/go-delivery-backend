@@ -87,6 +87,9 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       );
     }
 
+    if (orderProducts.length === 0 && orderBundles.length === 0) {
+      return Result.fail<CreateOrderServiceResponseDto>(null, 400, 'Products or bundles are required');
+    }
     const subtotalAmount =
       orderProducts.reduce((sum, product) => sum + product.Price.Price * product.Quantity.Quantity, 0) + orderBundles.reduce((sum, bundle) => sum + bundle.Price.Price * bundle.Quantity.Quantity, 0);
     let totalAmount = subtotalAmount;
