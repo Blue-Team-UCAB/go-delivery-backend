@@ -20,7 +20,6 @@ export class ValidateCouponApplicationService implements IApplicationService<Val
     if (!couponResult.isSuccess || couponResult.Value === null) {
       return Result.fail<ValidateCouponServiceResponseDto>(null, couponResult.StatusCode, couponResult.Message);
     }
-
     const coupon = couponResult.Value;
 
     const response: ValidateCouponServiceResponseDto = {
