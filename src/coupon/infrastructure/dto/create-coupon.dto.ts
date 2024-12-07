@@ -17,7 +17,7 @@ export class CreateCouponDto {
   porcentage: number;
 
   @IsString()
-  @Matches(/^[A-Z0-9]+$/)
+  @Matches(/^[A-Za-z0-9]+$/)
   code: string;
 
   @IsString()
