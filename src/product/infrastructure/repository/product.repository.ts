@@ -89,7 +89,6 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
   async saveProductAggregate(product: Product): Promise<Result<Product>> {
     try {
       const newProduct = await this.productMapper.fromDomainToPersistence(product);
-      console.log(newProduct.product_Categories);
       await this.save(newProduct);
       return Result.success<Product>(product, 200);
     } catch (error) {

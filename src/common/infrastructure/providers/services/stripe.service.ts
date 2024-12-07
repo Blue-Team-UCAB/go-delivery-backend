@@ -41,7 +41,6 @@ export class StripeService implements IStripeService {
   }
 
   async saveCard(userId: string, cardId: string): Promise<boolean> {
-    console.log(userId, cardId);
     try {
       await this.stripe.paymentMethods.attach(cardId, {
         customer: userId,

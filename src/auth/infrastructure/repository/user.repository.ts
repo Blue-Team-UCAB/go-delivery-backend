@@ -30,7 +30,6 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
       }
       return new Optional<User>();
     } catch (error) {
-      console.error(error);
       throw new InternalServerErrorException({ error });
     }
   }
