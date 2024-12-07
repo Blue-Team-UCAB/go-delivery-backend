@@ -102,7 +102,7 @@ export class OrderController {
   @Post('change-status')
   @IsAdmin()
   async changeOrderStatus(@Body() data: ChangeOrderStatusDto) {
-    const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher, this.courierRepository, this.customerRepository, this.userRepository);
+    const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher, this.courierRepository, this.userRepository);
     return await service.execute({ ...data });
   }
 

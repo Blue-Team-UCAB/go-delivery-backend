@@ -19,7 +19,6 @@ export class ChangeOrderStatusApplicationService implements IApplicationService<
     private readonly orderRepository: IOrderRepository,
     private readonly publisher: IPublisher<DomainEventBase>,
     private readonly courierRepository: ICourierRepository,
-    private readonly costumerRepository: ICustomerRepository,
     private readonly userRepository: IUserRepository,
   ) {}
 
@@ -60,14 +59,7 @@ export class ChangeOrderStatusApplicationService implements IApplicationService<
       return Result.fail<ChangeOrderStatuResponseDto>(null, update.StatusCode, update.Message);
     }
 
-    const customer = await this.costumerRepository.findById(order.CustomerId.Id);
-
-    if (!customer.isSuccess()) {
-      return Result.fail<ChangeOrderStatuResponseDto>(null, 500, 'Internal server error');
-    }
-
-    const user = await this.userRepository.getById(customer.Value.Id.Id);
-
+    const user = await this.userRepository.getByIdCostumer(order.CustomerId.Id);
     if (!user.getAssigned()) {
       return Result.fail<ChangeOrderStatuResponseDto>(null, 500, 'Internal server error');
     }
