@@ -20,9 +20,8 @@ export class CreateOrderDto {
   @IsString()
   id_coupon: string;
 
+  @IsOptional()
   @IsArray()
-  @ArrayNotEmpty()
-  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => ProductBundleDto)
   @Transform(({ value }) => {

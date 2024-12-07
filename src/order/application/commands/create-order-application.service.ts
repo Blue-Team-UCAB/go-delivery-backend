@@ -52,7 +52,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
 
   async execute(data: CreateOrderServiceEntryDto): Promise<Result<CreateOrderServiceResponseDto>> {
     const orderProducts: OrderProduct[] = [];
-    for (const productDto of data.products) {
+    for (const productDto of data.products ?? []) {
       const productResult = await this.productRepository.findProductById(productDto.id);
       if (!productResult.isSuccess) {
         return Result.fail<CreateOrderServiceResponseDto>(productResult.Error, productResult.StatusCode, productResult.Message);
