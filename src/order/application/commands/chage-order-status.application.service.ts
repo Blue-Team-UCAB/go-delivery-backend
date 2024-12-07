@@ -20,6 +20,10 @@ export class ChangeOrderStatusApplicationService implements IApplicationService<
   ) {}
 
   async execute(data: ChangeOrderStatusEntryDto): Promise<Result<ChangeOrderStatuResponseDto>> {
+    if (data.status === OrderStates.CANCELLED) {
+      return Result.fail<ChangeOrderStatuResponseDto>(null, 400, 'Invalid status');
+    }
+
     const orderResult = await this.orderRepository.findOrderById(data.orderId);
 
     if (!orderResult.isSuccess()) {
