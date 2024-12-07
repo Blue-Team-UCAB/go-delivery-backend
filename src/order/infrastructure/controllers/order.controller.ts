@@ -26,6 +26,8 @@ import { DateService } from '../../../common/infrastructure/providers/services/d
 import { CourierRepository } from '../repository/courier.repository';
 import { CouponRepository } from '../../../coupon/infrastructure/repository/coupon.repository';
 import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
+import { CancelOrderDto } from '../dto/cancel-oder.dto';
+import { CancelOrderApplicationService } from 'src/order/application/commands/cancel-oder.application.service';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -99,5 +101,13 @@ export class OrderController {
   async changeOrderStatus(@Body() data: ChangeOrderStatusDto, @GetUser() user: AuthInterface) {
     const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher, this.courierRepository);
     return await service.execute({ ...data, linkedDivices: user.linkedDivices });
+  }
+
+  @Post('cancel')
+  @UseAuth()
+  @IsClientOrAdmin()
+  async cancelOrder(@Body() data: CancelOrderDto, @GetUser() user: AuthInterface) {
+    const service = new CancelOrderApplicationService(this.orderRepository, this.stripeService, this.customerRepository, this.walletRepository);
+    return await service.execute({ ...data, idCustomer: user.idCostumer, idStripe: user.idStripe });
   }
 }

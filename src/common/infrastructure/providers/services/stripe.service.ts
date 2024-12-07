@@ -11,7 +11,7 @@ export class StripeService implements IStripeService {
     });
   }
 
-  async PaymentIntent(amount: number, token: string, costumerId: string): Promise<boolean> {
+  async PaymentIntent(amount: number, token: string, costumerId: string, idOrder: string): Promise<boolean> {
     try {
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount: amount * 100,
@@ -21,6 +21,9 @@ export class StripeService implements IStripeService {
         payment_method_types: ['card'],
         confirm: true,
         description: 'Payment',
+        metadata: {
+          idOrder: idOrder,
+        },
       });
       return true;
     } catch (err) {
@@ -41,7 +44,6 @@ export class StripeService implements IStripeService {
   }
 
   async saveCard(userId: string, cardId: string): Promise<boolean> {
-    console.log(userId, cardId);
     try {
       await this.stripe.paymentMethods.attach(cardId, {
         customer: userId,
@@ -64,5 +66,22 @@ export class StripeService implements IStripeService {
         exp_year: method.card.exp_year,
       }));
     } catch (err) {}
+  }
+
+  async refundPayment(idOrder: string, costumerId: string): Promise<boolean> {
+    try {
+      const paymentIntent = await this.stripe.paymentIntents.list({
+        customer: costumerId,
+        limit: 100,
+      });
+      const payment = paymentIntent.data.find(p => p.metadata.idOrder === idOrder);
+      if (payment) {
+        await this.stripe.refunds.create({
+          payment_intent: payment.id,
+        });
+        return true;
+      }
+      return false;
+    } catch (e) {}
   }
 }

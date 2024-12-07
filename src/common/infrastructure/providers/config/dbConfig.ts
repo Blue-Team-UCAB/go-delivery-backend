@@ -29,9 +29,7 @@ export const ormDatabaseProviders = [
         if (!dataSource.isInitialized) {
           await dataSource.initialize();
         }
-      } catch (error) {
-        console.error(error?.message);
-      }
+      } catch (error) {}
 
       return dataSource;
     },

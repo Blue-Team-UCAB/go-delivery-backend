@@ -13,7 +13,6 @@ export class ApiBCV {
       const { data } = response;
       return data[0].promedio;
     } catch (error) {
-      console.error('Error al obtener los datos:', error);
       throw error;
     }
   }

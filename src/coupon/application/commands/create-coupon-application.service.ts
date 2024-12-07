@@ -26,7 +26,7 @@ export class CreateCouponApplicationService implements IApplicationService<Creat
       startDate: CouponStartDate.create(data.startDate),
       expirationDate: CouponExpirationDate.create(data.expirationDate, data.startDate),
       porcentage: CouponPorcentage.create(data.porcentage),
-      code: CouponCode.create(data.code),
+      code: CouponCode.create(data.code.toUpperCase()),
       message: CouponMessage.create(data.title, data.message),
       numberUses: CouponNumberUses.create(data.numberUses),
     };
