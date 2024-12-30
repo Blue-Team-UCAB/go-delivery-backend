@@ -29,6 +29,7 @@ import { OrderController } from './order/infrastructure/controllers/order.contro
 import { OrderStatusChangeCosumerService } from './order/infrastructure/event-listener/change-order-status.service';
 import { CouponController } from './coupon/infrastructure/controllers/coupon.controller';
 import { FirebaseNotifierService } from './common/infrastructure/providers/services/push.notification.service';
+import { CustomerController } from './customer/infrastructure/controller/costumer.controller';
 
 @Module({
   imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule, HttpModule],
@@ -43,6 +44,7 @@ import { FirebaseNotifierService } from './common/infrastructure/providers/servi
     CreateProductConsumerService,
     PaymentController,
     OrderStatusChangeCosumerService,
+    CustomerController,
   ],
   providers: [
     ...ormDatabaseProviders,

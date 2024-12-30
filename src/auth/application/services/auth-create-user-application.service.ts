@@ -53,6 +53,9 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
 
     const costumerCreate = await this.costumerRepository.saveCustomer(costumer);
 
+    if (!costumerCreate.isSuccess()) {
+      return Result.fail<ISignUpResponseApplication>(costumerCreate.Error, costumerCreate.StatusCode, costumerCreate.Message);
+    }
     const user = {
       idUser: userId,
       emailUser: emailLower,

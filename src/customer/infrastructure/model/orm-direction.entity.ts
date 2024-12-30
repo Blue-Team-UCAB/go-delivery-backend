@@ -6,8 +6,8 @@ export class DirectionORMEntity {
   @PrimaryGeneratedColumn('uuid')
   id_Direction: string;
 
-  @Column('float')
-  direction_Direction: number;
+  @Column()
+  direction_Direction: string;
 
   @Column()
   latitude_Direction: string;

@@ -20,7 +20,7 @@ export class Customer extends AggregateRoot<CustomerId> {
   private name: CustomerName;
   private phone: CustomerPhone;
   private wallet: Wallet;
-  private direction: Direction[] = [];
+  private direction?: Direction[];
 
   get Name(): CustomerName {
     return this.name;
@@ -51,8 +51,8 @@ export class Customer extends AggregateRoot<CustomerId> {
     this.apply(addDirection);
   }
 
-  constructor(id: CustomerId, name: CustomerName, phone: CustomerPhone, idWallet: WalletId, amountWallet: WalletAmount, currencyWallet: WalletCurrency) {
-    const costumerCreated = CustomerCreatedEvent.create(id, name, phone, new Wallet(idWallet, amountWallet, currencyWallet));
+  constructor(id: CustomerId, name: CustomerName, phone: CustomerPhone, idWallet: WalletId, amountWallet: WalletAmount, currencyWallet: WalletCurrency, direction?: Direction[]) {
+    const costumerCreated = CustomerCreatedEvent.create(id, name, phone, new Wallet(idWallet, amountWallet, currencyWallet), direction);
     super(id, costumerCreated);
   }
 
@@ -61,6 +61,7 @@ export class Customer extends AggregateRoot<CustomerId> {
       this.name = event.name;
       this.phone = event.phone;
       this.wallet = event.wallet;
+      this.direction = event.direction;
     }
     if (event instanceof DirectionAddedEvent) {
       this.direction.push(event.direction);
