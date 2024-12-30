@@ -15,7 +15,6 @@ export class DirectionORMEntity {
   @Column()
   longuitud_Direction: string;
 
-  @ManyToOne(() => CustomerORMEntity, costumer => costumer.id_Costumer, { cascade: true, nullable: false })
-  @JoinColumn()
-  costumer_Direction: CustomerORMEntity[];
+  @ManyToOne(() => CustomerORMEntity, costumer => costumer.direction, { nullable: false })
+  costumer_Direction: CustomerORMEntity;
 }
