@@ -4,6 +4,7 @@ import { ProductRepository } from '../../../../product/infrastructure/repository
 import { DataSource, getMetadataArgsStorage } from 'typeorm';
 import { WalletRepository } from 'src/customer/infrastructure/repository/wallet-repository';
 import { PaymentRepository } from 'src/payment/infrastructure/repository/payment-repository';
+import { DirectionRepository } from 'src/customer/infrastructure/repository/direction-repository';
 
 export const ormDatabaseProviders = [
   {
@@ -68,6 +69,13 @@ export const ormDatabaseProviders = [
     provide: 'PaymentRepository',
     useFactory: (dataSource: DataSource) => {
       return new PaymentRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'DirectionRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new DirectionRepository(dataSource);
     },
     inject: ['BaseDeDatos'],
   },
