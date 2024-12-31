@@ -14,7 +14,7 @@ export class DirectionRepository extends Repository<DirectionOrm> implements IDi
   async findById(id: string): Promise<Result<Direction>> {
     try {
       const directionOrm = await this.createQueryBuilder('direction')
-        .select(['direction.id_Direction', 'direction.direction_Direction', 'direction.latitude_Direction', 'direction.longuitud_Direction'])
+        .select(['direction.id_Direction', 'direction.direction_Direction', 'direction.latitude_Direction', 'direction.longuitud_Direction', 'direction.name_Direction'])
         .where('direction.id_Direction = :id', { id })
         .getOne();
 
@@ -40,7 +40,7 @@ export class DirectionRepository extends Repository<DirectionOrm> implements IDi
   async findAll(idCostumer: string): Promise<Result<Direction[]>> {
     try {
       const directionsOrm = await this.createQueryBuilder('direction')
-        .select(['direction.id_Direction', 'direction.direction_Direction', 'direction.latitude_Direction', 'direction.longuitud_Direction'])
+        .select(['direction.id_Direction', 'direction.direction_Direction', 'direction.latitude_Direction', 'direction.longuitud_Direction', 'direction.name_Direction'])
         .where('direction.costumer_Direction = :idCostumer', { idCostumer })
         .getMany();
 

@@ -1,6 +1,10 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
-export class AddDirecionEntryDto {
+export class ModifyDirectionEntryDto {
+  @IsString()
+  @IsUUID()
+  directionId: string;
+
   @IsString()
   @IsNotEmpty()
   name: string;

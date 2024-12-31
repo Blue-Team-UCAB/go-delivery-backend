@@ -1,7 +1,8 @@
-export interface AddDirectionEntryDto {
+export interface ModifyDirectionEntryDto {
   costumerId: string;
-  name: string;
+  directionId: string;
   direction: string;
   longitude: string;
   latitude: string;
+  name: string;
 }

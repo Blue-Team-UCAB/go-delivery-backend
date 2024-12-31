@@ -12,6 +12,8 @@ import { DirectionRepository } from '../repository/direction-repository';
 import { IsClientOrAdmin } from 'src/auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
 import { GetDirectionEntryDto } from '../dto/entry/get-direction.entry.dto';
 import { GetDirectionApplicationService } from 'src/customer/application/get-direction.application.service';
+import { ModifiedDirecionApplicationService } from 'src/customer/application/modified-direction.application.service';
+import { ModifyDirectionEntryDto } from '../dto/entry/modify-direction.entry.dto';
 
 @Controller('customer')
 export class CustomerController {
@@ -47,5 +49,12 @@ export class CustomerController {
   async GetDirection(@Body() getDirection: GetDirectionEntryDto) {
     const service = new GetDirectionApplicationService(this.directionRepository);
     return await service.execute(getDirection);
+  }
+
+  @Post('modify-direction')
+  @UseAuth()
+  async ModifyDirection(@Body() modifyDirection: ModifyDirectionEntryDto, @GetUser() user: AuthInterface) {
+    const service = new ModifiedDirecionApplicationService(this.customerRepository);
+    return await service.execute({ costumerId: user.idCostumer, ...modifyDirection });
   }
 }

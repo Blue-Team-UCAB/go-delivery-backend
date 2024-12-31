@@ -8,6 +8,7 @@ import { DirectionId } from '../domain/value-objects/direction-id';
 import { DirectionDescription } from '../domain/value-objects/direction-direction';
 import { DirectionLonguitud } from '../domain/value-objects/direction-longuitude';
 import { DirectionLatitude } from '../domain/value-objects/direction-latitude';
+import { DirectionName } from '../domain/value-objects/direction-name';
 
 export class AddDirectionApplicationService implements IApplicationService<AddDirectionEntryDto, GetDirectionResponseDto> {
   constructor(
@@ -17,13 +18,18 @@ export class AddDirectionApplicationService implements IApplicationService<AddDi
 
   async execute(data: AddDirectionEntryDto): Promise<Result<GetDirectionResponseDto>> {
     const customer = await this._customerRepository.findById(data.costumerId);
-    console.log(customer);
     if (!customer.isSuccess()) {
       return Result.fail<GetDirectionResponseDto>(customer.Error, customer.StatusCode, customer.Message);
     }
 
     const id = await this.idGenerator.generateId();
-    customer.Value.addDirection(DirectionId.create(id), DirectionDescription.create(data.direction), DirectionLatitude.create(data.latitude), DirectionLonguitud.create(data.longitude));
+    customer.Value.addDirection(
+      DirectionId.create(id),
+      DirectionDescription.create(data.direction),
+      DirectionLatitude.create(data.latitude),
+      DirectionLonguitud.create(data.longitude),
+      DirectionName.create(data.name),
+    );
 
     const result = await this._customerRepository.saveCustomer(customer.Value);
 
@@ -34,6 +40,7 @@ export class AddDirectionApplicationService implements IApplicationService<AddDi
     return Result.success<GetDirectionResponseDto>(
       {
         id: id,
+        name: data.name,
         direction: data.direction,
         latitude: data.latitude,
         longitude: data.longitude,

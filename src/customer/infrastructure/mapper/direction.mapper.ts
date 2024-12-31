@@ -5,6 +5,7 @@ import { DirectionId } from 'src/customer/domain/value-objects/direction-id';
 import { DirectionDescription } from 'src/customer/domain/value-objects/direction-direction';
 import { DirectionLatitude } from 'src/customer/domain/value-objects/direction-latitude';
 import { DirectionLonguitud } from 'src/customer/domain/value-objects/direction-longuitude';
+import { DirectionName } from 'src/customer/domain/value-objects/direction-name';
 
 export class DirectionMapper implements IMapper<Direction, DirectionORMEntity> {
   async fromDomainToPersistence(domain: Direction): Promise<DirectionORMEntity> {
@@ -13,6 +14,7 @@ export class DirectionMapper implements IMapper<Direction, DirectionORMEntity> {
     directionORM.direction_Direction = domain.Description.Description;
     directionORM.latitude_Direction = domain.Latitude.Latitude;
     directionORM.longuitud_Direction = domain.Longuitud.Longuitud;
+    directionORM.name_Direction = domain.Name.Name;
     return directionORM;
   }
   async fromPersistenceToDomain(persistence: DirectionORMEntity): Promise<Direction> {
@@ -21,6 +23,7 @@ export class DirectionMapper implements IMapper<Direction, DirectionORMEntity> {
       DirectionDescription.create(persistence.direction_Direction),
       DirectionLatitude.create(persistence.latitude_Direction),
       DirectionLonguitud.create(persistence.longuitud_Direction),
+      DirectionName.create(persistence.name_Direction),
     );
   }
 }

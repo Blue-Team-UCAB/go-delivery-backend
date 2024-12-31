@@ -14,6 +14,7 @@ import { DirectionDescription } from 'src/customer/domain/value-objects/directio
 import { DirectionLatitude } from 'src/customer/domain/value-objects/direction-latitude';
 import { DirectionLonguitud } from 'src/customer/domain/value-objects/direction-longuitude';
 import { DirectionORMEntity } from '../model/orm-direction.entity';
+import { DirectionName } from 'src/customer/domain/value-objects/direction-name';
 
 export class CustomerMapper implements IMapper<Customer, CustomerORMEntity> {
   async fromDomainToPersistence(domain: Customer): Promise<CustomerORMEntity> {
@@ -30,6 +31,7 @@ export class CustomerMapper implements IMapper<Customer, CustomerORMEntity> {
         directionORM.direction_Direction = direction.Description.Description;
         directionORM.latitude_Direction = direction.Latitude.Latitude;
         directionORM.longuitud_Direction = direction.Longuitud.Longuitud;
+        directionORM.name_Direction = direction.Name.Name;
         return directionORM;
       });
     }
@@ -45,6 +47,7 @@ export class CustomerMapper implements IMapper<Customer, CustomerORMEntity> {
           DirectionDescription.create(direction.direction_Direction),
           DirectionLatitude.create(direction.latitude_Direction),
           DirectionLonguitud.create(direction.longuitud_Direction),
+          DirectionName.create(direction.name_Direction),
         );
       }),
     );

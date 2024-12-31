@@ -3,4 +3,5 @@ export interface GetDirectionResponseDto {
   direction: string;
   longitude: string;
   latitude: string;
+  name: string;
 }

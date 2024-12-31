@@ -17,6 +17,7 @@ export class GetDirectionApplicationService implements IApplicationService<GetDi
     return Result.success<GetDirectionResponseDto>(
       {
         id: direction.Value.Id.Id,
+        name: direction.Value.Name.Name,
         direction: direction.Value.Description.Description,
         latitude: direction.Value.Latitude.Latitude,
         longitude: direction.Value.Longuitud.Longuitud,

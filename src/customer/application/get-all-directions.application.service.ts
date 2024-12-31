@@ -17,6 +17,7 @@ export class GetAllDirectionApplicationService implements IApplicationService<Ge
     const response = directions.Value.map(direction => {
       return {
         id: direction.Id.Id,
+        name: direction.Name.Name,
         direction: direction.Description.Description,
         longitude: direction.Longuitud.Longuitud,
         latitude: direction.Latitude.Latitude,

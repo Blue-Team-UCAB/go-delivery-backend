@@ -27,6 +27,7 @@ export class CustomerRepository extends Repository<CustomerORM> implements ICust
           'direction.direction_Direction',
           'direction.latitude_Direction',
           'direction.longuitud_Direction',
+          'direction.name_Direction',
         ])
         .leftJoin('Customer.wallet', 'wallet')
         .leftJoin('Customer.direction', 'direction')
