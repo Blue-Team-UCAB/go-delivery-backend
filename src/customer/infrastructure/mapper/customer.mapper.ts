@@ -15,6 +15,7 @@ import { DirectionLatitude } from 'src/customer/domain/value-objects/direction-l
 import { DirectionLonguitud } from 'src/customer/domain/value-objects/direction-longuitude';
 import { DirectionORMEntity } from '../model/orm-direction.entity';
 import { DirectionName } from 'src/customer/domain/value-objects/direction-name';
+import { CustomerImage } from 'src/customer/domain/value-objects/customer-image';
 
 export class CustomerMapper implements IMapper<Customer, CustomerORMEntity> {
   async fromDomainToPersistence(domain: Customer): Promise<CustomerORMEntity> {
@@ -35,6 +36,11 @@ export class CustomerMapper implements IMapper<Customer, CustomerORMEntity> {
         return directionORM;
       });
     }
+
+    if (domain.Image) {
+      CustomerORM.image_Costumer = domain.Image.Url;
+    }
+
     return CustomerORM;
   }
 
@@ -52,6 +58,11 @@ export class CustomerMapper implements IMapper<Customer, CustomerORMEntity> {
       }),
     );
 
+    let image: CustomerImage = null;
+    if (persistence.image_Costumer) {
+      image = new CustomerImage(persistence.image_Costumer);
+    }
+
     return new Customer(
       CustomerId.create(persistence.id_Costumer),
       CustomerName.create(persistence.name_Costumer),
@@ -60,6 +71,7 @@ export class CustomerMapper implements IMapper<Customer, CustomerORMEntity> {
       WalletAmount.create(persistence.wallet.amount_Wallet),
       WalletCurrency.create(persistence.wallet.currency_Wallet),
       directions,
+      image,
     );
   }
 }
