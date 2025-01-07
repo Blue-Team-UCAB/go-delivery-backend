@@ -62,6 +62,7 @@ export class GetOrderByIdApplicationService implements IApplicationService<GetOr
           id: order.Courier.Id.Id,
           name: order.Courier.Name.Name,
           phone: order.Courier.Phone.Phone,
+          image: await this.s3Service.getFile(order.Courier.Image.Url),
         }
       : undefined;
 

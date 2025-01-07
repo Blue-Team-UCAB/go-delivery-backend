@@ -91,6 +91,7 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
           'courier_Orders.id',
           'courier_Orders.name',
           'courier_Orders.phone',
+          'courier_Orders.image',
           'orderProducts.id',
           'orderProducts.quantity',
           'product.id_Product',

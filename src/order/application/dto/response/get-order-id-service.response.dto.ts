@@ -14,6 +14,7 @@ export class CourierDto {
   id: string;
   name: string;
   phone: string;
+  image: string;
 }
 
 export class OrderReportDto {

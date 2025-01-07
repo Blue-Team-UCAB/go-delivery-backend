@@ -18,6 +18,7 @@ import { OrderCourierId } from './value-objects/order-courier.id';
 import { OrderCourierName } from './value-objects/order-courier-name';
 import { OrderCourierPhone } from './value-objects/order-courier-phone';
 import { CouponId } from 'src/coupon/domain/value-objects/coupon.id';
+import { OrderCourierImage } from './value-objects/order-courier-image';
 
 export class Order extends AggregateRoot<OrderId> {
   private customerId: CustomerId;
@@ -123,7 +124,7 @@ export class Order extends AggregateRoot<OrderId> {
     this.apply(lastState);
   }
 
-  public assignCourier(id: OrderCourierId, name: OrderCourierName, phone: OrderCourierPhone): void {
-    this.courier = new OrderCourier(id, name, phone);
+  public assignCourier(id: OrderCourierId, name: OrderCourierName, phone: OrderCourierPhone, image: OrderCourierImage): void {
+    this.courier = new OrderCourier(id, name, phone, image);
   }
 }
