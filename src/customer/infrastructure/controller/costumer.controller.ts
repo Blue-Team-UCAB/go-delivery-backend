@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { CustomerRepository } from '../repository/costumer-repository';
 import { DataSource } from 'typeorm';
 import { UseAuth } from 'src/auth/infrastructure/jwt/decorator/useAuth.decorator';
@@ -14,6 +14,10 @@ import { GetDirectionEntryDto } from '../dto/entry/get-direction.entry.dto';
 import { GetDirectionApplicationService } from 'src/customer/application/get-direction.application.service';
 import { ModifiedDirecionApplicationService } from 'src/customer/application/modified-direction.application.service';
 import { ModifyDirectionEntryDto } from '../dto/entry/modify-direction.entry.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UpdateCustomerImageEntryDto } from '../dto/entry/update-customer-image.entry.dto';
+import { UpdateCustomerImageApplicationService } from 'src/customer/application/update-custumer-image.application.service';
+import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
 
 @Controller('customer')
 export class CustomerController {
@@ -24,10 +28,21 @@ export class CustomerController {
   constructor(
     @Inject('BaseDeDatos')
     private readonly dataSource: DataSource,
+    private readonly s3Service: S3Service,
   ) {
     this.customerRepository = new CustomerRepository(this.dataSource);
     this.uuidCreator = new UuidGenerator();
     this.directionRepository = new DirectionRepository(this.dataSource);
+  }
+
+  @Post('update-image')
+  @UseInterceptors(FileInterceptor('image'))
+  @UseAuth()
+  async UpdateImage(@Body() updateCustomerImage: UpdateCustomerImageEntryDto, @GetUser() user: AuthInterface, @UploadedFile() image: Express.Multer.File) {
+    const service = new UpdateCustomerImageApplicationService(this.customerRepository, this.uuidCreator, this.s3Service);
+    updateCustomerImage.contentType = image.mimetype;
+    updateCustomerImage.imageBuffer = image.buffer;
+    return await service.execute({ customerId: user.idCostumer, ...updateCustomerImage });
   }
 
   @Post('add-direction')

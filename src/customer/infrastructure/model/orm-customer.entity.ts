@@ -1,5 +1,5 @@
 import { UserORMEntity } from 'src/auth/infrastructure/model/orm-user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn, IsNull } from 'typeorm';
 import { WalletORMEntity } from './orm-wallet.entity';
 import { OrderORMEntity } from '../../../order/infrastructure/models/orm-order.entity';
 import { DirectionORMEntity } from './orm-direction.entity';
@@ -7,13 +7,18 @@ import { DirectionORMEntity } from './orm-direction.entity';
 @Entity('Customer')
 export class CustomerORMEntity {
   @PrimaryGeneratedColumn('uuid')
-  id_Costumer: string; //todo ARREGLAR LA PALABRA A CUSTOMER
+  id_Costumer: string;
 
   @Column()
-  name_Costumer: string; //todo ARREGLAR LA PALABRA A CUSTOMER
+  name_Costumer: string;
 
   @Column()
-  phone_Costumer: string; //todo ARREGLAR LA PALABRA A CUSTOMER
+  phone_Costumer: string;
+
+  @Column({
+    nullable: true,
+  })
+  image_Costumer?: string;
 
   @OneToOne(() => UserORMEntity, user => user.id_User, { cascade: true, nullable: false })
   user: UserORMEntity;

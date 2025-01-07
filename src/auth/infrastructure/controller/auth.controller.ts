@@ -26,6 +26,7 @@ import { IsClientOrAdmin } from '../jwt/decorator/isClientOrAdmin.decorator';
 import { PushTokenDto } from '../dto/push-token.dto';
 import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
 import { AuthPushTokenUserApplicationService } from 'src/auth/application/services/auth-push-token.user.application.service';
+import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -45,6 +46,7 @@ export class AuthController {
     private readonly uuidGenator: UuidGenerator,
     private readonly codeGenerator: CodeVerificationService,
     private readonly mailService: MailSenderService,
+    private readonly s3Service: S3Service,
   ) {
     this.userRepository = new UserRepository(this.dataSource);
     this.jwtGenerator = new JwtGenerator(this.jwtService);
@@ -80,7 +82,7 @@ export class AuthController {
   @Get('current')
   @UseAuth()
   async current(@GetUser() user: AuthInterface) {
-    const service = new AuthCurrentApplicationService(this.costumerRepository);
+    const service = new AuthCurrentApplicationService(this.costumerRepository, this.s3Service);
     return await service.execute({ idCostumer: user.idCostumer, id: user.idUser, role: user.roleUser, email: user.emailUser });
   }
 

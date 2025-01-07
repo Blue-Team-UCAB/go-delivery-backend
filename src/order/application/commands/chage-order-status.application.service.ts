@@ -13,6 +13,7 @@ import { OrderCourierPhone } from 'src/order/domain/value-objects/order-courier-
 import { OrderCourierName } from 'src/order/domain/value-objects/order-courier-name';
 import { ICustomerRepository } from 'src/customer/domain/repositories/customer-repository.interface';
 import { IUserRepository } from 'src/auth/application/repository/user-repository.interface';
+import { OrderCourierImage } from 'src/order/domain/value-objects/order-courier-image';
 
 export class ChangeOrderStatusApplicationService implements IApplicationService<ChangeOrderStatusEntryDto, ChangeOrderStatuResponseDto> {
   constructor(
@@ -51,7 +52,12 @@ export class ChangeOrderStatusApplicationService implements IApplicationService<
       }
       const random = Math.floor(Math.random() * courier.Value.length);
       randomCourier = courier.Value[random];
-      order.assignCourier(OrderCourierId.create(randomCourier.id), OrderCourierName.create(randomCourier.name), OrderCourierPhone.create(randomCourier.phone));
+      order.assignCourier(
+        OrderCourierId.create(randomCourier.id),
+        OrderCourierName.create(randomCourier.name),
+        OrderCourierPhone.create(randomCourier.phone),
+        OrderCourierImage.create(randomCourier.image),
+      );
     }
 
     const update = await this.orderRepository.updateOrderStatus(order.Id.Id, newStatus.State, newStatus.Date, randomCourier ? randomCourier.id : null);

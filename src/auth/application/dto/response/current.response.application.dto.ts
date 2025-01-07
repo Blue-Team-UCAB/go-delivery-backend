@@ -4,4 +4,5 @@ export interface CurrentResponseServiceDto {
   name: string;
   phone: string;
   type: string;
+  image: string;
 }

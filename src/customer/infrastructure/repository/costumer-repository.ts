@@ -20,6 +20,7 @@ export class CustomerRepository extends Repository<CustomerORM> implements ICust
           'Customer.id_Costumer',
           'Customer.name_Costumer',
           'Customer.phone_Costumer',
+          'Customer.image_Costumer',
           'wallet.id_Wallet',
           'wallet.amount_Wallet',
           'wallet.currency_Wallet',
