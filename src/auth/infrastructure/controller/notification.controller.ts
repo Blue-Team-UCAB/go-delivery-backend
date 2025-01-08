@@ -8,7 +8,7 @@ import { AuthPushTokenUserApplicationService } from 'src/auth/application/servic
 import { DataSource } from 'typeorm';
 
 import { UserRepository } from '../repository/user.repository';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @Controller('Notifications')
 export class NotificationsController {
@@ -23,6 +23,7 @@ export class NotificationsController {
   @Post('savetoken')
   @UseAuth()
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   @ApiBody({ type: PushTokenDto })
   async pushToken(@GetUser() user: AuthInterface, @Body() data: PushTokenDto) {
     const service = new AuthPushTokenUserApplicationService(this.userRepository);

@@ -10,7 +10,6 @@ import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-gener
 import { GetAllDirectionApplicationService } from 'src/customer/application/get-all-directions.application.service';
 import { DirectionRepository } from '../repository/direction-repository';
 import { IsClientOrAdmin } from 'src/auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
-import { GetDirectionEntryDto } from '../dto/entry/get-direction.entry.dto';
 import { GetDirectionApplicationService } from 'src/customer/application/get-direction.application.service';
 import { ModifiedDirecionApplicationService } from 'src/customer/application/modified-direction.application.service';
 import { ModifyDirectionEntryDto } from '../dto/entry/modify-direction.entry.dto';
@@ -18,7 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateCustomerImageEntryDto } from '../dto/entry/update-customer-image.entry.dto';
 import { UpdateCustomerImageApplicationService } from 'src/customer/application/update-custumer-image.application.service';
 import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
@@ -49,6 +48,8 @@ export class UserController {
       },
     },
   })
+  @ApiBearerAuth()
+  @IsClientOrAdmin()
   async UpdateImage(@Body() updateCustomerImage: UpdateCustomerImageEntryDto, @GetUser() user: AuthInterface, @UploadedFile() image: Express.Multer.File) {
     const service = new UpdateCustomerImageApplicationService(this.customerRepository, this.uuidCreator, this.s3Service);
     updateCustomerImage.contentType = image.mimetype;
@@ -61,6 +62,8 @@ export class UserController {
   })
   @Post('add/address')
   @UseAuth()
+  @ApiBearerAuth()
+  @IsClientOrAdmin()
   async AddDirecion(@Body() addDirection: AddDirecionEntryDto, @GetUser() user: AuthInterface) {
     const service = new AddDirectionApplicationService(this.customerRepository, this.uuidCreator);
     return await service.execute({ costumerId: user.idCostumer, ...addDirection });
@@ -68,6 +71,8 @@ export class UserController {
 
   @Get('address/many')
   @UseAuth()
+  @ApiBearerAuth()
+  @IsClientOrAdmin()
   async GetAllDirections(@GetUser() user: AuthInterface) {
     const service = new GetAllDirectionApplicationService(this.directionRepository);
     return await service.execute({ costumerId: user.idCostumer });
@@ -75,6 +80,8 @@ export class UserController {
 
   @Get('address/:id')
   @IsClientOrAdmin()
+  @UseAuth()
+  @ApiBearerAuth()
   async GetDirection(@Param('id') idDirection: string) {
     const service = new GetDirectionApplicationService(this.directionRepository);
     return await service.execute({ idDirection: idDirection });
@@ -84,6 +91,8 @@ export class UserController {
   @ApiBody({
     type: ModifyDirectionEntryDto,
   })
+  @ApiBearerAuth()
+  @IsClientOrAdmin()
   @UseAuth()
   async ModifyDirection(@Body() modifyDirection: ModifyDirectionEntryDto, @GetUser() user: AuthInterface) {
     const service = new ModifiedDirecionApplicationService(this.customerRepository);
@@ -92,5 +101,7 @@ export class UserController {
 
   @Delete('delete/address/:id')
   @UseAuth()
+  @ApiBearerAuth()
+  @IsClientOrAdmin()
   async DeleteDirection(@Param('id') idDirection: string, @GetUser() user: AuthInterface) {}
 }

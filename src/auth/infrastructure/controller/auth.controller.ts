@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Inject, Get, Patch, Put } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UserRepository } from '../repository/user.repository';
 import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-generator';
 import { Sha256Service } from '../../../common/infrastructure/providers/services/sha256Service.service';
@@ -93,6 +93,8 @@ export class AuthController {
 
   @Get('current')
   @UseAuth()
+  @IsClientOrAdmin()
+  @ApiBearerAuth()
   async current(@GetUser() user: AuthInterface) {
     const service = new AuthCurrentApplicationService(this.costumerRepository, this.s3Service);
     return await service.execute({ idCostumer: user.idCostumer, id: user.idUser, role: user.roleUser, email: user.emailUser });
