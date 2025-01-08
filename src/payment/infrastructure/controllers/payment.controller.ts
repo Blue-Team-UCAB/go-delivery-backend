@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post } from '@nestjs/common';
 import { ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-generator';
 import { PaymentCheckPagoMovil } from 'src/common/infrastructure/payment-check/payment-check-pagoMovil';
@@ -77,6 +77,13 @@ export class PaymentController {
   async getWalletAmount(@GetUser() user: AuthInterface) {
     const service = new GetWalletAmountApplicationService(this.walletRepository, this.costumerRepository);
     return await service.execute({ idCustomer: user.idCostumer });
+  }
+
+  @Delete('user/card/delete/:id')
+  @IsClientOrAdmin()
+  @UseAuth()
+  async deleteCard(@GetUser() user: AuthInterface, @Param('id') idCard: string) {
+    return await this.stripe.deleteCard(user.idStripe, idCard);
   }
 
   @Get('many')
