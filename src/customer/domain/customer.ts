@@ -71,6 +71,14 @@ export class Customer extends AggregateRoot<CustomerId> {
     dir.modify(direction, latitude, longuitud, name_dir);
   }
 
+  deleteDirection(id: DirectionId): void {
+    const dir = this.direction.find(dir => dir.Id.equals(id));
+    if (!dir) {
+      throw new DirectionNotFound('Direction not found');
+    }
+    this.direction = this.direction.filter(dir => !dir.Id.equals(id));
+  }
+
   constructor(
     id: CustomerId,
     name: CustomerName,

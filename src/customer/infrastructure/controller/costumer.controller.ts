@@ -18,6 +18,7 @@ import { UpdateCustomerImageEntryDto } from '../dto/entry/update-customer-image.
 import { UpdateCustomerImageApplicationService } from 'src/customer/application/update-custumer-image.application.service';
 import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { DeleteDirectionApplicationService } from 'src/customer/application/delete-direction.application.service';
 
 @Controller('user')
 export class UserController {
@@ -103,5 +104,8 @@ export class UserController {
   @UseAuth()
   @ApiBearerAuth()
   @IsClientOrAdmin()
-  async DeleteDirection(@Param('id') idDirection: string, @GetUser() user: AuthInterface) {}
+  async DeleteDirection(@Param('id') idDirection: string, @GetUser() user: AuthInterface) {
+    const service = new DeleteDirectionApplicationService(this.customerRepository, this.directionRepository);
+    return await service.execute({ idCustomer: user.idCostumer, idDirection: idDirection });
+  }
 }
