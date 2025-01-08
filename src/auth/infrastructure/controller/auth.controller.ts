@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject, Get } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Get, Patch, Put } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRepository } from '../repository/user.repository';
@@ -85,7 +85,7 @@ export class AuthController {
   @ApiBody({
     type: ChangePasswordCodeDto,
   })
-  @Post('change/password')
+  @Put('change/password')
   async changePassword(@Body() data: ChangePasswordCodeDto) {
     const service = new ChangePasswordCodeUserApplicationService(this.userRepository, this.sha256Service);
     return await service.execute(data);

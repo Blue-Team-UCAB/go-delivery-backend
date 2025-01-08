@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { CustomerRepository } from '../repository/costumer-repository';
 import { DataSource } from 'typeorm';
 import { UseAuth } from 'src/auth/infrastructure/jwt/decorator/useAuth.decorator';
@@ -89,4 +89,8 @@ export class UserController {
     const service = new ModifiedDirecionApplicationService(this.customerRepository);
     return await service.execute({ costumerId: user.idCostumer, ...modifyDirection });
   }
+
+  @Delete('delete/address/:id')
+  @UseAuth()
+  async DeleteDirection(@Param('id') idDirection: string, @GetUser() user: AuthInterface) {}
 }
