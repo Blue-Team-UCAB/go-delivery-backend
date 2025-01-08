@@ -4,14 +4,6 @@ import { Response } from 'express';
 export class AppController {
   @Get()
   getHome(@Res() res: Response) {
-    res.send(`
-      <html>
-        <head><title>Inicio</title></head>
-        <body>
-          <h1>Bienvenido a la página de inicio</h1>
-          <p>Esta es una introducción.</p>
-        </body>
-      </html>
-    `);
+    res.redirect('http://localhost:3000/api/documentation');
   }
 }

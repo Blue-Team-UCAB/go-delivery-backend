@@ -1,3 +1,3 @@
 export interface UpdateCustomerImageResponseDto {
-  imageUrl: string;
+  image: string;
 }

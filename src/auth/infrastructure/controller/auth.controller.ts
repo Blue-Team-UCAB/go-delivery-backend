@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Inject, Get } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRepository } from '../repository/user.repository';
 import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-generator';
 import { Sha256Service } from '../../../common/infrastructure/providers/services/sha256Service.service';
@@ -55,24 +55,36 @@ export class AuthController {
     this.stripe = new StripeService();
   }
 
+  @ApiBody({
+    type: SignUpUserDto,
+  })
   @Post('register')
   async create(@Body() createUser: SignUpUserDto) {
     const service = new AuthCreateUserApplicationService(this.userRepository, this.uuidGenator, this.sha256Service, this.jwtGenerator, this.costumerRepository, this.walletRepository, this.stripe);
     return await service.execute(createUser);
   }
 
+  @ApiBody({
+    type: SignInUserDto,
+  })
   @Post('login')
   async login(@Body() user: SignInUserDto) {
     const service = new AuthLoginUserApplicationService(this.userRepository, this.sha256Service, this.jwtGenerator, this.costumerRepository);
     return await service.execute(user);
   }
 
+  @ApiBody({
+    type: ForgotPasswordDto,
+  })
   @Post('forgot/password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
     const service = new ForgotPasswordUserApplicationService(this.userRepository, this.sha256Service, this.codeGenerator, this.mailService, this.costumerRepository);
     return await service.execute(data);
   }
 
+  @ApiBody({
+    type: ChangePasswordCodeDto,
+  })
   @Post('change/password')
   async changePassword(@Body() data: ChangePasswordCodeDto) {
     const service = new ChangePasswordCodeUserApplicationService(this.userRepository, this.sha256Service);
@@ -84,13 +96,5 @@ export class AuthController {
   async current(@GetUser() user: AuthInterface) {
     const service = new AuthCurrentApplicationService(this.costumerRepository, this.s3Service);
     return await service.execute({ idCostumer: user.idCostumer, id: user.idUser, role: user.roleUser, email: user.emailUser });
-  }
-
-  @Post('push-token')
-  @UseAuth()
-  @IsClientOrAdmin()
-  async pushToken(@GetUser() user: AuthInterface, @Body() data: PushTokenDto) {
-    const service = new AuthPushTokenUserApplicationService(this.userRepository);
-    return await service.execute({ ...data, idUser: user.idUser });
   }
 }

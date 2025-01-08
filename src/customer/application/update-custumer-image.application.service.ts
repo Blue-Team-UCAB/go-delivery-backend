@@ -37,7 +37,7 @@ export class UpdateCustomerImageApplicationService implements IApplicationServic
 
     return Result.success<UpdateCustomerImageResponseDto>(
       {
-        imageUrl: imageUrl,
+        image: imageUrl,
       },
       200,
     );

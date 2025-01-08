@@ -20,6 +20,7 @@ async function GoDely() {
     }),
   );
 
+  app.setGlobalPrefix('api');
   app.enableCors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

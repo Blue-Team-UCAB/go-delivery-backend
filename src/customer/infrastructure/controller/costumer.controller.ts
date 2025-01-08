@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { CustomerRepository } from '../repository/costumer-repository';
 import { DataSource } from 'typeorm';
 import { UseAuth } from 'src/auth/infrastructure/jwt/decorator/useAuth.decorator';
@@ -18,9 +18,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateCustomerImageEntryDto } from '../dto/entry/update-customer-image.entry.dto';
 import { UpdateCustomerImageApplicationService } from 'src/customer/application/update-custumer-image.application.service';
 import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
-@Controller('customer')
-export class CustomerController {
+@Controller('user')
+export class UserController {
   private readonly customerRepository: CustomerRepository;
   private readonly uuidCreator: UuidGenerator;
   private readonly directionRepository: DirectionRepository;
@@ -35,9 +36,19 @@ export class CustomerController {
     this.directionRepository = new DirectionRepository(this.dataSource);
   }
 
-  @Post('update-image')
+  @Patch('update/image')
   @UseInterceptors(FileInterceptor('image'))
   @UseAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'File',
+        },
+      },
+    },
+  })
   async UpdateImage(@Body() updateCustomerImage: UpdateCustomerImageEntryDto, @GetUser() user: AuthInterface, @UploadedFile() image: Express.Multer.File) {
     const service = new UpdateCustomerImageApplicationService(this.customerRepository, this.uuidCreator, this.s3Service);
     updateCustomerImage.contentType = image.mimetype;
@@ -45,28 +56,34 @@ export class CustomerController {
     return await service.execute({ customerId: user.idCostumer, ...updateCustomerImage });
   }
 
-  @Post('add-direction')
+  @ApiBody({
+    type: AddDirecionEntryDto,
+  })
+  @Post('add/address')
   @UseAuth()
   async AddDirecion(@Body() addDirection: AddDirecionEntryDto, @GetUser() user: AuthInterface) {
     const service = new AddDirectionApplicationService(this.customerRepository, this.uuidCreator);
     return await service.execute({ costumerId: user.idCostumer, ...addDirection });
   }
 
-  @Get('directions')
+  @Get('address/many')
   @UseAuth()
   async GetAllDirections(@GetUser() user: AuthInterface) {
     const service = new GetAllDirectionApplicationService(this.directionRepository);
     return await service.execute({ costumerId: user.idCostumer });
   }
 
-  @Get('direction')
+  @Get('address/:id')
   @IsClientOrAdmin()
-  async GetDirection(@Body() getDirection: GetDirectionEntryDto) {
+  async GetDirection(@Param('id') idDirection: string) {
     const service = new GetDirectionApplicationService(this.directionRepository);
-    return await service.execute(getDirection);
+    return await service.execute({ idDirection: idDirection });
   }
 
-  @Post('modify-direction')
+  @Patch('update/address')
+  @ApiBody({
+    type: ModifyDirectionEntryDto,
+  })
   @UseAuth()
   async ModifyDirection(@Body() modifyDirection: ModifyDirectionEntryDto, @GetUser() user: AuthInterface) {
     const service = new ModifiedDirecionApplicationService(this.customerRepository);
