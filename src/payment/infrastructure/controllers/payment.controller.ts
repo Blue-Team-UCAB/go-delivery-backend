@@ -17,6 +17,8 @@ import { StripeService } from 'src/common/infrastructure/providers/services/stri
 import { PaymentRegisterStripeEntryDto } from '../dto/payment-register-stripe.entry.dto';
 import { GetWalletAmountApplicationService } from 'src/payment/application/response/get-wallet-amount.application.service';
 import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
+import { GetAllPaymentsApplicationService } from 'src/payment/application/get-all-transaccion.application.service';
+import { OrderRepository } from 'src/order/infrastructure/repository/order.repository';
 
 @ApiTags('Payment')
 @Controller('payment/method')
@@ -24,6 +26,7 @@ export class PaymentController {
   private readonly costumerRepository: CustomerRepository;
   private readonly paymentRepository: PaymentRepository;
   private readonly walletRepository: WalletRepository;
+  private readonly orderRepository: OrderRepository;
   private readonly stripe: StripeService;
 
   constructor(
@@ -34,6 +37,7 @@ export class PaymentController {
   ) {
     this.costumerRepository = new CustomerRepository(this.dataSource);
     this.paymentRepository = new PaymentRepository(this.dataSource);
+    this.orderRepository = new OrderRepository(this.dataSource);
     this.walletRepository = new WalletRepository(this.dataSource);
     this.stripe = new StripeService();
   }
@@ -97,4 +101,13 @@ export class PaymentController {
   @UseAuth()
   @ApiBearerAuth()
   async getPayments() {}
+
+  @Get('user/many/transaccion')
+  @IsClientOrAdmin()
+  @UseAuth()
+  @ApiBearerAuth()
+  async getPaymentsByUser(@GetUser() user: AuthInterface) {
+    const service = new GetAllPaymentsApplicationService(this.paymentRepository, this.orderRepository, this.stripe);
+    return await service.execute({ idCustomer: user.idCostumer, idStripe: user.idStripe });
+  }
 }
