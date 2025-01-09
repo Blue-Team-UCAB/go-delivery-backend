@@ -55,4 +55,14 @@ export class DirectionRepository extends Repository<DirectionOrm> implements IDi
       return Result.fail(null, 500, e.message);
     }
   }
+
+  async deleteDireccion(id: string): Promise<Result<Boolean>> {
+    try {
+      await this.delete(id);
+      return Result.success<boolean>(true, 204);
+    } catch (e) {
+      console.log(e);
+      return Result.fail(null, 500, e.message);
+    }
+  }
 }

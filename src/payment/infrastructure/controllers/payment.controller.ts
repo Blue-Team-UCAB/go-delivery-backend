@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Inject, Param, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-generator';
 import { PaymentCheckPagoMovil } from 'src/common/infrastructure/payment-check/payment-check-pagoMovil';
 import { CustomerRepository } from 'src/customer/infrastructure/repository/costumer-repository';
@@ -19,7 +19,7 @@ import { GetWalletAmountApplicationService } from 'src/payment/application/respo
 import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
 
 @ApiTags('Payment')
-@Controller('pay')
+@Controller('payment/method')
 export class PaymentController {
   private readonly costumerRepository: CustomerRepository;
   private readonly paymentRepository: PaymentRepository;
@@ -38,41 +38,63 @@ export class PaymentController {
     this.stripe = new StripeService();
   }
 
-  @Post('pago-movil')
+  @Post('recharge/pago-movil')
   @IsClientOrAdmin()
   @UseAuth()
+  @ApiBearerAuth()
+  @ApiBody({ type: PagoMovilEntryDto })
   async createPaymentPagoMovil(@Body() data: PagoMovilEntryDto, @GetUser() user: AuthInterface) {
     const service = new CreatePaymentPagoMovilApplicationService(this.paymentCheckPagoMovil, this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
     return await service.execute({ ...data, idCustomer: user.idCostumer, typo: 'Pago Movil' });
   }
 
-  @Post('zelle')
+  @Post('recharge/zelle')
   @IsClientOrAdmin()
   @UseAuth()
+  @ApiBearerAuth()
+  @ApiBody({ type: ZelleEntryDto })
   async createPaymentZelle(@Body() data: ZelleEntryDto, @GetUser() user: AuthInterface) {
     const service = new CreatePaymentPagoMovilApplicationService(new PaymentCheckZelle(), this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
     return await service.execute({ ...data, date: new Date(), idCustomer: user.idCostumer, typo: 'Zelle' });
   }
 
-  @Post('card')
+  @Post('user/add/card')
   @IsClientOrAdmin()
   @UseAuth()
+  @ApiBearerAuth()
+  @ApiBody({ type: PaymentRegisterStripeEntryDto })
   async createPaymentStripe(@Body() data: PaymentRegisterStripeEntryDto, @GetUser() user: AuthInterface) {
     return await this.stripe.saveCard(user.idStripe, data.idCard);
   }
 
-  @Get('card')
+  @Get('user/card/many')
   @IsClientOrAdmin()
   @UseAuth()
+  @ApiBearerAuth()
   async getCards(@GetUser() user: AuthInterface) {
     return await this.stripe.getCards(user.idStripe);
   }
 
-  @Get('wallet-amount')
+  @Get('user/wallet-amount')
   @IsClientOrAdmin()
   @UseAuth()
+  @ApiBearerAuth()
   async getWalletAmount(@GetUser() user: AuthInterface) {
     const service = new GetWalletAmountApplicationService(this.walletRepository, this.costumerRepository);
     return await service.execute({ idCustomer: user.idCostumer });
   }
+
+  @Delete('user/card/delete/:id')
+  @IsClientOrAdmin()
+  @UseAuth()
+  @ApiBearerAuth()
+  async deleteCard(@GetUser() user: AuthInterface, @Param('id') idCard: string) {
+    return await this.stripe.deleteCard(user.idStripe, idCard);
+  }
+
+  @Get('many')
+  @IsClientOrAdmin()
+  @UseAuth()
+  @ApiBearerAuth()
+  async getPayments() {}
 }

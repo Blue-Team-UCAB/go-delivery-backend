@@ -20,6 +20,7 @@ async function GoDely() {
     }),
   );
 
+  app.setGlobalPrefix('api');
   app.enableCors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -29,7 +30,7 @@ async function GoDely() {
   app.connectMicroservice<MicroserviceOptions>(RabbitMQMicroservice(app.get(ConfigService)));
   await app.startAllMicroservices();
 
-  const config = new DocumentBuilder().setTitle('Go Dely API').setDescription('Delivery app backend done with DDD.').setVersion('1.0').build();
+  const config = new DocumentBuilder().setTitle('Go Dely API').setDescription('Delivery app backend done with DDD.').setVersion('1.0').addBearerAuth().build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/documentation', app, documentFactory);
 

@@ -1,5 +1,5 @@
 import { Body, Controller, Inject, Post, Get, Param, Query, ValidationPipe } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { BundleRepository } from '../../../bundle/infrastructure/repository/bundle.repository';
 import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-generator';
 import { ProductRepository } from '../../../product/infrastructure/repository/product.repository';
@@ -30,6 +30,8 @@ import { CancelOrderDto } from '../dto/cancel-oder.dto';
 import { CancelOrderApplicationService } from 'src/order/application/commands/cancel-oder.application.service';
 import { IUserRepository } from 'src/auth/application/repository/user-repository.interface';
 import { UserRepository } from 'src/auth/infrastructure/repository/user.repository';
+import { ReportOrder } from '../dto/report-order.dto';
+import { ReportOrderApplicationService } from 'src/order/application/commands/report-order.application.service';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -67,6 +69,7 @@ export class OrderController {
   @Post()
   @UseAuth()
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async createOrder(@Body() createOrderDto: CreateOrderDto, @GetUser() user: AuthInterface) {
     const service = new CreateOrderApplicationService(
       this.orderRepository,
@@ -85,6 +88,7 @@ export class OrderController {
 
   @Get(':id')
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getOrderId(@Param('id') id: string) {
     const service = new GetOrderByIdApplicationService(this.orderRepository, this.s3Service, this.dateService);
     return await service.execute({ id: id });
@@ -93,6 +97,7 @@ export class OrderController {
   @Get()
   @UseAuth()
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getOrderPage(@Query(ValidationPipe) query: GetOrderPageDto, @GetUser() user: AuthInterface) {
     const { page, perpage, status } = query;
     const service = new GetOrderByPageApplicationService(this.orderRepository, this.dateService);
@@ -101,6 +106,7 @@ export class OrderController {
 
   @Post('change-status')
   @IsAdmin()
+  @ApiBearerAuth()
   async changeOrderStatus(@Body() data: ChangeOrderStatusDto) {
     const service = new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher, this.courierRepository, this.userRepository);
     return await service.execute({ ...data });
@@ -109,8 +115,25 @@ export class OrderController {
   @Post('cancel')
   @UseAuth()
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async cancelOrder(@Body() data: CancelOrderDto, @GetUser() user: AuthInterface) {
     const service = new CancelOrderApplicationService(this.orderRepository, this.stripeService, this.customerRepository, this.walletRepository);
     return await service.execute({ ...data, idCustomer: user.idCostumer, idStripe: user.idStripe });
+  }
+
+  @Post('report')
+  @IsClientOrAdmin()
+  @UseAuth()
+  @ApiBearerAuth()
+  @ApiBody({
+    type: ReportOrder,
+  })
+  async reportOrder(@Body() data: ReportOrder, @GetUser() user: AuthInterface) {
+    const service = new ReportOrderApplicationService(this.orderRepository, this.stripeService, this.customerRepository, this.walletRepository);
+    return await service.execute({
+      ...data,
+      idCustomer: user.idCostumer,
+      idStripe: user.idStripe,
+    });
   }
 }

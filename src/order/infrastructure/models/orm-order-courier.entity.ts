@@ -12,6 +12,11 @@ export class OrderCourierORMEntity {
   @Column()
   phone: string;
 
+  @Column({
+    nullable: true,
+  })
+  image: string;
+
   @OneToMany(() => OrderORMEntity, order => order.courier_Orders)
   orders: OrderORMEntity[];
 }

@@ -13,13 +13,14 @@ export class CourierRepository extends Repository<OrderCourierORMEntity> impleme
 
   async findAllCourier(): Promise<Result<CourierDto[]>> {
     try {
-      const courier = await this.createQueryBuilder('courier').select(['courier.id', 'courier.name', 'courier.phone']).getMany();
+      const courier = await this.createQueryBuilder('courier').select(['courier.id', 'courier.name', 'courier.phone', 'courier.image']).getMany();
       let couriers: CourierDto[] = [];
       courier.map(courier => {
         couriers.push({
           id: courier.id,
           name: courier.name,
           phone: courier.phone,
+          image: courier.image,
         });
       });
       return Result.success<CourierDto[]>(couriers, 200);

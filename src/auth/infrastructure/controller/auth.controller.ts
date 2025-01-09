@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Inject, Get } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Get, Patch, Put } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UserRepository } from '../repository/user.repository';
 import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-generator';
 import { Sha256Service } from '../../../common/infrastructure/providers/services/sha256Service.service';
@@ -26,6 +26,7 @@ import { IsClientOrAdmin } from '../jwt/decorator/isClientOrAdmin.decorator';
 import { PushTokenDto } from '../dto/push-token.dto';
 import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
 import { AuthPushTokenUserApplicationService } from 'src/auth/application/services/auth-push-token.user.application.service';
+import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -45,6 +46,7 @@ export class AuthController {
     private readonly uuidGenator: UuidGenerator,
     private readonly codeGenerator: CodeVerificationService,
     private readonly mailService: MailSenderService,
+    private readonly s3Service: S3Service,
   ) {
     this.userRepository = new UserRepository(this.dataSource);
     this.jwtGenerator = new JwtGenerator(this.jwtService);
@@ -53,25 +55,37 @@ export class AuthController {
     this.stripe = new StripeService();
   }
 
+  @ApiBody({
+    type: SignUpUserDto,
+  })
   @Post('register')
   async create(@Body() createUser: SignUpUserDto) {
     const service = new AuthCreateUserApplicationService(this.userRepository, this.uuidGenator, this.sha256Service, this.jwtGenerator, this.costumerRepository, this.walletRepository, this.stripe);
     return await service.execute(createUser);
   }
 
+  @ApiBody({
+    type: SignInUserDto,
+  })
   @Post('login')
   async login(@Body() user: SignInUserDto) {
     const service = new AuthLoginUserApplicationService(this.userRepository, this.sha256Service, this.jwtGenerator, this.costumerRepository);
     return await service.execute(user);
   }
 
+  @ApiBody({
+    type: ForgotPasswordDto,
+  })
   @Post('forgot/password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
     const service = new ForgotPasswordUserApplicationService(this.userRepository, this.sha256Service, this.codeGenerator, this.mailService, this.costumerRepository);
     return await service.execute(data);
   }
 
-  @Post('change/password')
+  @ApiBody({
+    type: ChangePasswordCodeDto,
+  })
+  @Put('change/password')
   async changePassword(@Body() data: ChangePasswordCodeDto) {
     const service = new ChangePasswordCodeUserApplicationService(this.userRepository, this.sha256Service);
     return await service.execute(data);
@@ -79,16 +93,10 @@ export class AuthController {
 
   @Get('current')
   @UseAuth()
-  async current(@GetUser() user: AuthInterface) {
-    const service = new AuthCurrentApplicationService(this.costumerRepository);
-    return await service.execute({ idCostumer: user.idCostumer, id: user.idUser, role: user.roleUser, email: user.emailUser });
-  }
-
-  @Post('push-token')
-  @UseAuth()
   @IsClientOrAdmin()
-  async pushToken(@GetUser() user: AuthInterface, @Body() data: PushTokenDto) {
-    const service = new AuthPushTokenUserApplicationService(this.userRepository);
-    return await service.execute({ ...data, idUser: user.idUser });
+  @ApiBearerAuth()
+  async current(@GetUser() user: AuthInterface) {
+    const service = new AuthCurrentApplicationService(this.costumerRepository, this.s3Service);
+    return await service.execute({ idCostumer: user.idCostumer, id: user.idUser, role: user.roleUser, email: user.emailUser });
   }
 }

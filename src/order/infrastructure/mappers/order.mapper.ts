@@ -29,6 +29,7 @@ import { OrderCourierName } from '../../domain/value-objects/order-courier-name'
 import { OrderCourierPhone } from '../../domain/value-objects/order-courier-phone';
 import { OrderStateHistoryORMEntity } from '../models/orm-order-state.entity';
 import { CouponId } from '../../../coupon/domain/value-objects/coupon.id';
+import { OrderCourierImage } from 'src/order/domain/value-objects/order-courier-image';
 
 export class OrderMapper implements IMapper<Order, OrderORMEntity> {
   async fromDomainToPersistence(domain: Order): Promise<OrderORMEntity> {
@@ -105,7 +106,12 @@ export class OrderMapper implements IMapper<Order, OrderORMEntity> {
       return OrderState.create(state.state as OrderStates, state.date);
     });
     const courier = persistence.courier_Orders
-      ? new OrderCourier(OrderCourierId.create(persistence.courier_Orders.id), OrderCourierName.create(persistence.courier_Orders.name), OrderCourierPhone.create(persistence.courier_Orders.phone))
+      ? new OrderCourier(
+          OrderCourierId.create(persistence.courier_Orders.id),
+          OrderCourierName.create(persistence.courier_Orders.name),
+          OrderCourierPhone.create(persistence.courier_Orders.phone),
+          OrderCourierImage.create(persistence.courier_Orders.image),
+        )
       : null;
     const order = new Order(
       OrderId.create(persistence.id_Order),

@@ -84,4 +84,23 @@ export class StripeService implements IStripeService {
       return false;
     } catch (e) {}
   }
+
+  async deleteCard(userId: string, cardId: string): Promise<boolean> {
+    try {
+      const paymentMethods = await this.stripe.paymentMethods.list({
+        customer: userId,
+        type: 'card',
+      });
+      const cardExists = paymentMethods.data.some(method => method.id === cardId);
+      if (!cardExists) {
+        console.error('Card does not belong to the user');
+        return false;
+      }
+      await this.stripe.paymentMethods.detach(cardId);
+      return true;
+    } catch (err) {
+      console.error('Error deleting card:', err);
+      return false;
+    }
+  }
 }

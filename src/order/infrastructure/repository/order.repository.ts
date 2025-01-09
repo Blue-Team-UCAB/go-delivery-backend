@@ -91,6 +91,7 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
           'courier_Orders.id',
           'courier_Orders.name',
           'courier_Orders.phone',
+          'courier_Orders.image',
           'orderProducts.id',
           'orderProducts.quantity',
           'product.id_Product',
@@ -199,6 +200,24 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
       newStateHistory.state = status;
       newStateHistory.date = date;
       order.order_StateHistory.push(newStateHistory);
+      await this.save(order);
+      return Result.success<boolean>(true, 200);
+    } catch (e) {
+      return Result.fail<boolean>(null, 500, e.message);
+    }
+  }
+
+  async updateOrderReport(id: string, date: Date, report: string): Promise<Result<boolean>> {
+    try {
+      const order = await this.findOne({ where: { id_Order: id } });
+
+      if (!order) {
+        return Result.fail<boolean>(null, 404, 'No existe la orden solicitada');
+      }
+
+      order.claimDate_Order = date;
+      order.claim_Order = report;
+
       await this.save(order);
       return Result.success<boolean>(true, 200);
     } catch (e) {

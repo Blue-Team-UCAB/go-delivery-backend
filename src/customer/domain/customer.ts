@@ -17,12 +17,14 @@ import { DirectionLonguitud } from './value-objects/direction-longuitude';
 import { DirectionAddedEvent } from './events/direction-added.event';
 import { DirectionNotFound } from './exceptions/direction-not-found.exception';
 import { DirectionName } from './value-objects/direction-name';
+import { CustomerImage } from './value-objects/customer-image';
 
 export class Customer extends AggregateRoot<CustomerId> {
   private name: CustomerName;
   private phone: CustomerPhone;
   private wallet: Wallet;
   private direction?: Direction[];
+  private image?: CustomerImage;
 
   get Name(): CustomerName {
     return this.name;
@@ -38,6 +40,14 @@ export class Customer extends AggregateRoot<CustomerId> {
 
   get Direction(): Direction[] {
     return this.direction;
+  }
+
+  get Image(): CustomerImage {
+    return this.image;
+  }
+
+  updateImage(image: CustomerImage): void {
+    this.image = image;
   }
 
   sumWallet(amount: WalletAmount): void {
@@ -61,8 +71,25 @@ export class Customer extends AggregateRoot<CustomerId> {
     dir.modify(direction, latitude, longuitud, name_dir);
   }
 
-  constructor(id: CustomerId, name: CustomerName, phone: CustomerPhone, idWallet: WalletId, amountWallet: WalletAmount, currencyWallet: WalletCurrency, direction?: Direction[]) {
-    const costumerCreated = CustomerCreatedEvent.create(id, name, phone, new Wallet(idWallet, amountWallet, currencyWallet), direction);
+  deleteDirection(id: DirectionId): void {
+    const dir = this.direction.find(dir => dir.Id.equals(id));
+    if (!dir) {
+      throw new DirectionNotFound('Direction not found');
+    }
+    this.direction = this.direction.filter(dir => !dir.Id.equals(id));
+  }
+
+  constructor(
+    id: CustomerId,
+    name: CustomerName,
+    phone: CustomerPhone,
+    idWallet: WalletId,
+    amountWallet: WalletAmount,
+    currencyWallet: WalletCurrency,
+    direction?: Direction[],
+    image?: CustomerImage,
+  ) {
+    const costumerCreated = CustomerCreatedEvent.create(id, name, phone, new Wallet(idWallet, amountWallet, currencyWallet), direction, image);
     super(id, costumerCreated);
   }
 
@@ -72,6 +99,7 @@ export class Customer extends AggregateRoot<CustomerId> {
       this.phone = event.phone;
       this.wallet = event.wallet;
       this.direction = event.direction;
+      this.image = event.image;
     }
     if (event instanceof DirectionAddedEvent) {
       this.direction.push(event.direction);
