@@ -127,4 +127,8 @@ export class Order extends AggregateRoot<OrderId> {
   public assignCourier(id: OrderCourierId, name: OrderCourierName, phone: OrderCourierPhone, image: OrderCourierImage): void {
     this.courier = new OrderCourier(id, name, phone, image);
   }
+
+  public reportOrder(report: OrderReport): void {
+    this.report = report;
+  }
 }
