@@ -20,7 +20,6 @@ export class AuthCurrentApplicationService implements IApplicationService<Curren
 
     let image = null;
 
-    console.log(costumer.Value);
     if (costumer.Value.Image) {
       image = await this.s3Service.getFile(costumer.Value.Image.Url);
     }
