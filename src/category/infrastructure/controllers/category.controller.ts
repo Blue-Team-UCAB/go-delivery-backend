@@ -15,8 +15,7 @@ import { GetCategoryByPageApplicationService } from 'src/category/application/qu
 @ApiTags('Categories')
 @Controller('category')
 export class CategoryController {
-  private categoryRepository;
-  CategoryRepository;
+  private readonly categoryRepository: CategoryRepository;
 
   constructor(
     @Inject('BaseDeDatos')

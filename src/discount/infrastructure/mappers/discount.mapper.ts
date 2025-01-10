@@ -44,15 +44,15 @@ export class DiscountMapper implements IMapper<Discount, DiscountORMEntity> {
   }
 
   async fromPersistenceToDomain(persistence: DiscountORMEntity): Promise<Discount> {
-    const products = persistence.discount_Products.map(discountProduct => {
+    const products = (persistence.discount_Products || []).map(discountProduct => {
       return ProductId.create(discountProduct.product.id_Product);
     });
 
-    const bundles = persistence.discount_Bundles.map(discountBundle => {
+    const bundles = (persistence.discount_Bundles || []).map(discountBundle => {
       return BundleId.create(discountBundle.bundle.id);
     });
 
-    const categories = persistence.discount_Categories.map(discountCategory => {
+    const categories = (persistence.discount_Categories || []).map(discountCategory => {
       return CategoryId.create(discountCategory.category.id_Category);
     });
 
