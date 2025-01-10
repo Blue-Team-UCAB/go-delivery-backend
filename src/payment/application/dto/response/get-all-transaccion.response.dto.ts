@@ -3,4 +3,5 @@ export interface GetAllTransaccionResponseDto {
   date: Date;
   amount: number;
   method: string;
+  debit: boolean;
 }
