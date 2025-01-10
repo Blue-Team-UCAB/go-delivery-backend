@@ -14,7 +14,7 @@ export class PaymentName implements ValueObject<PaymentName> {
   }
 
   validate(): boolean {
-    return ['Binance', 'Zelle', 'PagoMovil'].includes(this._name);
+    return ['Binance', 'Zelle', 'PagoMovil', 'Refund'].includes(this._name);
   }
 
   get Name(): string {

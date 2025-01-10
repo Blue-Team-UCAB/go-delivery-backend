@@ -8,6 +8,15 @@ import { IStripeService } from 'src/common/application/stripe-service/stripe-ser
 import { ICustomerRepository } from 'src/customer/domain/repositories/customer-repository.interface';
 import { WalletAmount } from 'src/customer/domain/value-objects/wallet-amount';
 import { IWalletRepository } from 'src/customer/domain/repositories/wallet-repository.interface';
+import { IPaymentRepository } from 'src/payment/domain/repositories/payment-repository.interface';
+import { Payment } from 'src/payment/domain/payment';
+import { IdGenerator } from 'src/common/application/id-generator/id-generator.interface';
+import { PaymentId } from 'src/payment/domain/value-objects/payment-Id';
+import { PaymentName } from 'src/payment/domain/value-objects/payment-name';
+import { PaymentDate } from 'src/payment/domain/value-objects/payment-date';
+import { PaymentReference } from 'src/payment/domain/value-objects/payment-reference';
+import { CustomerId } from 'src/customer/domain/value-objects/customer-id';
+import { PaymentAmount } from 'src/payment/domain/value-objects/payment-amount';
 
 export class CancelOrderApplicationService implements IApplicationService<CancelOrderEntryDto, CancelOrderResponseDto> {
   constructor(
@@ -15,6 +24,8 @@ export class CancelOrderApplicationService implements IApplicationService<Cancel
     private readonly stripeService: IStripeService,
     private readonly costumerRepository: ICustomerRepository,
     private readonly walletRepository: IWalletRepository,
+    private readonly paymentRepository: IPaymentRepository,
+    private readonly idGenerator: IdGenerator<string>,
   ) {}
   async execute(data: CancelOrderEntryDto): Promise<Result<CancelOrderResponseDto>> {
     const order = await this.orderRepository.findOrderById(data.orderId);
@@ -43,6 +54,22 @@ export class CancelOrderApplicationService implements IApplicationService<Cancel
       const cust = await this.walletRepository.saveWallet(constumer.Value.Wallet);
 
       if (!cust.isSuccess()) {
+        return Result.fail<CancelOrderResponseDto>(null, 500, 'Internal Server Error');
+      }
+      const id = await this.idGenerator.generateId();
+
+      const payment = new Payment(
+        PaymentId.create(id),
+        PaymentName.create('Refund'),
+        PaymentDate.create(new Date()),
+        PaymentAmount.create(order.Value.TotalAmount.Amount),
+        PaymentReference.create(order.Value.Id.Id),
+        CustomerId.create(data.idCustomer),
+      );
+
+      const pay = await this.paymentRepository.savePayment(payment);
+
+      if (!pay.isSuccess()) {
         return Result.fail<CancelOrderResponseDto>(null, 500, 'Internal Server Error');
       }
     }

@@ -32,6 +32,7 @@ import { IUserRepository } from 'src/auth/application/repository/user-repository
 import { UserRepository } from 'src/auth/infrastructure/repository/user.repository';
 import { ReportOrder } from '../dto/report-order.dto';
 import { ReportOrderApplicationService } from 'src/order/application/commands/report-order.application.service';
+import { PaymentRepository } from 'src/payment/infrastructure/repository/payment-repository';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -46,6 +47,7 @@ export class OrderController {
   private readonly courierRepository: CourierRepository;
   private readonly couponRepository: CouponRepository;
   private readonly userRepository: IUserRepository;
+  private readonly paymentRepository: PaymentRepository;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -64,6 +66,7 @@ export class OrderController {
     this.courierRepository = new CourierRepository(this.dataSource);
     this.couponRepository = new CouponRepository(this.dataSource);
     this.userRepository = new UserRepository(this.dataSource);
+    this.paymentRepository = new PaymentRepository(this.dataSource);
   }
 
   @Post()
@@ -117,7 +120,7 @@ export class OrderController {
   @IsClientOrAdmin()
   @ApiBearerAuth()
   async cancelOrder(@Body() data: CancelOrderDto, @GetUser() user: AuthInterface) {
-    const service = new CancelOrderApplicationService(this.orderRepository, this.stripeService, this.customerRepository, this.walletRepository);
+    const service = new CancelOrderApplicationService(this.orderRepository, this.stripeService, this.customerRepository, this.walletRepository, this.paymentRepository, this.uuidCreator);
     return await service.execute({ ...data, idCustomer: user.idCostumer, idStripe: user.idStripe });
   }
 
@@ -129,7 +132,7 @@ export class OrderController {
     type: ReportOrder,
   })
   async reportOrder(@Body() data: ReportOrder, @GetUser() user: AuthInterface) {
-    const service = new ReportOrderApplicationService(this.orderRepository, this.stripeService, this.customerRepository, this.walletRepository);
+    const service = new ReportOrderApplicationService(this.orderRepository, this.stripeService, this.customerRepository, this.walletRepository, this.paymentRepository, this.uuidCreator);
     return await service.execute({
       ...data,
       idCustomer: user.idCostumer,

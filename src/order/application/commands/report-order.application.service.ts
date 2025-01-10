@@ -9,6 +9,8 @@ import { IWalletRepository } from 'src/customer/domain/repositories/wallet-repos
 import { OrderReport } from 'src/order/domain/value-objects/order-report';
 import { CancelOrderApplicationService } from './cancel-oder.application.service';
 import { ReportOrderEntryDto } from '../dto/entry/report-oder.entry.dto';
+import { IPaymentRepository } from 'src/payment/domain/repositories/payment-repository.interface';
+import { IdGenerator } from 'src/common/application/id-generator/id-generator.interface';
 
 export class ReportOrderApplicationService implements IApplicationService<ReportOrderEntryDto, CancelOrderResponseDto> {
   constructor(
@@ -16,6 +18,8 @@ export class ReportOrderApplicationService implements IApplicationService<Report
     private readonly stripeService: IStripeService,
     private readonly customerRepository: ICustomerRepository,
     private readonly walletRepository: IWalletRepository,
+    private readonly paymentRepository: IPaymentRepository,
+    private readonly idGenerator: IdGenerator<string>,
   ) {}
 
   async execute(data: ReportOrderEntryDto): Promise<Result<CancelOrderResponseDto>> {
@@ -25,7 +29,7 @@ export class ReportOrderApplicationService implements IApplicationService<Report
       return Result.fail<CancelOrderResponseDto>(orden.Error, orden.StatusCode, orden.Message);
     }
 
-    const service = new CancelOrderApplicationService(this.orderRepository, this.stripeService, this.customerRepository, this.walletRepository);
+    const service = new CancelOrderApplicationService(this.orderRepository, this.stripeService, this.customerRepository, this.walletRepository, this.paymentRepository, this.idGenerator);
     const res = await service.execute(data);
 
     if (!res.isSuccess()) {

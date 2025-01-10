@@ -103,4 +103,58 @@ export class StripeService implements IStripeService {
       return false;
     }
   }
+
+  async getOrdersNotRefundWithStripe(userId: string): Promise<string[]> {
+    try {
+      const paymentIntents = await this.stripe.paymentIntents.list({
+        customer: userId,
+        limit: 100,
+      });
+
+      const validOrders: string[] = [];
+      for (const paymentIntent of paymentIntents.data) {
+        const charges = await this.stripe.charges.list({
+          payment_intent: paymentIntent.id,
+          limit: 1,
+        });
+        const hasRefund = charges.data.some(charge => charge.refunded);
+
+        if (!hasRefund && paymentIntent.metadata.idOrder) {
+          validOrders.push(paymentIntent.metadata.idOrder);
+        }
+      }
+
+      return validOrders;
+    } catch (err) {
+      console.error('Error getting orders with stripe:', err);
+      return [];
+    }
+  }
+
+  async getOrdersRefundWithStripe(idStripe: string): Promise<string[]> {
+    try {
+      const paymentIntents = await this.stripe.paymentIntents.list({
+        customer: idStripe,
+        limit: 100,
+      });
+
+      const validOrders: string[] = [];
+      for (const paymentIntent of paymentIntents.data) {
+        const charges = await this.stripe.charges.list({
+          payment_intent: paymentIntent.id,
+          limit: 1,
+        });
+        const hasRefund = charges.data.some(charge => charge.refunded);
+
+        if (hasRefund && paymentIntent.metadata.idOrder) {
+          validOrders.push(paymentIntent.metadata.idOrder);
+        }
+      }
+
+      return validOrders;
+    } catch (err) {
+      console.error('Error getting orders with stripe:', err);
+      return [];
+    }
+  }
 }
