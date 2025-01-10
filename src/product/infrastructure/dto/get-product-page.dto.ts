@@ -20,5 +20,17 @@ export class GetProductPageDto {
 
   @IsOptional()
   @IsString()
-  search?: string;
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  price?: string;
+
+  @IsOptional()
+  @IsString()
+  popular?: string;
+
+  @IsOptional()
+  @IsString()
+  discount?: string;
 }

@@ -15,11 +15,15 @@ import { IsAdmin } from '../../../auth/infrastructure/jwt/decorator/isAdmin.deco
 import { IsClientOrAdmin } from '../../../auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
 import { EventPublisher } from '../../../common/infrastructure/Event-Publisher/eventPublisher.service';
 import { DomainEvent } from 'src/common/domain/domain-event';
+import { DiscountRepository } from '../../../discount/infrastructure/repository/discount.repository';
+import { BestForTheCustomerStrategy } from 'src/common/infrastructure/select-discount-strategies/best-for-the-customer-strategy';
+import { DateService } from '../../../common/infrastructure/providers/services/date.service';
 
 @ApiTags('Products')
 @Controller('product')
 export class ProductController {
   private readonly productRepository: ProductRepository;
+  private readonly discountRepository: DiscountRepository;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -27,8 +31,11 @@ export class ProductController {
     private readonly s3Service: S3Service,
     private readonly uuidCreator: UuidGenerator,
     private readonly publisher: EventPublisher<DomainEvent>,
+    private readonly bestForTheCustomerStrategy: BestForTheCustomerStrategy,
+    private readonly dateService: DateService,
   ) {
     this.productRepository = new ProductRepository(this.dataSource);
+    this.discountRepository = new DiscountRepository(this.dataSource);
   }
 
   @Post()
@@ -41,18 +48,18 @@ export class ProductController {
     return (await service.execute(createProductDto)).Value;
   }
 
+  @Get('many')
+  @IsClientOrAdmin()
+  async getProductByPage(@Query(ValidationPipe) query: GetProductPageDto) {
+    const { page, perpage, category, name, price, popular, discount } = query;
+    const service = new GetProductByPageApplicationService(this.productRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService);
+    return (await service.execute({ page, perpage, category, name, price, popular, discount })).Value;
+  }
+
   @Get(':id')
   @IsClientOrAdmin()
   async getProductId(@Param('id') id: string) {
-    const service = new GetProductByIdApplicationService(this.productRepository, this.s3Service);
+    const service = new GetProductByIdApplicationService(this.productRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService);
     return (await service.execute({ id: id })).Value;
-  }
-
-  @Get()
-  @IsClientOrAdmin()
-  async getProductByPage(@Query(ValidationPipe) query: GetProductPageDto) {
-    const { page, perpage, category, search } = query;
-    const service = new GetProductByPageApplicationService(this.productRepository, this.s3Service);
-    return (await service.execute({ page, perpage, category, search })).Value;
   }
 }

@@ -1,3 +1,4 @@
+import { DiscountCategoryORMEntity } from 'src/discount/infrastructure/models/orm-discount-category';
 import { ProductCategoryORMEntity } from 'src/product/infrastructure/models/orm-product-category.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -14,4 +15,7 @@ export class CategoryORMEntity {
 
   @OneToMany(() => ProductCategoryORMEntity, productCategory => productCategory.category)
   product_Categories: ProductCategoryORMEntity[];
+
+  @OneToMany(() => DiscountCategoryORMEntity, discountCategory => discountCategory.category)
+  discount_Categories: DiscountCategoryORMEntity[];
 }

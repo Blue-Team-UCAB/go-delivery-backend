@@ -1,6 +1,6 @@
 import { IProductRepository } from '../../domain/repositories/product-repository.interface';
 import { ProductORMEntity as ProductoORM } from '../models/orm-product.entity';
-import { DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import { Result } from '../../../common/domain/result-handler/result';
 import { Product } from '../../domain/product';
 import { ProductMapper } from '../mappers/product.mapper';
@@ -46,9 +46,10 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
     }
   }
 
-  async findAllProducts(page: number, perpage: number, category?: string, search?: string): Promise<Result<Product[]>> {
+  async findAllProducts(page: number, perpage: number, category?: string, name?: string, price?: string, popular?: string, discount?: string): Promise<Result<Product[]>> {
     try {
       const skip = perpage * page - perpage;
+      const schema = process.env.PGDB_SCHEMA;
 
       const query = this.createQueryBuilder('product')
         .select([
@@ -74,11 +75,34 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
         query.andWhere('category.name_Category = :category', { category });
       }
 
-      if (search) {
-        query.andWhere('product.name_Product ILIKE :search OR product.description_Product ILIKE :search', { search: `%${search}%` });
+      if (name) {
+        query.andWhere('product.name_Product ILIKE :search OR product.description_Product ILIKE :search', { search: `%${name}%` });
+      }
+
+      if (price) {
+        const maxPrice = parseFloat(price);
+        query.andWhere('product.price_Product <= :maxPrice', { maxPrice });
+      }
+
+      if (popular) {
+        //logica para buscar los productos mas populares
+      }
+
+      if (discount) {
+        query.andWhere(
+          new Brackets(qb => {
+            qb.where(`EXISTS (SELECT 1 FROM ${schema}."DiscountProduct" dp WHERE dp."productIdProduct" = product."id_Product")`).orWhere(
+              `EXISTS (SELECT 1 FROM ${schema}."DiscountCategory" dc WHERE dc."categoryIdCategory" = category."id_Category")`,
+            );
+          }),
+        );
       }
 
       const products = await query.getMany();
+
+      if (!products || products.length === 0) {
+        return Result.success<Product[]>([], 200);
+      }
       const resp = await Promise.all(products.map(product => this.productMapper.fromPersistenceToDomain(product)));
       return Result.success<Product[]>(resp, 200);
     } catch (e) {

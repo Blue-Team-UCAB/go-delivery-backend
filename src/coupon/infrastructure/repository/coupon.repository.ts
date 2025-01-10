@@ -25,8 +25,8 @@ export class CouponRepository extends Repository<CouponORMEntity> implements ICo
 
       const couponDomain = await this.couponMapper.fromPersistenceToDomain(coupon);
       return Result.success<Coupon>(couponDomain, 200);
-    } catch (e) {
-      return Result.fail<Coupon>(null, 500, e.message);
+    } catch (error) {
+      return Result.fail<Coupon>(null, 500, error.message);
     }
   }
 
@@ -46,8 +46,8 @@ export class CouponRepository extends Repository<CouponORMEntity> implements ICo
       const couponsORM = await query.getMany();
       const coupons = await Promise.all(couponsORM.map(coupon => this.couponMapper.fromPersistenceToDomain(coupon)));
       return Result.success<Coupon[]>(coupons, 200);
-    } catch (e) {
-      return Result.fail<Coupon[]>(null, 500, e.message);
+    } catch (error) {
+      return Result.fail<Coupon[]>(null, 500, error.message);
     }
   }
 

@@ -1,5 +1,17 @@
-import { GetProductIdServiceResponseDto } from './get-product-id-service.response.dto';
-
 export interface GetProductPageServiceResponseDto {
-  products: GetProductIdServiceResponseDto[];
+  products: {
+    id: string;
+    name: string;
+    description: string;
+    currency: string;
+    price: number;
+    stock: number;
+    weight: number;
+    measurement: string;
+    images: string[];
+    discount: {
+      id: string;
+      percentage: number;
+    }[];
+  }[];
 }

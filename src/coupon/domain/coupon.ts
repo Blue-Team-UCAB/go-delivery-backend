@@ -8,6 +8,7 @@ import { CouponNumberUses } from './value-objects/coupon-number-uses';
 import { CouponPorcentage } from './value-objects/coupon-porcentage';
 import { CouponStartDate } from './value-objects/coupon-start-date';
 import { CouponId } from './value-objects/coupon.id';
+import { InvalidCouponException } from './exceptions/invalid-coupon.exception';
 
 export class Coupon extends AggregateRoot<CouponId> {
   private startingDate: CouponStartDate;
@@ -48,7 +49,7 @@ export class Coupon extends AggregateRoot<CouponId> {
 
   protected checkValidState(): void {
     if (!this.startingDate || !this.expirationDate || !this.porcentage || !this.code || !this.message || !this.numberUses) {
-      throw new Error('Coupon not valid');
+      throw new InvalidCouponException('Coupon not valid');
     }
   }
 

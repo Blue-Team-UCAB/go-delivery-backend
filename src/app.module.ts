@@ -29,8 +29,10 @@ import { OrderController } from './order/infrastructure/controllers/order.contro
 import { OrderStatusChangeCosumerService } from './order/infrastructure/event-listener/change-order-status.service';
 import { CouponController } from './coupon/infrastructure/controllers/coupon.controller';
 import { FirebaseNotifierService } from './common/infrastructure/providers/services/push.notification.service';
+import { DiscountController } from './discount/infrastructure/controllers/discount.controller';
 import { UserController } from './customer/infrastructure/controller/costumer.controller';
 import { NotificationsController } from './auth/infrastructure/controller/notification.controller';
+import { BestForTheCustomerStrategy } from './common/infrastructure/select-discount-strategies/best-for-the-customer-strategy';
 
 @Module({
   imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule, HttpModule],
@@ -45,6 +47,7 @@ import { NotificationsController } from './auth/infrastructure/controller/notifi
     CreateProductConsumerService,
     PaymentController,
     OrderStatusChangeCosumerService,
+    DiscountController,
     UserController,
     NotificationsController,
   ],
@@ -59,6 +62,7 @@ import { NotificationsController } from './auth/infrastructure/controller/notifi
     EventPublisher,
     MailSenderService,
     UserEmailProvider,
+    BestForTheCustomerStrategy,
     DateService,
     UuidGenerator,
     CodeVerificationService,
