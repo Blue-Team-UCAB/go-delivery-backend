@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, UnauthorizedException } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-generator';
 import { PaymentCheckPagoMovil } from 'src/common/infrastructure/payment-check/payment-check-pagoMovil';
@@ -19,6 +19,7 @@ import { GetWalletAmountApplicationService } from 'src/payment/application/respo
 import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
 import { GetAllPaymentsApplicationService } from 'src/payment/application/get-all-transaccion.application.service';
 import { OrderRepository } from 'src/order/infrastructure/repository/order.repository';
+import { ErrorHandlerAspect } from 'src/common/application/aspects/error-handler-aspect';
 
 @ApiTags('Payment')
 @Controller('payment/method')
@@ -48,8 +49,13 @@ export class PaymentController {
   @ApiBearerAuth()
   @ApiBody({ type: PagoMovilEntryDto })
   async createPaymentPagoMovil(@Body() data: PagoMovilEntryDto, @GetUser() user: AuthInterface) {
-    const service = new CreatePaymentPagoMovilApplicationService(this.paymentCheckPagoMovil, this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
-    return await service.execute({ ...data, idCustomer: user.idCostumer, typo: 'Pago Movil' });
+    const service = new ErrorHandlerAspect(
+      new CreatePaymentPagoMovilApplicationService(this.paymentCheckPagoMovil, this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator),
+      error => {
+        throw new UnauthorizedException('Error al procesar el pago');
+      },
+    );
+    return (await service.execute({ ...data, idCustomer: user.idCostumer, typo: 'Pago Movil' })).Value;
   }
 
   @Post('recharge/zelle')
@@ -58,8 +64,13 @@ export class PaymentController {
   @ApiBearerAuth()
   @ApiBody({ type: ZelleEntryDto })
   async createPaymentZelle(@Body() data: ZelleEntryDto, @GetUser() user: AuthInterface) {
-    const service = new CreatePaymentPagoMovilApplicationService(new PaymentCheckZelle(), this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator);
-    return await service.execute({ ...data, date: new Date(), idCustomer: user.idCostumer, typo: 'Zelle' });
+    const service = new ErrorHandlerAspect(
+      new CreatePaymentPagoMovilApplicationService(new PaymentCheckZelle(), this.costumerRepository, this.walletRepository, this.paymentRepository, this.uuidGenator),
+      error => {
+        throw new UnauthorizedException('Error al procesar el pago');
+      },
+    );
+    return (await service.execute({ ...data, date: new Date(), idCustomer: user.idCostumer, typo: 'Zelle' })).Value;
   }
 
   @Post('user/add/card')
@@ -84,8 +95,10 @@ export class PaymentController {
   @UseAuth()
   @ApiBearerAuth()
   async getWalletAmount(@GetUser() user: AuthInterface) {
-    const service = new GetWalletAmountApplicationService(this.walletRepository, this.costumerRepository);
-    return await service.execute({ idCustomer: user.idCostumer });
+    const service = new ErrorHandlerAspect(new GetWalletAmountApplicationService(this.walletRepository, this.costumerRepository), error => {
+      throw new UnauthorizedException('Error al obtener el monto de la billetera');
+    });
+    return (await service.execute({ idCustomer: user.idCostumer })).Value;
   }
 
   @Delete('user/card/delete/:id')
@@ -107,7 +120,9 @@ export class PaymentController {
   @UseAuth()
   @ApiBearerAuth()
   async getPaymentsByUser(@GetUser() user: AuthInterface) {
-    const service = new GetAllPaymentsApplicationService(this.paymentRepository, this.orderRepository, this.stripe);
-    return await service.execute({ idCustomer: user.idCostumer, idStripe: user.idStripe });
+    const service = new ErrorHandlerAspect(new GetAllPaymentsApplicationService(this.paymentRepository, this.orderRepository, this.stripe), error => {
+      throw new UnauthorizedException('Error al obtener las transacciones');
+    });
+    return (await service.execute({ idCustomer: user.idCostumer, idStripe: user.idStripe })).Value;
   }
 }
