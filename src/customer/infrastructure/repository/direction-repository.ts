@@ -61,7 +61,6 @@ export class DirectionRepository extends Repository<DirectionOrm> implements IDi
       await this.delete(id);
       return Result.success<boolean>(true, 204);
     } catch (e) {
-      console.log(e);
       return Result.fail(null, 500, e.message);
     }
   }

@@ -43,7 +43,8 @@ export class GetAllPaymentsApplicationService implements IApplicationService<Get
         type: `Devolucion de la orden #${payment.Reference.Reference.slice(-5)}`,
         date: payment.Date.Date,
         amount: payment.Amount.Amount,
-        method: 'Wallet',
+        method: 'Cartera',
+        debit: true,
       });
     }
 
@@ -61,6 +62,7 @@ export class GetAllPaymentsApplicationService implements IApplicationService<Get
         date: payment.Date.Date,
         amount: payment.Amount.Amount,
         method: payment.Name.Name,
+        debit: true,
       });
     }
 
@@ -90,6 +92,7 @@ export class GetAllPaymentsApplicationService implements IApplicationService<Get
         date: order.CreatedDate.CreatedDate,
         amount: -order.TotalAmount.Amount,
         method: 'Tarjeta de Crédito',
+        debit: false,
       });
     }
 
@@ -99,6 +102,7 @@ export class GetAllPaymentsApplicationService implements IApplicationService<Get
         date: order.CreatedDate.CreatedDate,
         amount: order.TotalAmount.Amount,
         method: 'Tarjeta de Crédito',
+        debit: true,
       });
     }
 
@@ -116,6 +120,7 @@ export class GetAllPaymentsApplicationService implements IApplicationService<Get
         date: order.CreatedDate.CreatedDate,
         amount: -order.TotalAmount.Amount,
         method: 'Wallet',
+        debit: false,
       });
     }
 

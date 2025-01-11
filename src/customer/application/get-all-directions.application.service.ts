@@ -19,8 +19,9 @@ export class GetAllDirectionApplicationService implements IApplicationService<Ge
         id: direction.Id.Id,
         name: direction.Name.Name,
         direction: direction.Description.Description,
-        longitude: direction.Longuitud.Longuitud,
-        latitude: direction.Latitude.Latitude,
+        long: direction.Longuitud.Longuitud,
+        lat: direction.Latitude.Latitude,
+        favorite: false,
       };
     });
 

@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, InternalServerErrorException, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { CustomerRepository } from '../repository/costumer-repository';
-import { DataSource } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import { UseAuth } from 'src/auth/infrastructure/jwt/decorator/useAuth.decorator';
 import { AddDirecionEntryDto } from '../dto/entry/add-direction.entry.dto';
 import { AddDirectionApplicationService } from 'src/customer/application/add-direction.application.service';
@@ -19,6 +19,7 @@ import { UpdateCustomerImageApplicationService } from 'src/customer/application/
 import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { DeleteDirectionApplicationService } from 'src/customer/application/delete-direction.application.service';
+import { ErrorHandlerAspect } from 'src/common/application/aspects/error-handler-aspect';
 
 @Controller('user')
 export class UserController {
@@ -52,10 +53,12 @@ export class UserController {
   @ApiBearerAuth()
   @IsClientOrAdmin()
   async UpdateImage(@Body() updateCustomerImage: UpdateCustomerImageEntryDto, @GetUser() user: AuthInterface, @UploadedFile() image: Express.Multer.File) {
-    const service = new UpdateCustomerImageApplicationService(this.customerRepository, this.uuidCreator, this.s3Service);
+    const service = new ErrorHandlerAspect(new UpdateCustomerImageApplicationService(this.customerRepository, this.uuidCreator, this.s3Service), error => {
+      throw new InternalServerErrorException('Error al actualizar la imagen del usuario');
+    });
     updateCustomerImage.contentType = image.mimetype;
     updateCustomerImage.imageBuffer = image.buffer;
-    return await service.execute({ customerId: user.idCostumer, ...updateCustomerImage });
+    return (await service.execute({ customerId: user.idCostumer, ...updateCustomerImage })).Value;
   }
 
   @ApiBody({
@@ -66,8 +69,10 @@ export class UserController {
   @ApiBearerAuth()
   @IsClientOrAdmin()
   async AddDirecion(@Body() addDirection: AddDirecionEntryDto, @GetUser() user: AuthInterface) {
-    const service = new AddDirectionApplicationService(this.customerRepository, this.uuidCreator);
-    return await service.execute({ costumerId: user.idCostumer, ...addDirection });
+    const service = new ErrorHandlerAspect(new AddDirectionApplicationService(this.customerRepository, this.uuidCreator), error => {
+      throw new InternalServerErrorException('Error al agregar la direccion del usuario');
+    });
+    return (await service.execute({ costumerId: user.idCostumer, ...addDirection, latitude: addDirection.lat, longitude: addDirection.long })).Value;
   }
 
   @Get('address/many')
@@ -75,8 +80,10 @@ export class UserController {
   @ApiBearerAuth()
   @IsClientOrAdmin()
   async GetAllDirections(@GetUser() user: AuthInterface) {
-    const service = new GetAllDirectionApplicationService(this.directionRepository);
-    return await service.execute({ costumerId: user.idCostumer });
+    const service = new ErrorHandlerAspect(new GetAllDirectionApplicationService(this.directionRepository), error => {
+      throw new InternalServerErrorException('Error al obtener las direcciones del usuario');
+    });
+    return (await service.execute({ costumerId: user.idCostumer })).Value;
   }
 
   @Get('address/:id')
@@ -84,8 +91,10 @@ export class UserController {
   @UseAuth()
   @ApiBearerAuth()
   async GetDirection(@Param('id') idDirection: string) {
-    const service = new GetDirectionApplicationService(this.directionRepository);
-    return await service.execute({ idDirection: idDirection });
+    const service = new ErrorHandlerAspect(new GetDirectionApplicationService(this.directionRepository), error => {
+      throw new InternalServerErrorException('Error al obtener la direccion del usuario');
+    });
+    return (await service.execute({ idDirection: idDirection })).Value;
   }
 
   @Patch('update/address')
@@ -96,8 +105,10 @@ export class UserController {
   @IsClientOrAdmin()
   @UseAuth()
   async ModifyDirection(@Body() modifyDirection: ModifyDirectionEntryDto, @GetUser() user: AuthInterface) {
-    const service = new ModifiedDirecionApplicationService(this.customerRepository);
-    return await service.execute({ costumerId: user.idCostumer, ...modifyDirection });
+    const service = new ErrorHandlerAspect(new ModifiedDirecionApplicationService(this.customerRepository), error => {
+      throw new InternalServerErrorException('Error al modificar la direccion del usuario');
+    });
+    return (await service.execute({ costumerId: user.idCostumer, ...modifyDirection, latitude: modifyDirection.lat, longitude: modifyDirection.long })).Value;
   }
 
   @Delete('delete/address/:id')
@@ -105,7 +116,9 @@ export class UserController {
   @ApiBearerAuth()
   @IsClientOrAdmin()
   async DeleteDirection(@Param('id') idDirection: string, @GetUser() user: AuthInterface) {
-    const service = new DeleteDirectionApplicationService(this.customerRepository, this.directionRepository);
-    return await service.execute({ idCustomer: user.idCostumer, idDirection: idDirection });
+    const service = new ErrorHandlerAspect(new DeleteDirectionApplicationService(this.customerRepository, this.directionRepository), error => {
+      throw new InternalServerErrorException('Error al eliminar la direccion del usuario');
+    });
+    return (await service.execute({ idCustomer: user.idCostumer, idDirection: idDirection })).Value;
   }
 }

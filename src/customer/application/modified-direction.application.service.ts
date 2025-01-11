@@ -39,8 +39,9 @@ export class ModifiedDirecionApplicationService implements IApplicationService<M
         id: data.directionId,
         name: data.name,
         direction: data.direction,
-        latitude: data.latitude,
-        longitude: data.longitude,
+        lat: data.latitude,
+        long: data.longitude,
+        favorite: false,
       },
       200,
     );

@@ -13,8 +13,8 @@ export class OrderStatusChangeCosumerService<T extends DataDto> implements IList
     data.data.linkedDivices.forEach(token => {
       const msg: PushNotificationDto = {
         token: token,
-        title: 'Order status changed',
-        body: `Your order status has been changed to: ${data.data.state._state.toLowerCase()}`,
+        title: `Orden #${data.data.idOrder._id.slice(-5)} actualizada`,
+        body: `El estatus de tu orden ha cambiado a: ${data.data.state._state.toLowerCase()}`,
       };
       this.firebaseNotifierService.sendNotification(msg);
     });

@@ -5,4 +5,11 @@ export interface CurrentResponseServiceDto {
   phone: string;
   type: string;
   image: string;
+  wallet: {
+    walletId: string;
+    Ballance: {
+      amount: number;
+      currency: string;
+    };
+  };
 }

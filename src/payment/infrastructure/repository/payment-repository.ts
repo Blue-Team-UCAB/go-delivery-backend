@@ -39,7 +39,6 @@ export class PaymentRepository extends Repository<PaymentORM> implements IPaymen
 
       return Result.success<Payment[]>(payments, 200);
     } catch (error) {
-      console.log(error);
       return Result.fail<Payment[]>(null, 500, 'Internal server error');
     }
   }

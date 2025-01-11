@@ -1,7 +1,8 @@
 export interface GetDirectionResponseDto {
   id: string;
   direction: string;
-  longitude: string;
-  latitude: string;
+  favorite: boolean;
+  long: string;
+  lat: string;
   name: string;
 }
