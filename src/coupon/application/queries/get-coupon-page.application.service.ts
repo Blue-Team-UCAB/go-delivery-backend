@@ -6,7 +6,6 @@ import { IDateService } from '../../../common/application/date-service/date-serv
 import { GetCouponPageServiceEntryDto } from '../dto/entry/get-coupon-page-service-entry.dto';
 import { GetCouponPageServiceResponseDto } from '../dto/response/get-coupon-page-service-response.dto';
 
-@Injectable()
 export class GetCouponPageApplicationService implements IApplicationService<GetCouponPageServiceEntryDto, GetCouponPageServiceResponseDto> {
   constructor(
     private readonly couponRepository: ICouponRepository,

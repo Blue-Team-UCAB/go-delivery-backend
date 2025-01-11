@@ -51,18 +51,18 @@ export class BundleController {
     return await service.execute(createBundleDto);
   }
 
-  @Get(':id')
-  @IsClientOrAdmin()
-  async getBundleId(@Param('id') id: string) {
-    const service = new GetBundleByIdApplicationService(this.bundleRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService);
-    return await service.execute({ id: id });
-  }
-
-  @Get()
+  @Get('many')
   @IsClientOrAdmin()
   async getBundleByPage(@Query(ValidationPipe) query: GetBundlePageDto) {
     const { page, perpage } = query;
     const service = new GetBundleByPageApplicationService(this.bundleRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService);
     return await service.execute({ page, perpage });
+  }
+
+  @Get(':id')
+  @IsClientOrAdmin()
+  async getBundleId(@Param('id') id: string) {
+    const service = new GetBundleByIdApplicationService(this.bundleRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService);
+    return await service.execute({ id: id });
   }
 }

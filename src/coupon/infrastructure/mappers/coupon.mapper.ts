@@ -8,6 +8,10 @@ import { CouponPorcentage } from '../../domain/value-objects/coupon-porcentage';
 import { CouponCode } from '../../domain/value-objects/coupon-code';
 import { CouponMessage } from '../../domain/value-objects/coupon-message';
 import { CouponNumberUses } from '../../domain/value-objects/coupon-number-uses';
+import { CouponCustomerORMEntity } from '../models/orm-coupon-costumer';
+import { CouponCustomer } from '../../domain/entities/coupon-customer';
+import { CustomerId } from '../../../customer/domain/value-objects/customer-id';
+import { CouponCustomerRemainingUses } from '../../domain/value-objects/coupon-customer-remaining-uses';
 
 export class CouponMapper implements IMapper<Coupon, CouponORMEntity> {
   async fromDomainToPersistence(domain: Coupon): Promise<CouponORMEntity> {
@@ -20,10 +24,20 @@ export class CouponMapper implements IMapper<Coupon, CouponORMEntity> {
     couponORM.title = domain.Message.Title;
     couponORM.message = domain.Message.Message;
     couponORM.numberUses = domain.NumberUses.NumberUses;
+    couponORM.coupon_Customers = domain.Customers.map(customer => {
+      const couponCustomerORM = new CouponCustomerORMEntity();
+      couponCustomerORM.customer = { id_Costumer: customer.Id.Id } as any;
+      couponCustomerORM.remainingUses = customer.RemainingUses.RemainingUses;
+      return couponCustomerORM;
+    });
     return couponORM;
   }
 
   async fromPersistenceToDomain(persistence: CouponORMEntity): Promise<Coupon> {
+    const customers = persistence.coupon_Customers.map(couponCustomer => {
+      return new CouponCustomer(CustomerId.create(couponCustomer.customer.id_Costumer), CouponCustomerRemainingUses.create(couponCustomer.remainingUses));
+    });
+
     return new Coupon(
       CouponId.create(persistence.id),
       CouponStartDate.create(persistence.startDate),
@@ -32,6 +46,7 @@ export class CouponMapper implements IMapper<Coupon, CouponORMEntity> {
       CouponCode.create(persistence.code),
       CouponMessage.create(persistence.title, persistence.message),
       CouponNumberUses.create(persistence.numberUses),
+      customers,
     );
   }
 }

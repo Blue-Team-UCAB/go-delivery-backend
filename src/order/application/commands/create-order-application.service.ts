@@ -102,6 +102,15 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       }
       coupon = couponResult.Value;
       totalAmount = subtotalAmount - (subtotalAmount * coupon.Porcentage.Porcentage) / 100;
+      const customerId = CustomerId.create(data.id_customer);
+      coupon.applyCoupon(customerId);
+      const couponCustomer = coupon.Customers.find(c => c.Id.equals(customerId));
+      if (couponCustomer) {
+        const updateResult = await this.couponRepository.updateRemainingUses(coupon.Id.Id, customerId.Id, couponCustomer.RemainingUses.RemainingUses);
+        if (!updateResult.isSuccess) {
+          return Result.fail<CreateOrderServiceResponseDto>(null, updateResult.StatusCode, updateResult.Message);
+        }
+      }
     }
 
     const dataOrder = {
