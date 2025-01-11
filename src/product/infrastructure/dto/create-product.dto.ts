@@ -39,35 +39,8 @@ export class CreateProductDto {
   @IsOptional()
   contentType?: string;
 
+  @IsOptional()
   @IsArray()
-  @ArrayNotEmpty()
-  @ArrayMinSize(1)
-  @ValidateNested({ each: true })
-  @Type(() => ProductCategoryDto)
-  @Transform(({ value }) => {
-    if (typeof value === 'string') {
-      try {
-        const parsedValue = JSON.parse(value);
-        return parsedValue.map((item: any) => plainToInstance(ProductCategoryDto, item));
-      } catch (error) {
-        throw new Error('Invalid JSON string for categories');
-      }
-    }
-
-    if (Array.isArray(value)) {
-      return value.map(item => plainToInstance(ProductCategoryDto, item));
-    }
-
-    throw new Error('Invalid type for categories, expected string or array');
-  })
-  categories: ProductCategoryDto[];
-}
-
-export class ProductCategoryDto {
-  @IsString()
-  id: string;
-
-  @IsString()
-  @MinLength(3)
-  name: string;
+  @IsString({ each: true })
+  categories: string[];
 }

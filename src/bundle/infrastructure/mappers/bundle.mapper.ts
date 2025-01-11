@@ -21,6 +21,10 @@ import { BundleProductQuantity } from '../../domain/value-objects/bundle-product
 // import { BundleQuantity } from '../../domain/value-objects/bundle-quantity';
 import { IMapper } from '../../../common/application/mapper/mapper.interface';
 import { ProductImage } from '../../../product/domain/value-objects/product-image';
+import { BundleCategoryORMEntity } from '../models/orm-bundle-category.entity';
+import { BundleCategory } from '../../domain/entities/bundle-category';
+import { CategoryId } from '../../../category/domain/value-objects/category.id';
+import { BundleCategoryName } from '../../domain/value-objects/bundle-category-name';
 
 export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
   async fromDomainToPersistence(domain: Bundle): Promise<BundleORMEntity> {
@@ -34,7 +38,11 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
     bundleORM.weight = domain.Weight.Weight;
     bundleORM.imageUrl = domain.ImageUrl.Url;
     bundleORM.caducityDate = domain.CaducityDate.CaducityDate;
-
+    bundleORM.bundle_Categories = domain.Categories.map(category => {
+      const bundleCategoryORM = new BundleCategoryORMEntity();
+      bundleCategoryORM.category = { id_Category: category.Id.Id } as any;
+      return bundleCategoryORM;
+    });
     bundleORM.bundleProducts = domain.Products.filter(product => product instanceof BundleProduct).map(product => {
       const productORM = new BundleProductORMEntity();
       productORM.product = { id_Producto: product.Id.Id } as any;
@@ -91,6 +99,10 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
     //     )
     //   : [];
 
+    const categories = persistence.bundle_Categories.map(bundleCategory => {
+      return new BundleCategory(CategoryId.create(bundleCategory.category.id_Category), BundleCategoryName.create(bundleCategory.category.name_Category));
+    });
+
     const bundle = new Bundle(
       BundleId.create(persistence.id),
       BundleName.create(persistence.name),
@@ -102,6 +114,7 @@ export class BundleMapper implements IMapper<Bundle, BundleORMEntity> {
       BundleImage.create(persistence.imageUrl),
       BundleCaducityDate.create(persistence.caducityDate),
       [...products /*, ...bundles*/],
+      categories,
     );
     return bundle;
   }

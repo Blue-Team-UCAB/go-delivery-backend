@@ -18,12 +18,14 @@ import { DomainEvent } from 'src/common/domain/domain-event';
 import { DiscountRepository } from '../../../discount/infrastructure/repository/discount.repository';
 import { BestForTheCustomerStrategy } from 'src/common/infrastructure/select-discount-strategies/best-for-the-customer-strategy';
 import { DateService } from '../../../common/infrastructure/providers/services/date.service';
+import { CategoryRepository } from '../../../category/infrastructure/repository/category.repository';
 
 @ApiTags('Products')
 @Controller('product')
 export class ProductController {
   private readonly productRepository: ProductRepository;
   private readonly discountRepository: DiscountRepository;
+  private readonly categoryRepository: CategoryRepository;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -36,13 +38,14 @@ export class ProductController {
   ) {
     this.productRepository = new ProductRepository(this.dataSource);
     this.discountRepository = new DiscountRepository(this.dataSource);
+    this.categoryRepository = new CategoryRepository(this.dataSource);
   }
 
   @Post()
   @IsAdmin()
   @UseInterceptors(FileInterceptor('image'))
   async createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() image: Express.Multer.File) {
-    const service = new createProductApplicationService(this.productRepository, this.uuidCreator, this.s3Service, this.publisher);
+    const service = new createProductApplicationService(this.productRepository, this.categoryRepository, this.uuidCreator, this.s3Service, this.publisher);
     createProductDto.imageBuffer = image.buffer;
     createProductDto.contentType = image.mimetype;
     return (await service.execute(createProductDto)).Value;

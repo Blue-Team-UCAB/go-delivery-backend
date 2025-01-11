@@ -1,4 +1,5 @@
 import { DomainEvent } from '../../../common/domain/domain-event';
+import { BundleCategory } from '../entities/bundle-category';
 import { PricableAndWeightable } from '../interfaces/bundle-composite';
 import { BundleCaducityDate } from '../value-objects/bundle-caducity-date';
 import { BundleCurrency } from '../value-objects/bundle-currency';
@@ -22,6 +23,7 @@ export class BundleCreatedEvent extends DomainEvent {
     public imageUrl: BundleImage,
     public caducityDate: BundleCaducityDate,
     public products: PricableAndWeightable[],
+    public categories: BundleCategory[],
   ) {
     super();
   }
@@ -37,7 +39,8 @@ export class BundleCreatedEvent extends DomainEvent {
     imageUrl: BundleImage,
     caducityDate: BundleCaducityDate,
     products: PricableAndWeightable[],
+    categories: BundleCategory[],
   ): BundleCreatedEvent {
-    return new BundleCreatedEvent(id, name, description, currency, price, stock, weight, imageUrl, caducityDate, products);
+    return new BundleCreatedEvent(id, name, description, currency, price, stock, weight, imageUrl, caducityDate, products, categories);
   }
 }

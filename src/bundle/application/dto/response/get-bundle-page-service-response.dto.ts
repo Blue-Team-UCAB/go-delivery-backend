@@ -7,7 +7,6 @@ export interface GetBundlePageServiceResponseDto {
     price: number;
     stock: number;
     weight: number;
-    imageUrl: string;
-    caducityDate: Date;
+    images: string[];
   }[];
 }

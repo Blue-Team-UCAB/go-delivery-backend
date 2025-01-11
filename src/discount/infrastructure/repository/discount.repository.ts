@@ -54,11 +54,20 @@ export class DiscountRepository extends Repository<DiscountORMEntity> implements
 
   async findDiscountByBundle(bundle: Bundle, currentDate: Date): Promise<Result<Discount[]>> {
     try {
+      const categoryIds = bundle.Categories.map(c => c.Id.Id);
+
       const discounts = await this.createQueryBuilder('discount')
         .leftJoinAndSelect('discount.discount_Bundles', 'discountBundle')
         .leftJoinAndSelect('discountBundle.bundle', 'bundle')
+        .leftJoinAndSelect('discount.discount_Categories', 'discountCategory')
+        .leftJoinAndSelect('discountCategory.category', 'category')
         .where('bundle.id = :bundleId', { bundleId: bundle.Id.Id })
-        .andWhere('discount.state = :state OR discount.expirationDate > :currentDate', { state: 'ACTIVE', currentDate })
+        .orWhere('category.id_Category IN (:...categoryIds)', { categoryIds })
+        .andWhere(
+          new Brackets(qb => {
+            qb.where('discount.state = :state', { state: 'ACTIVE' }).orWhere('discount.expirationDate > :currentDate', { currentDate });
+          }),
+        )
         .getMany();
       const discountDomains = await Promise.all(discounts.map(discount => this.discountMapper.fromPersistenceToDomain(discount)));
       return Result.success<Discount[]>(discountDomains, 200);

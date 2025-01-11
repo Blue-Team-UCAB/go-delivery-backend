@@ -8,10 +8,5 @@ export interface CreateProductServiceEntryDto {
   measurement: string;
   imageBuffer?: Buffer;
   contentType?: string;
-  categories: ProductCategoryDto[];
-}
-
-export class ProductCategoryDto {
-  id: string;
-  name: string;
+  categories: string[];
 }
