@@ -146,7 +146,7 @@ export class PaymentController {
       resp.Value.map(async element => ({
         idPayment: element.id_PaymentMethod,
         name: element.name_PaymentMethod,
-        state: element.state_PaymentMethod.toString(),
+        state: 'active',
         image: await this.s3Service.getFile(element.image_PaymentMethod),
       })),
     );
