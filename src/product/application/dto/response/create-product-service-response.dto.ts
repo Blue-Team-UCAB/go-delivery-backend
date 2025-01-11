@@ -8,10 +8,8 @@ export interface CreateProductServiceResponseDto {
   weight: number;
   measurement: string;
   imageUrl: string;
-  categories: ProductCategoryDto[];
-}
-
-export class ProductCategoryDto {
-  id: string;
-  name: string;
+  categories: {
+    id: string;
+    name: string;
+  }[];
 }

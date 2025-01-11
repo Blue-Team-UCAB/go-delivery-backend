@@ -42,9 +42,14 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
           // 'childBundle.price',
           // 'childBundle.weight',
           // 'childBundle.imageUrl',
+          'bundleCategory.id_',
+          'category.id_Category',
+          'category.name_Category',
         ])
         .leftJoinAndSelect('bundle.bundleProducts', 'bundleProducts')
         .leftJoinAndSelect('bundleProducts.product', 'product')
+        .leftJoin('bundle.bundle_Categories', 'bundleCategory')
+        .leftJoin('bundleCategory.category', 'category')
         // .leftJoinAndSelect('bundle.parentBundles', 'bundleBundle')
         // .leftJoinAndSelect('bundleBundle.childBundle', 'childBundle')
         .where('bundle.id = :id', { id })
@@ -64,7 +69,22 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
     try {
       const skip = perpage * page - perpage;
       const bundles = await this.createQueryBuilder('bundle')
-        .select(['bundle.id', 'bundle.name', 'bundle.description', 'bundle.currency', 'bundle.price', 'bundle.stock', 'bundle.weight', 'bundle.imageUrl', 'bundle.caducityDate'])
+        .select([
+          'bundle.id',
+          'bundle.name',
+          'bundle.description',
+          'bundle.currency',
+          'bundle.price',
+          'bundle.stock',
+          'bundle.weight',
+          'bundle.imageUrl',
+          'bundle.caducityDate',
+          'bundleCategory.id_',
+          'category.id_Category',
+          'category.name_Category',
+        ])
+        .leftJoin('bundle.bundle_Categories', 'bundleCategory')
+        .leftJoin('bundleCategory.category', 'category')
         .skip(skip)
         .take(perpage)
         .getMany();

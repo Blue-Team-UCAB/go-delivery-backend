@@ -1,15 +1,29 @@
-import { BundleProductResponseDto } from './bundle-product-response.dto';
-
 export interface GetBundleIdServiceResponseDto {
-  id: string;
   name: string;
   description: string;
   currency: string;
   price: number;
   stock: number;
   weight: number;
-  imageUrl: string;
+  measurement: string;
+  images: string[];
   caducityDate: Date;
-  products: BundleProductResponseDto[];
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    weight: number;
+    images: string[];
+    quantity: number;
+    //type: 'product' | 'bundle';
+  }[];
+  category: {
+    id: string;
+    name: string;
+  }[];
+  discount: {
+    id: string;
+    percentage: number;
+  }[];
   //bundles: BundleProductResponseDto[];
 }

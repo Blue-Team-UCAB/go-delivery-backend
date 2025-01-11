@@ -27,6 +27,19 @@ export class CategoryRepository extends Repository<CategoryORM> implements ICate
     }
   }
 
+  async findCategoryById(id: string): Promise<Result<Category>> {
+    try {
+      const category = await this.findOne({ where: { id_Category: id } });
+      if (!category) {
+        return Result.fail<Category>(null, 404, 'Category not found');
+      }
+      const resp = await this.categoryMapper.fromPersistenceToDomain(category);
+      return Result.success<Category>(resp, 200);
+    } catch (e) {
+      return Result.fail<Category>(null, 500, e.message);
+    }
+  }
+
   async saveCategoryAggregate(category: Category): Promise<Result<Category>> {
     try {
       const newCategory = await this.categoryMapper.fromDomainToPersistence(category);
