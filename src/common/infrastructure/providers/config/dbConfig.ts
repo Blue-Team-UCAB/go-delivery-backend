@@ -11,6 +11,7 @@ import { CouponRepository } from 'src/coupon/infrastructure/repository/coupon.re
 import { OrderRepository } from 'src/order/infrastructure/repository/order.repository';
 import { CategoryRepository } from 'src/category/infrastructure/repository/category.repository';
 import { MovementRepository } from 'src/order/infrastructure/repository/movement.repository';
+import { PaymentMethodRepository } from 'src/payment/infrastructure/repository/payment-method.repository';
 
 export const ormDatabaseProviders = [
   {
@@ -89,6 +90,13 @@ export const ormDatabaseProviders = [
     provide: 'CourierMovementRepository',
     useFactory: (dataSource: DataSource) => {
       return new MovementRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'PaymentMethodRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new PaymentMethodRepository(dataSource);
     },
     inject: ['BaseDeDatos'],
   },

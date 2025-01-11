@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UuidGenerator } from 'src/common/infrastructure/id-generator/uuid-generator';
 import { PaymentCheckPagoMovil } from 'src/common/infrastructure/payment-check/payment-check-pagoMovil';
@@ -20,6 +20,13 @@ import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.int
 import { GetAllPaymentsApplicationService } from 'src/payment/application/get-all-transaccion.application.service';
 import { OrderRepository } from 'src/order/infrastructure/repository/order.repository';
 import { ErrorHandlerAspect } from 'src/common/application/aspects/error-handler-aspect';
+import { IsAdmin } from 'src/auth/infrastructure/jwt/decorator/isAdmin.decorator';
+import { PaymentMethodRepository } from '../repository/payment-method.repository';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
+import { CreatePaymentMethodEntryDto } from '../dto/create-payment-method.entry.dto';
+import { EnableDisablePaymentMethodEntryDto } from '../dto/enable-disable-payment-method.entry.dto';
+import { PaymentMethodGuard } from '../guards/payment-method.guard';
 
 @ApiTags('Payment')
 @Controller('payment/method')
@@ -29,21 +36,25 @@ export class PaymentController {
   private readonly walletRepository: WalletRepository;
   private readonly orderRepository: OrderRepository;
   private readonly stripe: StripeService;
+  private readonly paymentMethodRepository: PaymentMethodRepository;
 
   constructor(
     @Inject('BaseDeDatos')
     private readonly dataSource: DataSource,
     private readonly uuidGenator: UuidGenerator,
     private readonly paymentCheckPagoMovil: PaymentCheckPagoMovil,
+    private readonly s3Service: S3Service,
   ) {
     this.costumerRepository = new CustomerRepository(this.dataSource);
     this.paymentRepository = new PaymentRepository(this.dataSource);
     this.orderRepository = new OrderRepository(this.dataSource);
     this.walletRepository = new WalletRepository(this.dataSource);
     this.stripe = new StripeService();
+    this.paymentMethodRepository = new PaymentMethodRepository(this.dataSource);
   }
 
   @Post('recharge/pago-movil')
+  @UseGuards(PaymentMethodGuard)
   @IsClientOrAdmin()
   @UseAuth()
   @ApiBearerAuth()
@@ -62,6 +73,7 @@ export class PaymentController {
   @IsClientOrAdmin()
   @UseAuth()
   @ApiBearerAuth()
+  @UseGuards(PaymentMethodGuard)
   @ApiBody({ type: ZelleEntryDto })
   async createPaymentZelle(@Body() data: ZelleEntryDto, @GetUser() user: AuthInterface) {
     const service = new ErrorHandlerAspect(
@@ -109,12 +121,6 @@ export class PaymentController {
     return await this.stripe.deleteCard(user.idStripe, idCard);
   }
 
-  @Get('many')
-  @IsClientOrAdmin()
-  @UseAuth()
-  @ApiBearerAuth()
-  async getPayments() {}
-
   @Get('user/many/transaccion')
   @IsClientOrAdmin()
   @UseAuth()
@@ -124,5 +130,79 @@ export class PaymentController {
       throw new UnauthorizedException('Error al obtener las transacciones');
     });
     return (await service.execute({ idCustomer: user.idCostumer, idStripe: user.idStripe })).Value;
+  }
+
+  @Get('many')
+  @IsAdmin()
+  @UseAuth()
+  @ApiBearerAuth()
+  async getPayments() {
+    const resp = await this.paymentMethodRepository.getOnlyActivePaymentMethods();
+    if (!resp.isSuccess) {
+      throw new UnauthorizedException('Error al obtener los metodos de pago');
+    }
+
+    const response = await Promise.all(
+      resp.Value.map(async element => ({
+        idPayment: element.id_PaymentMethod,
+        name: element.name_PaymentMethod,
+        state: element.state_PaymentMethod.toString(),
+        image: await this.s3Service.getFile(element.image_PaymentMethod),
+      })),
+    );
+
+    return response;
+  }
+
+  @Post('disable')
+  @IsAdmin()
+  @UseAuth()
+  @ApiBearerAuth()
+  async disablePaymentMethod(@Body() data: EnableDisablePaymentMethodEntryDto) {
+    const resp = await this.paymentMethodRepository.updatePaymentMethod(data.id_payment_method, false);
+    if (!resp.isSuccess) {
+      throw new UnauthorizedException('Error al deshabilitar el metodo de pago');
+    }
+    return {
+      id_payment_method: resp.Value.id_PaymentMethod,
+    };
+  }
+
+  @Post('enable')
+  @IsAdmin()
+  @UseAuth()
+  @ApiBearerAuth()
+  async enablePaymentMethod(@Body() data: EnableDisablePaymentMethodEntryDto) {
+    const resp = await this.paymentMethodRepository.updatePaymentMethod(data.id_payment_method, true);
+    if (!resp.isSuccess) {
+      throw new UnauthorizedException('Error al habilitar el metodo de pago');
+    }
+    return {
+      id_payment_method: resp.Value.id_PaymentMethod,
+    };
+  }
+
+  @Post('create')
+  @IsAdmin()
+  @UseAuth()
+  @ApiBearerAuth()
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiBody({ type: CreatePaymentMethodEntryDto })
+  async createPaymentMethod(@Body() data: CreatePaymentMethodEntryDto, @UploadedFile() image: Express.Multer.File) {
+    const uuid = await this.uuidGenator.generateId();
+    const uuidImage = await this.uuidGenator.generateId();
+    const imagekey = `payment-method/${uuidImage}.png`;
+    const respImage = await this.s3Service.uploadFile(imagekey, image.buffer, image.mimetype);
+
+    if (!respImage) {
+      throw new UnauthorizedException('Error al crear el metodo de pago');
+    }
+    const resp = await this.paymentMethodRepository.createPaymentMethod({ id_PaymentMethod: uuid, name_PaymentMethod: data.name, state_PaymentMethod: true, image_PaymentMethod: imagekey });
+    if (!resp.isSuccess) {
+      throw new UnauthorizedException('Error al crear el metodo de pago');
+    }
+    return {
+      id_payment_method: resp.Value.id_PaymentMethod,
+    };
   }
 }
