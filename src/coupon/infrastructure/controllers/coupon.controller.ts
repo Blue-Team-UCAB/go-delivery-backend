@@ -8,13 +8,15 @@ import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-
 import { CreateCouponDto } from '../dto/create-coupon.dto';
 import { GetCouponPageDto } from '../dto/get-coupon-page.dto';
 import { DateService } from '../../../common/infrastructure/providers/services/date.service';
-import { ValidateCouponDto } from '../dto/validate-coupon.dto';
-import { ValidateCouponApplicationService } from 'src/coupon/application/commands/validate-coupon-application.service';
+import { ClaimCouponDto } from '../dto/claim-coupon.dto';
+import { ClaimCouponApplicationService } from '../../application/commands/claim-coupon-application.service';
 import { UseAuth } from '../../../auth/infrastructure/jwt/decorator/useAuth.decorator';
 import { IsAdmin } from '../../../auth/infrastructure/jwt/decorator/isAdmin.decorator';
 import { IsClientOrAdmin } from '../../../auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
 import { GetUser } from '../../../auth/infrastructure/jwt/decorator/get-user.decorator';
-import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
+import { AuthInterface } from '../../../common/infrastructure/auth-interface/aunt.interface';
+import { GetCouponByIdApplicationService } from '../../application/queries/get-coupon-id.application.service';
+import { GetApplicableCouponsByCustomerApplicationService } from '../../application/queries/get-applicable-coupon-customer.application.service';
 
 @ApiTags('Coupons')
 @Controller('coupon')
@@ -37,7 +39,7 @@ export class CouponController {
     return await service.execute(createCouponDto);
   }
 
-  @Get()
+  @Get('many')
   @IsClientOrAdmin()
   async getCoupons(@Query(ValidationPipe) query: GetCouponPageDto) {
     const { page, perpage, search } = query;
@@ -45,11 +47,26 @@ export class CouponController {
     return await service.execute({ page, perpage, search });
   }
 
-  @Post('validate-coupon')
+  @Get('applicable')
   @UseAuth()
   @IsClientOrAdmin()
-  async validateCoupon(@Body() validateCouponDto: ValidateCouponDto, @GetUser() user: AuthInterface) {
-    const service = new ValidateCouponApplicationService(this.couponRepository, this.dateService);
-    return await service.execute({ ...validateCouponDto, id_customer: user.idCostumer });
+  async getApplicableCoupons(@GetUser() user: AuthInterface) {
+    const service = new GetApplicableCouponsByCustomerApplicationService(this.couponRepository, this.dateService);
+    return await service.execute({ id_customer: user.idCostumer });
+  }
+
+  @Post('claim-coupon')
+  @UseAuth()
+  @IsClientOrAdmin()
+  async validateCoupon(@Body() claimCouponDto: ClaimCouponDto, @GetUser() user: AuthInterface) {
+    const service = new ClaimCouponApplicationService(this.couponRepository, this.dateService);
+    return await service.execute({ ...claimCouponDto, id_customer: user.idCostumer });
+  }
+
+  @Get(':id')
+  @IsClientOrAdmin()
+  async getCoupon(@Query('id') id: string) {
+    const service = new GetCouponByIdApplicationService(this.couponRepository);
+    return await service.execute({ id });
   }
 }

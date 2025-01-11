@@ -1,4 +1,5 @@
 import { DomainEvent } from '../../../common/domain/domain-event';
+import { CouponCustomer } from '../entities/coupon-customer';
 import { CouponCode } from '../value-objects/coupon-code';
 import { CouponExpirationDate } from '../value-objects/coupon-expiration-date';
 import { CouponMessage } from '../value-objects/coupon-message';
@@ -16,6 +17,7 @@ export class CouponCreatedEvent extends DomainEvent {
     public code: CouponCode,
     public message: CouponMessage,
     public numberUses: CouponNumberUses,
+    public customers: CouponCustomer[],
   ) {
     super();
   }
@@ -28,7 +30,8 @@ export class CouponCreatedEvent extends DomainEvent {
     code: CouponCode,
     message: CouponMessage,
     numberUses: CouponNumberUses,
+    customers: CouponCustomer[],
   ): CouponCreatedEvent {
-    return new CouponCreatedEvent(id, startDate, expirationDate, porcentage, code, message, numberUses);
+    return new CouponCreatedEvent(id, startDate, expirationDate, porcentage, code, message, numberUses, customers);
   }
 }

@@ -13,6 +13,7 @@ import { CouponNumberUses } from '../../domain/value-objects/coupon-number-uses'
 import { Coupon } from '../../domain/coupon';
 import { CouponId } from '../../domain/value-objects/coupon.id';
 import { IDateService } from '../../../common/application/date-service/date-service.interface';
+import { CouponCustomer } from 'src/coupon/domain/entities/coupon-customer';
 
 export class CreateCouponApplicationService implements IApplicationService<CreateCouponServiceEntryDto, CreateCouponServiceResponseDto> {
   constructor(
@@ -29,6 +30,7 @@ export class CreateCouponApplicationService implements IApplicationService<Creat
       code: CouponCode.create(data.code.toUpperCase()),
       message: CouponMessage.create(data.title, data.message),
       numberUses: CouponNumberUses.create(data.numberUses),
+      customers: [] as CouponCustomer[],
     };
 
     const coupon = new Coupon(
@@ -39,6 +41,7 @@ export class CreateCouponApplicationService implements IApplicationService<Creat
       dataCoupon.code,
       dataCoupon.message,
       dataCoupon.numberUses,
+      dataCoupon.customers,
     );
 
     const result = await this.couponRepository.saveCouponAggregate(coupon);

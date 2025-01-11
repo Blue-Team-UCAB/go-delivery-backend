@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn
 import { WalletORMEntity } from './orm-wallet.entity';
 import { OrderORMEntity } from '../../../order/infrastructure/models/orm-order.entity';
 import { DirectionORMEntity } from './orm-direction.entity';
+import { CouponCustomerORMEntity } from 'src/coupon/infrastructure/models/orm-coupon-costumer';
 
 @Entity('Customer')
 export class CustomerORMEntity {
@@ -32,4 +33,7 @@ export class CustomerORMEntity {
 
   @OneToMany(() => OrderORMEntity, order => order.customer_Orders, { cascade: true, nullable: false })
   order: OrderORMEntity[];
+
+  @OneToMany(() => CouponCustomerORMEntity, couponCustomer => couponCustomer.customer, { cascade: true })
+  coupon_Customers: CouponCustomerORMEntity[];
 }
