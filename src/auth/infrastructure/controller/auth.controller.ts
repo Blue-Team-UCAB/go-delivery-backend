@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject, Get, Patch, Put } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Get, Patch, Put, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UserRepository } from '../repository/user.repository';
@@ -27,6 +27,7 @@ import { PushTokenDto } from '../dto/push-token.dto';
 import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.interface';
 import { AuthPushTokenUserApplicationService } from 'src/auth/application/services/auth-push-token.user.application.service';
 import { S3Service } from 'src/common/infrastructure/providers/services/s3.service';
+import { ErrorHandlerAspect } from 'src/common/application/aspects/error-handler-aspect';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -60,8 +61,13 @@ export class AuthController {
   })
   @Post('register')
   async create(@Body() createUser: SignUpUserDto) {
-    const service = new AuthCreateUserApplicationService(this.userRepository, this.uuidGenator, this.sha256Service, this.jwtGenerator, this.costumerRepository, this.walletRepository, this.stripe);
-    return await service.execute(createUser);
+    const service = new ErrorHandlerAspect(
+      new AuthCreateUserApplicationService(this.userRepository, this.uuidGenator, this.sha256Service, this.jwtGenerator, this.costumerRepository, this.walletRepository, this.stripe),
+      (error: Error) => {
+        throw new UnauthorizedException('User already exists');
+      },
+    );
+    return (await service.execute(createUser)).Value;
   }
 
   @ApiBody({
@@ -69,8 +75,10 @@ export class AuthController {
   })
   @Post('login')
   async login(@Body() user: SignInUserDto) {
-    const service = new AuthLoginUserApplicationService(this.userRepository, this.sha256Service, this.jwtGenerator, this.costumerRepository);
-    return await service.execute(user);
+    const service = new ErrorHandlerAspect(new AuthLoginUserApplicationService(this.userRepository, this.sha256Service, this.jwtGenerator, this.costumerRepository), (error: Error) => {
+      throw new NotFoundException('User not found');
+    });
+    return (await service.execute(user)).Value;
   }
 
   @ApiBody({
@@ -78,8 +86,13 @@ export class AuthController {
   })
   @Post('forgot/password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
-    const service = new ForgotPasswordUserApplicationService(this.userRepository, this.sha256Service, this.codeGenerator, this.mailService, this.costumerRepository);
-    return await service.execute(data);
+    const service = new ErrorHandlerAspect(
+      new ForgotPasswordUserApplicationService(this.userRepository, this.sha256Service, this.codeGenerator, this.mailService, this.costumerRepository),
+      (error: Error) => {
+        throw new NotFoundException('User not found');
+      },
+    );
+    return (await service.execute(data)).Value;
   }
 
   @ApiBody({
@@ -87,8 +100,10 @@ export class AuthController {
   })
   @Put('change/password')
   async changePassword(@Body() data: ChangePasswordCodeDto) {
-    const service = new ChangePasswordCodeUserApplicationService(this.userRepository, this.sha256Service);
-    return await service.execute(data);
+    const service = new ErrorHandlerAspect(new ChangePasswordCodeUserApplicationService(this.userRepository, this.sha256Service), (error: Error) => {
+      throw new UnauthorizedException('User not found');
+    });
+    return (await service.execute(data)).Value;
   }
 
   @Get('current')
@@ -96,7 +111,9 @@ export class AuthController {
   @IsClientOrAdmin()
   @ApiBearerAuth()
   async current(@GetUser() user: AuthInterface) {
-    const service = new AuthCurrentApplicationService(this.costumerRepository, this.s3Service);
-    return await service.execute({ idCostumer: user.idCostumer, id: user.idUser, role: user.roleUser, email: user.emailUser });
+    const service = new ErrorHandlerAspect(new AuthCurrentApplicationService(this.costumerRepository, this.s3Service), (error: Error) => {
+      throw new NotFoundException('User not found');
+    });
+    return (await service.execute({ idCostumer: user.idCostumer, id: user.idUser, role: user.roleUser, email: user.emailUser })).Value;
   }
 }

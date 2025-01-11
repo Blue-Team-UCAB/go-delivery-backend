@@ -10,6 +10,7 @@ import { DiscountRepository } from 'src/discount/infrastructure/repository/disco
 import { CouponRepository } from 'src/coupon/infrastructure/repository/coupon.repository';
 import { OrderRepository } from 'src/order/infrastructure/repository/order.repository';
 import { CategoryRepository } from 'src/category/infrastructure/repository/category.repository';
+import { MovementRepository } from 'src/order/infrastructure/repository/movement.repository';
 
 export const ormDatabaseProviders = [
   {
@@ -84,6 +85,14 @@ export const ormDatabaseProviders = [
     },
     inject: ['BaseDeDatos'],
   },
+  {
+    provide: 'CourierMovementRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new MovementRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+
   // {
   //   provide: 'BundleRepository',
   //   useFactory: (dataSource: DataSource) => {

@@ -29,8 +29,15 @@ export class AuthCurrentApplicationService implements IApplicationService<Curren
       email: data.email,
       name: costumer.Value.Name.Name,
       phone: costumer.Value.Phone.Phone,
-      type: data.role,
       image: image,
+      type: data.role,
+      wallet: {
+        walletId: costumer.Value.Wallet.Id.Id,
+        Ballance: {
+          currency: costumer.Value.Wallet.Currency.Currency,
+          amount: costumer.Value.Wallet.Amount.Amount,
+        },
+      },
     };
 
     return Result.success<CurrentResponseServiceDto>(response, 200);

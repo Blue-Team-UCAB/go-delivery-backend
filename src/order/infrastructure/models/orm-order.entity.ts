@@ -1,10 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany, JoinColumn, OneToOne } from 'typeorm';
 import { CustomerORMEntity } from '../../../customer/infrastructure/model/orm-customer.entity';
 import { OrderProductORMEntity } from './orm-order-product.entity';
 import { OrderBundleORMEntity } from './orm-order-bundle.entity';
 import { OrderCourierORMEntity } from './orm-order-courier.entity';
 import { OrderStateHistoryORMEntity } from './orm-order-state.entity';
 import { CouponORMEntity } from '../../../coupon/infrastructure/models/orm-coupon.entity';
+import { OrderCourierMovementORMEntity } from './orm-order-courier-movement.entity';
 
 @Entity('Order')
 export class OrderORMEntity {
@@ -54,4 +55,7 @@ export class OrderORMEntity {
 
   @OneToMany(() => OrderStateHistoryORMEntity, orderStateHistory => orderStateHistory.order, { cascade: true })
   order_StateHistory: OrderStateHistoryORMEntity[];
+
+  @OneToOne(() => OrderCourierMovementORMEntity, courier => courier.orders, { cascade: true })
+  courier_Movement: OrderCourierMovementORMEntity;
 }

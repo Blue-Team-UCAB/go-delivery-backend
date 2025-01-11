@@ -72,8 +72,7 @@ export class AuthCreateUserApplicationService implements IApplicationService<ISi
     }
 
     const response: ISignUpResponseApplication = {
-      name: costumerCreate.Value.Name.Name,
-      email: user.emailUser,
+      id: createUser.Value.idUser,
       token: this.jwtGenerator.generateJwt(userId),
     };
 
