@@ -4,6 +4,6 @@ import { Response } from 'express';
 export class AppController {
   @Get()
   getHome(@Res() res: Response) {
-    res.redirect('http://localhost:3000/api/documentation');
+    res.redirect('https://back.godely.net/api/documentation');
   }
 }
