@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class ModifyDirectionEntryDto {
   @ApiProperty({
@@ -32,7 +32,7 @@ export class ModifyDirectionEntryDto {
   })
   @IsString()
   @IsNotEmpty()
-  latitude: string;
+  lat: string;
 
   @ApiProperty({
     description: 'Longitude',
@@ -40,5 +40,13 @@ export class ModifyDirectionEntryDto {
   })
   @IsString()
   @IsNotEmpty()
-  longitude: string;
+  long: string;
+
+  @ApiProperty({
+    description: 'Favorite direction',
+    example: true,
+  })
+  @IsBoolean()
+  @IsOptional()
+  favorite?: boolean;
 }

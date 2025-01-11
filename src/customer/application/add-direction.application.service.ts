@@ -42,8 +42,9 @@ export class AddDirectionApplicationService implements IApplicationService<AddDi
         id: id,
         name: data.name,
         direction: data.direction,
-        latitude: data.latitude,
-        longitude: data.longitude,
+        lat: data.latitude,
+        long: data.longitude,
+        favorite: false,
       },
       200,
     );
