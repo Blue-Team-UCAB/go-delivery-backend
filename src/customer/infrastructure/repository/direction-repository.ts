@@ -31,7 +31,7 @@ export class DirectionRepository extends Repository<DirectionOrm> implements IDi
     try {
       const directionOrm = await this.directionMapper.fromDomainToPersistence(direccion);
       this.save(directionOrm);
-      return Result.success<Direction>(direccion, 201);
+      return Result.success<Direction>(direccion, 200);
     } catch (e) {
       return Result.fail(null, 500, e.message);
     }
@@ -59,7 +59,7 @@ export class DirectionRepository extends Repository<DirectionOrm> implements IDi
   async deleteDireccion(id: string): Promise<Result<Boolean>> {
     try {
       await this.delete(id);
-      return Result.success<boolean>(true, 204);
+      return Result.success<boolean>(true, 200);
     } catch (e) {
       return Result.fail(null, 500, e.message);
     }

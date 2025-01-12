@@ -26,6 +26,6 @@ export class DeleteDirectionApplicationService implements IApplicationService<De
       return Result.fail<DeleteDirectionResponseDto>(resp.Error, resp.StatusCode, resp.Message);
     }
 
-    return Result.success<DeleteDirectionResponseDto>(null, 204);
+    return Result.success<DeleteDirectionResponseDto>(null, 200);
   }
 }

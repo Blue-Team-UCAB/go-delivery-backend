@@ -49,7 +49,7 @@ export class CustomerRepository extends Repository<CustomerORM> implements ICust
     try {
       const CustomerORM = await this.CustomerMapper.fromDomainToPersistence(Customer);
       await this.save(CustomerORM);
-      return Result.success<Customer>(Customer, 201);
+      return Result.success<Customer>(Customer, 200);
     } catch (e) {
       return Result.fail(new Error(e.message), 500, e.message);
     }
