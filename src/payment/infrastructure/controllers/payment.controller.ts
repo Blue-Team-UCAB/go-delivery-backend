@@ -133,7 +133,7 @@ export class PaymentController {
   }
 
   @Get('many')
-  @IsAdmin()
+  @IsClientOrAdmin()
   @UseAuth()
   @ApiBearerAuth()
   async getPayments() {
