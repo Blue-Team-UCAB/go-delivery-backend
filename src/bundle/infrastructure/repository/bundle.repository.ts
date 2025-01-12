@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, Brackets } from 'typeorm';
 import { IBundleRepository } from '../../domain/repositories/bundle-repository.interface';
 import { Bundle } from '../../domain/bundle';
 import { BundleORMEntity } from '../models/orm-bundle.entity';
@@ -65,10 +65,12 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
     }
   }
 
-  async findAllBundles(page: number, perpage: number): Promise<Result<Bundle[]>> {
+  async findAllBundles(page: number, perpage: number, category?: string, name?: string, price?: string, popular?: string, discount?: string): Promise<Result<Bundle[]>> {
     try {
       const skip = perpage * page - perpage;
-      const bundles = await this.createQueryBuilder('bundle')
+      const schema = process.env.PGDB_SCHEMA;
+
+      const query = this.createQueryBuilder('product')
         .select([
           'bundle.id',
           'bundle.name',
@@ -86,8 +88,36 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
         .leftJoin('bundle.bundle_Categories', 'bundleCategory')
         .leftJoin('bundleCategory.category', 'category')
         .skip(skip)
-        .take(perpage)
-        .getMany();
+        .take(perpage);
+
+      if (category) {
+        query.andWhere('category.name_Category = :category', { category });
+      }
+
+      if (name) {
+        query.andWhere('bundle.name ILIKE :search OR bundle.description ILIKE :search', { search: `%${name}%` });
+      }
+
+      if (price) {
+        const maxPrice = parseFloat(price);
+        query.andWhere('bundle.price <= :maxPrice', { maxPrice });
+      }
+
+      if (popular) {
+        //logica para buscar los productos mas populares
+      }
+
+      if (discount) {
+        query.andWhere(
+          new Brackets(qb => {
+            qb.where(`EXISTS (SELECT 1 FROM ${schema}."DiscountBundle" dp WHERE dp."bundleId" = bundle."id")`).orWhere(
+              `EXISTS (SELECT 1 FROM ${schema}."DiscountCategory" dc WHERE dc."categoryIdCategory" = category."id_Category")`,
+            );
+          }),
+        );
+      }
+      const bundles = await query.getMany();
+
       const resp = await Promise.all(bundles.map(bundle => this.bundleMapper.fromPersistenceToDomain(bundle, false)));
       return Result.success<Bundle[]>(resp, 200);
     } catch (e) {
