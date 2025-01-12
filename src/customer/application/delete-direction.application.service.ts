@@ -18,7 +18,6 @@ export class DeleteDirectionApplicationService implements IApplicationService<De
       return Result.fail<DeleteDirectionResponseDto>(customer.Error, customer.StatusCode, customer.Message);
     }
 
-    console.log('customer', customer.Value);
     customer.Value.deleteDirection(new DirectionId(data.idDirection));
 
     const resp = await this.directionRepository.deleteDireccion(data.idDirection);
