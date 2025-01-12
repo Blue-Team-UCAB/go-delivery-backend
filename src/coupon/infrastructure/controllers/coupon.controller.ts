@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, ValidationPipe, Inject, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, ValidationPipe, Inject, UseInterceptors, UploadedFile, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { DataSource } from 'typeorm';
 import { CreateCouponApplicationService } from '../../application/commands/create-coupon-application.service';
@@ -17,6 +17,7 @@ import { GetUser } from '../../../auth/infrastructure/jwt/decorator/get-user.dec
 import { AuthInterface } from '../../../common/infrastructure/auth-interface/aunt.interface';
 import { GetCouponByIdApplicationService } from '../../application/queries/get-coupon-id.application.service';
 import { GetApplicableCouponsByCustomerApplicationService } from '../../application/queries/get-applicable-coupon-customer.application.service';
+import { ErrorHandlerAspect } from '../../../common/application/aspects/error-handler-aspect';
 
 @ApiTags('Coupons')
 @Controller('coupon')
@@ -35,38 +36,48 @@ export class CouponController {
   @Post()
   @IsAdmin()
   async createCoupon(@Body() createCouponDto: CreateCouponDto) {
-    const service = new CreateCouponApplicationService(this.couponRepository, this.uuidCreator, this.dateService);
-    return await service.execute(createCouponDto);
+    const service = new ErrorHandlerAspect(new CreateCouponApplicationService(this.couponRepository, this.uuidCreator, this.dateService), (error: Error) => {
+      throw new InternalServerErrorException('Error creating coupon');
+    });
+    return (await service.execute(createCouponDto)).Value;
   }
 
   @Get('many')
   @IsClientOrAdmin()
   async getCoupons(@Query(ValidationPipe) query: GetCouponPageDto) {
     const { page, perpage, search } = query;
-    const service = new GetCouponPageApplicationService(this.couponRepository, this.dateService);
-    return await service.execute({ page, perpage, search });
+    const service = new ErrorHandlerAspect(new GetCouponPageApplicationService(this.couponRepository, this.dateService), (error: Error) => {
+      throw new InternalServerErrorException('Error getting coupons');
+    });
+    return (await service.execute({ page, perpage, search })).Value;
   }
 
   @Get('applicable')
   @UseAuth()
   @IsClientOrAdmin()
   async getApplicableCoupons(@GetUser() user: AuthInterface) {
-    const service = new GetApplicableCouponsByCustomerApplicationService(this.couponRepository, this.dateService);
-    return await service.execute({ id_customer: user.idCostumer });
+    const service = new ErrorHandlerAspect(new GetApplicableCouponsByCustomerApplicationService(this.couponRepository, this.dateService), (error: Error) => {
+      throw new InternalServerErrorException('Error getting applicable coupons');
+    });
+    return (await service.execute({ id_customer: user.idCostumer })).Value;
   }
 
   @Post('claim-coupon')
   @UseAuth()
   @IsClientOrAdmin()
   async validateCoupon(@Body() claimCouponDto: ClaimCouponDto, @GetUser() user: AuthInterface) {
-    const service = new ClaimCouponApplicationService(this.couponRepository, this.dateService);
-    return await service.execute({ ...claimCouponDto, id_customer: user.idCostumer });
+    const service = new ErrorHandlerAspect(new ClaimCouponApplicationService(this.couponRepository, this.dateService), (error: Error) => {
+      throw new InternalServerErrorException('Error claiming coupon');
+    });
+    return (await service.execute({ ...claimCouponDto, id_customer: user.idCostumer })).Value;
   }
 
   @Get(':id')
   @IsClientOrAdmin()
   async getCoupon(@Query('id') id: string) {
-    const service = new GetCouponByIdApplicationService(this.couponRepository);
-    return await service.execute({ id });
+    const service = new ErrorHandlerAspect(new GetCouponByIdApplicationService(this.couponRepository), (error: Error) => {
+      throw new NotFoundException('Coupon not found');
+    });
+    return (await service.execute({ id })).Value;
   }
 }

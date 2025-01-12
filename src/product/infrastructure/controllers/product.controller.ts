@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject, Get, Param, ValidationPipe, Query, UploadedFile, UseInterceptors, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Get, Param, ValidationPipe, Query, UploadedFile, UseInterceptors, UseGuards, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { DataSource } from 'typeorm';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,9 +16,10 @@ import { IsClientOrAdmin } from '../../../auth/infrastructure/jwt/decorator/isCl
 import { EventPublisher } from '../../../common/infrastructure/Event-Publisher/eventPublisher.service';
 import { DomainEvent } from 'src/common/domain/domain-event';
 import { DiscountRepository } from '../../../discount/infrastructure/repository/discount.repository';
-import { BestForTheCustomerStrategy } from 'src/common/infrastructure/select-discount-strategies/best-for-the-customer-strategy';
+import { BestForTheCustomerStrategy } from '../../../common/infrastructure/select-discount-strategies/best-for-the-customer-strategy';
 import { DateService } from '../../../common/infrastructure/providers/services/date.service';
 import { CategoryRepository } from '../../../category/infrastructure/repository/category.repository';
+import { ErrorHandlerAspect } from '../../../common/application/aspects/error-handler-aspect';
 
 @ApiTags('Products')
 @Controller('product')
@@ -45,7 +46,9 @@ export class ProductController {
   @IsAdmin()
   @UseInterceptors(FileInterceptor('image'))
   async createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() image: Express.Multer.File) {
-    const service = new createProductApplicationService(this.productRepository, this.categoryRepository, this.uuidCreator, this.s3Service, this.publisher);
+    const service = new ErrorHandlerAspect(new createProductApplicationService(this.productRepository, this.categoryRepository, this.uuidCreator, this.s3Service, this.publisher), (error: Error) => {
+      throw new InternalServerErrorException('Error creating product');
+    });
     createProductDto.imageBuffer = image.buffer;
     createProductDto.contentType = image.mimetype;
     return (await service.execute(createProductDto)).Value;
@@ -55,14 +58,24 @@ export class ProductController {
   @IsClientOrAdmin()
   async getProductByPage(@Query(ValidationPipe) query: GetProductPageDto) {
     const { page, perpage, category, name, price, popular, discount } = query;
-    const service = new GetProductByPageApplicationService(this.productRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService);
+    const service = new ErrorHandlerAspect(
+      new GetProductByPageApplicationService(this.productRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService),
+      (error: Error) => {
+        throw new InternalServerErrorException('Error getting products');
+      },
+    );
     return (await service.execute({ page, perpage, category, name, price, popular, discount })).Value;
   }
 
   @Get(':id')
   @IsClientOrAdmin()
   async getProductId(@Param('id') id: string) {
-    const service = new GetProductByIdApplicationService(this.productRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService);
-    return (await service.execute({ id: id })).Value;
+    const service = new ErrorHandlerAspect(
+      new GetProductByIdApplicationService(this.productRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService),
+      (error: Error) => {
+        throw new NotFoundException('Product not found');
+      },
+    );
+    return (await service.execute({ id })).Value;
   }
 }
