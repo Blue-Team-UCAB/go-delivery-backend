@@ -84,7 +84,7 @@ export class AuthController {
   @ApiBody({
     type: ForgotPasswordDto,
   })
-  @Post('forgot/password')
+  @Post('forget/password')
   async forgotPassword(@Body() data: ForgotPasswordDto) {
     const service = new ErrorHandlerAspect(
       new ForgotPasswordUserApplicationService(this.userRepository, this.sha256Service, this.codeGenerator, this.mailService, this.costumerRepository),
