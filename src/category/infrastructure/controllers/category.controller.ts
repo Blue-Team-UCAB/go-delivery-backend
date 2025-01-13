@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Inject, InternalServerErrorException, NotFoundException, Post, Query, UploadedFile, UseInterceptors, ValidationPipe } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CategoryRepository } from '../repository/category.repository';
 import { DataSource } from 'typeorm';
 import { S3Service } from '../../../common/infrastructure/providers/services/s3.service';
@@ -30,6 +30,7 @@ export class CategoryController {
 
   @Post()
   @IsAdmin()
+  @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('image'))
   async createCategory(@Body() createCategoryDto: CreateCategoryDto, @UploadedFile() image: Express.Multer.File) {
     const service = new ErrorHandlerAspect(new CreateCategoryApplicationService(this.categoryRepository, this.uuidCreator, this.s3Service), (error: Error) => {
@@ -42,6 +43,7 @@ export class CategoryController {
 
   @Get('many')
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getCategoryByPage(@Query(ValidationPipe) query: GetCategoryPageDto) {
     const { page, perpage } = query;
     const service = new ErrorHandlerAspect(new GetCategoryByPageApplicationService(this.categoryRepository, this.s3Service), (error: Error) => {
@@ -52,6 +54,7 @@ export class CategoryController {
 
   @Get(':id')
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getCategoryById(@Query('id') id: string) {
     const service = new ErrorHandlerAspect(new GetCategoryIdApplicationService(this.categoryRepository, this.s3Service), (error: Error) => {
       throw new NotFoundException('Category not found');
