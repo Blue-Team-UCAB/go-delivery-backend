@@ -7,7 +7,7 @@ import { IDirrecionRepository } from '../domain/repositories/direction-repositor
 import { DirectionId } from '../domain/value-objects/direction-id';
 import { DirectionDescription } from '../domain/value-objects/direction-direction';
 import { DirectionLatitude } from '../domain/value-objects/direction-latitude';
-import { DirectionLonguitud } from '../domain/value-objects/direction-longuitude';
+import { DirectionLongitud } from '../domain/value-objects/direction-longitude';
 import { DirectionName } from '../domain/value-objects/direction-name';
 
 export class ModifiedDirecionApplicationService implements IApplicationService<ModifyDirectionEntryDto, GetDirectionResponseDto> {
@@ -24,7 +24,7 @@ export class ModifiedDirecionApplicationService implements IApplicationService<M
       DirectionId.create(data.directionId),
       DirectionDescription.create(data.direction),
       DirectionLatitude.create(data.latitude),
-      DirectionLonguitud.create(data.longitude),
+      DirectionLongitud.create(data.longitude),
       DirectionName.create(data.name),
     );
 

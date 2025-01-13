@@ -111,9 +111,9 @@ export class CouponRepository extends Repository<CouponORMEntity> implements ICo
       if (result.affected === 0) {
         return Result.fail<void>(null, 404, 'No rows were updated');
       }
-      return Result.success<void>(null, 200);
+      return Result.success<void>(undefined, 200);
     } catch (error) {
-      return Result.fail<void>(new Error(error.message), 500, error.message);
+      return Result.fail<void>(new Error(error.message), error.code, error.message);
     }
   }
 

@@ -70,7 +70,7 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
       const skip = perpage * page - perpage;
       const schema = process.env.PGDB_SCHEMA;
 
-      const query = this.createQueryBuilder('product')
+      const query = this.createQueryBuilder('bundle')
         .select([
           'bundle.id',
           'bundle.name',
@@ -117,6 +117,7 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
         );
       }
       const bundles = await query.getMany();
+      console.log(bundles);
 
       const resp = await Promise.all(bundles.map(bundle => this.bundleMapper.fromPersistenceToDomain(bundle, false)));
       return Result.success<Bundle[]>(resp, 200);

@@ -35,6 +35,11 @@ import { IDateService } from '../../../common/application/date-service/date-serv
 import { ICouponRepository } from '../../../coupon/domain/repositories/coupon-repository.interface';
 import { Coupon } from '../../../coupon/domain/coupon';
 import { CouponId } from '../../../coupon/domain/value-objects/coupon.id';
+import { IDirrecionRepository } from '../../../customer/domain/repositories/direction-repository.interface';
+import { CalculateOrderSubTotalDomainService } from '../../domain/services/calculate-order-subtotal-domain.service';
+import { IStrategyToSelectDiscount } from '../../../common/domain/discount-strategy/select-discount-strategy.interface';
+import { CalculateOrderTotalDomainService } from 'src/order/domain/services/calculate-order-total-domain.service';
+import { IDiscountRepository } from 'src/discount/domain/repositories/discount-repository.interface';
 
 export class CreateOrderApplicationService implements IApplicationService<CreateOrderServiceEntryDto, CreateOrderServiceResponseDto> {
   constructor(
@@ -42,15 +47,19 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     private readonly productRepository: IProductRepository,
     private readonly bundleRepository: IBundleRepository,
     private readonly customerRepository: ICustomerRepository,
+    private readonly direcionRepository: IDirrecionRepository,
     private readonly walletRepository: IWalletRepository,
     private readonly couponRepository: ICouponRepository,
     private readonly stripeService: StripeService,
     private readonly idGenerator: IdGenerator<string>,
     private readonly s3Service: IStorageS3Service,
     private readonly dateService: IDateService,
+    private readonly selectDiscountStrategy: IStrategyToSelectDiscount,
+    private readonly discountRepository: IDiscountRepository,
   ) {}
 
   async execute(data: CreateOrderServiceEntryDto): Promise<Result<CreateOrderServiceResponseDto>> {
+    // Get all products from the order
     const orderProducts: OrderProduct[] = [];
     for (const productDto of data.products ?? []) {
       const productResult = await this.productRepository.findProductById(productDto.id);
@@ -69,6 +78,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       );
     }
 
+    // Get all bundles from the order
     const orderBundles: OrderBundle[] = [];
     for (const bundleDto of data.bundles ?? []) {
       const bundleResult = await this.bundleRepository.findBundleById(bundleDto.id);
@@ -87,37 +97,72 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       );
     }
 
+    // Validate if there are products or bundles in the order
     if (orderProducts.length === 0 && orderBundles.length === 0) {
       return Result.fail<CreateOrderServiceResponseDto>(null, 400, 'Products or bundles are required');
     }
-    const subtotalAmount =
-      orderProducts.reduce((sum, product) => sum + product.Price.Price * product.Quantity.Quantity, 0) + orderBundles.reduce((sum, bundle) => sum + bundle.Price.Price * bundle.Quantity.Quantity, 0);
-    let totalAmount = subtotalAmount;
-    let coupon: Coupon | null = null;
+
+    // Calculate the subtotal amount
+    const subtotalAmount = CalculateOrderSubTotalDomainService.calculate(orderProducts, orderBundles);
+
+    let totalAmount = 0;
+    let coupon: Coupon;
+    const currentDate = await this.dateService.now();
 
     if (data.id_coupon) {
+      // If there is a coupon, apply it to the order
       const couponResult = await this.couponRepository.findCouponById(data.id_coupon);
       if (!couponResult.isSuccess) {
         return Result.fail<CreateOrderServiceResponseDto>(couponResult.Error, couponResult.StatusCode, couponResult.Message);
       }
       coupon = couponResult.Value;
-      totalAmount = subtotalAmount - (subtotalAmount * coupon.Porcentage.Porcentage) / 100;
       const customerId = CustomerId.create(data.id_customer);
       coupon.applyCoupon(customerId);
       const couponCustomer = coupon.Customers.find(c => c.Id.equals(customerId));
+      // Update the remaining uses of the coupon
       if (couponCustomer) {
         const updateResult = await this.couponRepository.updateRemainingUses(coupon.Id.Id, customerId.Id, couponCustomer.RemainingUses.RemainingUses);
         if (!updateResult.isSuccess) {
           return Result.fail<CreateOrderServiceResponseDto>(null, updateResult.StatusCode, updateResult.Message);
         }
       }
+      totalAmount = await CalculateOrderTotalDomainService.calculate(
+        orderProducts,
+        orderBundles,
+        this.selectDiscountStrategy,
+        this.discountRepository,
+        this.productRepository,
+        this.bundleRepository,
+        currentDate,
+        coupon,
+      );
+    } else {
+      totalAmount = await CalculateOrderTotalDomainService.calculate(
+        orderProducts,
+        orderBundles,
+        this.selectDiscountStrategy,
+        this.discountRepository,
+        this.productRepository,
+        this.bundleRepository,
+        currentDate,
+      );
     }
+
+    const directionResult = await this.direcionRepository.findById(data.id_direction);
+
+    if (!directionResult.isSuccess) {
+      return Result.fail<CreateOrderServiceResponseDto>(directionResult.Error, directionResult.StatusCode, directionResult.Message);
+    }
+
+    const direction = directionResult.Value;
+    const longitude = Number(direction.Longitud.Longitud);
+    const latitude = Number(direction.Latitude.Latitude);
 
     const dataOrder = {
       customerId: CustomerId.create(data.id_customer),
       stateHistory: [OrderState.create(OrderStates.CREATED, new Date())],
       createdDate: OrderCreatedDate.create(new Date()),
-      direction: OrderDirection.create(data.direction, data.longitude, data.latitude),
+      direction: OrderDirection.create(direction.Description.Description, longitude, latitude),
       totalAmount: OrderTotalAmount.create(totalAmount),
       subtotalAmount: OrderSubtotalAmount.create(subtotalAmount),
       products: orderProducts,
@@ -139,6 +184,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       coupon ? CouponId.create(coupon.Id.Id) : null,
     );
 
+    // If the payment is with stripe, make the payment
     const regex = new RegExp('^pm_[a-zA-Z0-9]{24}$');
     if (data.token_stripe && regex.test(data.token_stripe)) {
       const paymentSuccess = await this.stripeService.PaymentIntent(totalAmount, data.token_stripe, data.id_stripe_customer, order.Id.Id);

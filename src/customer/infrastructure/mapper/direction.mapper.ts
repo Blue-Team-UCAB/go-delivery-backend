@@ -4,7 +4,7 @@ import { DirectionORMEntity } from '../model/orm-direction.entity';
 import { DirectionId } from 'src/customer/domain/value-objects/direction-id';
 import { DirectionDescription } from 'src/customer/domain/value-objects/direction-direction';
 import { DirectionLatitude } from 'src/customer/domain/value-objects/direction-latitude';
-import { DirectionLonguitud } from 'src/customer/domain/value-objects/direction-longuitude';
+import { DirectionLongitud } from 'src/customer/domain/value-objects/direction-longitude';
 import { DirectionName } from 'src/customer/domain/value-objects/direction-name';
 
 export class DirectionMapper implements IMapper<Direction, DirectionORMEntity> {
@@ -13,7 +13,7 @@ export class DirectionMapper implements IMapper<Direction, DirectionORMEntity> {
     directionORM.id_Direction = domain.Id.Id;
     directionORM.direction_Direction = domain.Description.Description;
     directionORM.latitude_Direction = domain.Latitude.Latitude;
-    directionORM.longuitud_Direction = domain.Longuitud.Longuitud;
+    directionORM.longuitud_Direction = domain.Longitud.Longitud;
     directionORM.name_Direction = domain.Name.Name;
     return directionORM;
   }
@@ -22,7 +22,7 @@ export class DirectionMapper implements IMapper<Direction, DirectionORMEntity> {
       DirectionId.create(persistence.id_Direction),
       DirectionDescription.create(persistence.direction_Direction),
       DirectionLatitude.create(persistence.latitude_Direction),
-      DirectionLonguitud.create(persistence.longuitud_Direction),
+      DirectionLongitud.create(persistence.longuitud_Direction),
       DirectionName.create(persistence.name_Direction),
     );
   }

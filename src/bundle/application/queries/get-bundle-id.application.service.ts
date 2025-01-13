@@ -33,7 +33,6 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
 
     const currentDate = await this.dateService.now();
     const discounts: Result<Discount[]> = await this.discountRepository.findDiscountByBundle(bundleResult.Value, currentDate);
-    console.log(discounts.Value);
     if (!discounts.isSuccess) {
       return Result.fail(discounts.Error, discounts.StatusCode, discounts.Message);
     }

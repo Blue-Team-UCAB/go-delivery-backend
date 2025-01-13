@@ -34,6 +34,9 @@ import { ReportOrder } from '../dto/report-order.dto';
 import { ReportOrderApplicationService } from '../../application/commands/report-order.application.service';
 import { PaymentRepository } from '../../../payment/infrastructure/repository/payment-repository';
 import { ErrorHandlerAspect } from '../../../common/application/aspects/error-handler-aspect';
+import { DirectionRepository } from '../../../customer/infrastructure/repository/direction-repository';
+import { DiscountRepository } from '../../../discount/infrastructure/repository/discount.repository';
+import { BestForTheCustomerStrategy } from '../../../common/infrastructure/select-discount-strategies/best-for-the-customer-strategy';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -42,6 +45,7 @@ export class OrderController {
   private readonly productRepository: ProductRepository;
   private readonly bundleRepository: BundleRepository;
   private readonly customerRepository: CustomerRepository;
+  private readonly directionRepositoy: DirectionRepository;
   private readonly walletRepository: WalletRepository;
   private readonly stripeService: StripeService;
   private readonly uuidCreator: UuidGenerator;
@@ -49,6 +53,7 @@ export class OrderController {
   private readonly couponRepository: CouponRepository;
   private readonly userRepository: IUserRepository;
   private readonly paymentRepository: PaymentRepository;
+  private readonly discountRepository: DiscountRepository;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -56,6 +61,7 @@ export class OrderController {
     private readonly s3Service: S3Service,
     private readonly dateService: DateService,
     private readonly publisher: EventPublisher<DomainEventBase>,
+    private readonly bestForTheCustomerStrategy: BestForTheCustomerStrategy,
   ) {
     this.uuidCreator = new UuidGenerator();
     this.productRepository = new ProductRepository(this.dataSource);
@@ -68,9 +74,11 @@ export class OrderController {
     this.couponRepository = new CouponRepository(this.dataSource);
     this.userRepository = new UserRepository(this.dataSource);
     this.paymentRepository = new PaymentRepository(this.dataSource);
+    this.directionRepositoy = new DirectionRepository(this.dataSource);
+    this.discountRepository = new DiscountRepository(this.dataSource);
   }
 
-  @Post()
+  @Post('pay')
   @UseAuth()
   @IsClientOrAdmin()
   @ApiBearerAuth()
@@ -81,12 +89,15 @@ export class OrderController {
         this.productRepository,
         this.bundleRepository,
         this.customerRepository,
+        this.directionRepositoy,
         this.walletRepository,
         this.couponRepository,
         this.stripeService,
         this.uuidCreator,
         this.s3Service,
         this.dateService,
+        this.bestForTheCustomerStrategy,
+        this.discountRepository,
       ),
       (error: Error) => {
         throw new InternalServerErrorException('Error creating order');
@@ -105,7 +116,7 @@ export class OrderController {
     return (await service.execute({ id })).Value;
   }
 
-  @Get()
+  @Get('user/many')
   @UseAuth()
   @IsClientOrAdmin()
   @ApiBearerAuth()
