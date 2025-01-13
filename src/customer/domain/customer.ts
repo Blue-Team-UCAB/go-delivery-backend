@@ -79,6 +79,14 @@ export class Customer extends AggregateRoot<CustomerId> {
     this.direction = this.direction.filter(dir => !dir.Id.equals(id));
   }
 
+  updateName(name: CustomerName): void {
+    this.name = name;
+  }
+
+  updatePhone(phone: CustomerPhone): void {
+    this.phone = phone;
+  }
+
   constructor(
     id: CustomerId,
     name: CustomerName,

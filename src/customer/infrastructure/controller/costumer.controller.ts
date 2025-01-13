@@ -20,12 +20,19 @@ import { S3Service } from 'src/common/infrastructure/providers/services/s3.servi
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { DeleteDirectionApplicationService } from 'src/customer/application/delete-direction.application.service';
 import { ErrorHandlerAspect } from 'src/common/application/aspects/error-handler-aspect';
+import { UpdateCustomerEntryDto } from '../dto/entry/update-customer.entry.dto';
+import { UpdateCustomerApplicationService } from 'src/customer/application/update-customer.application.service';
+import { IUserRepository } from 'src/auth/application/repository/user-repository.interface';
+import { UserRepository } from 'src/auth/infrastructure/repository/user.repository';
+import { Sha256Service } from 'src/common/infrastructure/providers/services/sha256Service.service';
 
 @Controller('user')
 export class UserController {
   private readonly customerRepository: CustomerRepository;
   private readonly uuidCreator: UuidGenerator;
   private readonly directionRepository: DirectionRepository;
+  private readonly userRepositiry: IUserRepository;
+  private readonly sha256Service: Sha256Service;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -35,6 +42,8 @@ export class UserController {
     this.customerRepository = new CustomerRepository(this.dataSource);
     this.uuidCreator = new UuidGenerator();
     this.directionRepository = new DirectionRepository(this.dataSource);
+    this.userRepositiry = new UserRepository(this.dataSource);
+    this.sha256Service = new Sha256Service();
   }
 
   @Patch('update/image')
@@ -120,5 +129,21 @@ export class UserController {
       throw new InternalServerErrorException('Error al eliminar la direccion del usuario');
     });
     return (await service.execute({ idCustomer: user.idCostumer, idDirection: idDirection })).Value;
+  }
+
+  @Patch('update/profile')
+  @UseAuth()
+  @ApiBearerAuth()
+  @IsClientOrAdmin()
+  @UseInterceptors(FileInterceptor('image'))
+  async UpdateProfile(@Body() updateProfile: UpdateCustomerEntryDto, @GetUser() user: AuthInterface, @UploadedFile() image: Express.Multer.File) {
+    if (image) {
+      updateProfile.imageBuffer = image.buffer;
+      updateProfile.contentType = image.mimetype;
+    }
+    const service = new ErrorHandlerAspect(new UpdateCustomerApplicationService(this.customerRepository, this.userRepositiry, this.sha256Service, this.uuidCreator, this.s3Service), error => {
+      throw new InternalServerErrorException('Error al actualizar el perfil del usuario');
+    });
+    return (await service.execute({ idUser: user.idUser, idCustomer: user.idCostumer, ...updateProfile })).Value;
   }
 }
