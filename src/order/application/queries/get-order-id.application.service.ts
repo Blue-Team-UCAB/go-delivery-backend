@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { IApplicationService } from '../../../common/application/application-services/application-service.interface';
 import { GetOrderIdServiceEntryDto } from '../dto/entry/get-order-id-service.entry.dto';
-import { GetOrderIdServiceResponseDto, CourierDto, OrderReportDto, StateHistoryDto, DirectionDto, ProductBundleDto } from '../dto/response/get-order-id-service.response.dto';
+import { CourierDto, DirectionDto, GetOrderIdServiceResponseDto, OrderReportDto, ProductBundleDto } from '../dto/response/get-order-id-service.response.dto';
 import { IOrderRepository } from '../../domain/repositories/order-repository.interface';
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { Result } from '../../../common/domain/result-handler/result';
 import { IDateService } from '../../../common/application/date-service/date-service.interface';
+import { OrderStates } from 'src/order/domain/value-objects/order-state';
 
 @Injectable()
 export class GetOrderByIdApplicationService implements IApplicationService<GetOrderIdServiceEntryDto, GetOrderIdServiceResponseDto> {
@@ -30,9 +31,11 @@ export class GetOrderByIdApplicationService implements IApplicationService<GetOr
         return {
           id: product.Id.Id,
           name: product.Name.Name,
-          price: product.Price.Price,
+          description: 'Este producto es increiblemente bueno',
           quantity: product.Quantity.Quantity,
-          imageUrl: imageUrlProduct,
+          price: product.Price.Price,
+          images: [imageUrlProduct],
+          currency: 'USD',
         };
       }),
     );
@@ -43,9 +46,11 @@ export class GetOrderByIdApplicationService implements IApplicationService<GetOr
         return {
           id: bundle.Id.Id,
           name: bundle.Name.Name,
-          price: bundle.Price.Price,
+          description: 'Este bundle es increiblemente bueno',
           quantity: bundle.Quantity.Quantity,
-          imageUrl: imageUrlBundle,
+          price: bundle.Price.Price,
+          images: [imageUrlBundle],
+          currency: 'USD',
         };
       }),
     );
@@ -59,34 +64,44 @@ export class GetOrderByIdApplicationService implements IApplicationService<GetOr
 
     const courier: CourierDto | null = order.Courier
       ? {
-          id: order.Courier.Id.Id,
-          name: order.Courier.Name.Name,
+          courierName: order.Courier.Name.Name,
           phone: order.Courier.Phone.Phone,
-          image: await this.s3Service.getFile(order.Courier.Image.Url),
+          courierImage: await this.s3Service.getFile(order.Courier.Image.Url),
         }
       : undefined;
+
+    const direction: DirectionDto | null = {
+      lat: order.Direction.Longitude,
+      long: order.Direction.Latitude,
+    };
 
     const report: OrderReportDto | null = order.Report
       ? {
-          claimDate: order.Report.ClaimDate,
-          claim: order.Report.Claim,
+          description: order.Report.Claim,
         }
       : undefined;
 
-    const direction: DirectionDto = {
-      direction: order.Direction.Direction,
-      longitude: order.Direction.Longitude,
-      latitude: order.Direction.Latitude,
-    };
+    let receivedDate: Date | null;
+    const lastState = order.StateHistory[order.StateHistory.length - 1];
+    if (lastState.State === OrderStates.SHIPPED) {
+      receivedDate = lastState.Date;
+    }
 
     const response: GetOrderIdServiceResponseDto = {
-      id: order.Id.Id,
-      state: stateHistory,
+      orderId: order.Id.Id,
+      orderState: stateHistory,
+      orderTimeCreated: order.CreatedDate.CreatedDate.toLocaleTimeString(),
       totalAmount: order.TotalAmount.Amount,
-      subtotalAmount: order.SubtotalAmount.Amount,
-      courier: courier,
-      report: report,
-      direction: direction,
+      subTotal: order.SubtotalAmount.Amount,
+      orderReceivedDate: receivedDate,
+      orderPayment: {
+        paymetAmount: order.TotalAmount.Amount,
+        paymentCurrency: 'USD',
+        paymentMethod: 'Wallet',
+      },
+      orderDirection: direction,
+      orderReport: report,
+      orderCourier: courier,
       products: products,
       bundles: bundles,
     };

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ICourierRepository } from '../../application/repositories/courier-repository.interface';
 import { DataSource, Repository } from 'typeorm';
 import { OrderCourierORMEntity } from '../models/orm-order-courier.entity';
-import { Result } from 'src/common/domain/result-handler/result';
-import { CourierDto } from 'src/order/application/dto/response/get-order-id-service.response.dto';
+import { Result } from '../../../common/domain/result-handler/result';
+import { CourierDto } from '../../../order/application/dto/response/change-order-status.response.dto';
 
 @Injectable()
 export class CourierRepository extends Repository<OrderCourierORMEntity> implements ICourierRepository {
