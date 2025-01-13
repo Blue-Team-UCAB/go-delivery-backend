@@ -146,12 +146,9 @@ export class OrderController {
   @UseAuth()
   @ApiBearerAuth()
   async reportOrder(@Body() data: ReportOrder, @GetUser() user: AuthInterface) {
-    const service = new ErrorHandlerAspect(
-      new ReportOrderApplicationService(this.orderRepository, this.stripeService, this.customerRepository, this.walletRepository, this.paymentRepository, this.uuidCreator),
-      (error: Error) => {
-        throw new InternalServerErrorException('Error reporting order');
-      },
-    );
+    const service = new ErrorHandlerAspect(new ReportOrderApplicationService(this.orderRepository), (error: Error) => {
+      throw new InternalServerErrorException('Error reporting order');
+    });
     return (await service.execute({ ...data, idCustomer: user.idCostumer, idStripe: user.idStripe })).Value;
   }
 }
