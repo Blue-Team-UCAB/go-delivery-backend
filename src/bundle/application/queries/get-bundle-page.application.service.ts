@@ -22,7 +22,7 @@ export class GetBundleByPageApplicationService implements IApplicationService<Ge
   ) {}
 
   async execute(data: GetBundlePageServiceEntryDto): Promise<Result<GetBundlePageServiceResponseDto>> {
-    const bundleResult: Result<Bundle[]> = await this.bundleRepository.findAllBundles(data.page, data.perpage);
+    const bundleResult: Result<Bundle[]> = await this.bundleRepository.findAllBundles(data.page, data.perpage, data.name, data.price, data.popular, data.discount);
 
     if (!bundleResult.isSuccess) {
       return Result.fail(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
