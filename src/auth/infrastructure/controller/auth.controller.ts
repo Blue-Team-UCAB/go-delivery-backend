@@ -56,7 +56,7 @@ export class AuthController {
     this.stripe = new StripeService();
   }
 
-  @ApiBody({
+  /* @ApiBody({
     type: SignUpUserDto,
   })
   @Post('register')
@@ -68,7 +68,7 @@ export class AuthController {
       },
     );
     return (await service.execute(createUser)).Value;
-  }
+  }*/
 
   @ApiBody({
     type: SignInUserDto,
