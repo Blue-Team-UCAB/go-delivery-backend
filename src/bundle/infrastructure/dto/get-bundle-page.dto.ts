@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class GetBundlePageDto {
   @IsOptional()
@@ -13,4 +13,20 @@ export class GetBundlePageDto {
   @Min(1)
   @Type(() => Number)
   perpage: number = 10;
+
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  price?: string;
+
+  @IsOptional()
+  @IsString()
+  popular?: string;
+
+  @IsOptional()
+  @IsString()
+  discount?: string;
 }

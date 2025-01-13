@@ -116,7 +116,7 @@ export class OrderController {
     return (await service.execute({ id })).Value;
   }
 
-  @Get()
+  @Get('user/many')
   @UseAuth()
   @IsClientOrAdmin()
   @ApiBearerAuth()
