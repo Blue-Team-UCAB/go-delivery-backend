@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Inject, UploadedFile, UseInterceptors, Get, Param, ValidationPipe, Query, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { BundleRepository } from '../repository/bundle.repository';
 import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-generator';
 import { DataSource } from 'typeorm';
@@ -44,6 +44,7 @@ export class BundleController {
 
   @Post()
   @IsAdmin()
+  @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('image'))
   async createBundle(@Body() createBundleDto: CreateBundleDto, @UploadedFile() image: Express.Multer.File) {
     const service = new ErrorHandlerAspect(
@@ -59,6 +60,7 @@ export class BundleController {
 
   @Get('many')
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getBundleByPage(@Query(ValidationPipe) query: GetBundlePageDto) {
     const { page, perpage } = query;
     const service = new ErrorHandlerAspect(
@@ -72,6 +74,7 @@ export class BundleController {
 
   @Get(':id')
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getBundleId(@Param('id') id: string) {
     const service = new ErrorHandlerAspect(
       new GetBundleByIdApplicationService(this.bundleRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService),
