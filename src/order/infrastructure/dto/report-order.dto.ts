@@ -13,7 +13,7 @@ export class ReportOrder {
   @IsString()
   @ApiProperty({
     description: 'Order description',
-    example: 'Why Cancelled description',
+    example: 'Order description',
   })
   description: string;
 }

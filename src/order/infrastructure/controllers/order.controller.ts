@@ -160,6 +160,6 @@ export class OrderController {
     const service = new ErrorHandlerAspect(new ReportOrderApplicationService(this.orderRepository), (error: Error) => {
       throw new InternalServerErrorException('Error reporting order');
     });
-    return (await service.execute({ ...data, idCustomer: user.idCostumer, idStripe: user.idStripe })).Value;
+    return (await service.execute({ ...data })).Value;
   }
 }
