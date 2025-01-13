@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Get, Query, ValidationPipe, Inject, UseInterceptors, UploadedFile, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { DataSource } from 'typeorm';
 import { CreateCouponApplicationService } from '../../application/commands/create-coupon-application.service';
 import { GetCouponPageApplicationService } from '../../application/queries/get-coupon-page.application.service';
@@ -35,6 +35,7 @@ export class CouponController {
 
   @Post()
   @IsAdmin()
+  @ApiBearerAuth()
   async createCoupon(@Body() createCouponDto: CreateCouponDto) {
     const service = new ErrorHandlerAspect(new CreateCouponApplicationService(this.couponRepository, this.uuidCreator, this.dateService), (error: Error) => {
       throw new InternalServerErrorException('Error creating coupon');
@@ -44,6 +45,7 @@ export class CouponController {
 
   @Get('many')
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getCoupons(@Query(ValidationPipe) query: GetCouponPageDto) {
     const { page, perpage, search } = query;
     const service = new ErrorHandlerAspect(new GetCouponPageApplicationService(this.couponRepository, this.dateService), (error: Error) => {
@@ -55,6 +57,7 @@ export class CouponController {
   @Get('applicable')
   @UseAuth()
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getApplicableCoupons(@GetUser() user: AuthInterface) {
     const service = new ErrorHandlerAspect(new GetApplicableCouponsByCustomerApplicationService(this.couponRepository, this.dateService), (error: Error) => {
       throw new InternalServerErrorException('Error getting applicable coupons');
@@ -65,6 +68,7 @@ export class CouponController {
   @Post('claim-coupon')
   @UseAuth()
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async validateCoupon(@Body() claimCouponDto: ClaimCouponDto, @GetUser() user: AuthInterface) {
     const service = new ErrorHandlerAspect(new ClaimCouponApplicationService(this.couponRepository, this.dateService), (error: Error) => {
       throw new InternalServerErrorException('Error claiming coupon');
@@ -74,6 +78,7 @@ export class CouponController {
 
   @Get(':id')
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getCoupon(@Query('id') id: string) {
     const service = new ErrorHandlerAspect(new GetCouponByIdApplicationService(this.couponRepository), (error: Error) => {
       throw new NotFoundException('Coupon not found');

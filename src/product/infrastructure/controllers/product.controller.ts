@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Inject, Get, Param, ValidationPipe, Query, UploadedFile, UseInterceptors, UseGuards, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { DataSource } from 'typeorm';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { createProductApplicationService } from '../../application/commands/create-product-application.service';
 import { UuidGenerator } from '../../../common/infrastructure/id-generator/uuid-generator';
 import { ProductRepository } from '../repository/product.repository';
@@ -44,6 +44,7 @@ export class ProductController {
 
   @Post()
   @IsAdmin()
+  @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('image'))
   async createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() image: Express.Multer.File) {
     const service = new ErrorHandlerAspect(new createProductApplicationService(this.productRepository, this.categoryRepository, this.uuidCreator, this.s3Service, this.publisher), (error: Error) => {
@@ -56,6 +57,7 @@ export class ProductController {
 
   @Get('many')
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getProductByPage(@Query(ValidationPipe) query: GetProductPageDto) {
     const { page, perpage, category, name, price, popular, discount } = query;
     const service = new ErrorHandlerAspect(
@@ -69,6 +71,7 @@ export class ProductController {
 
   @Get(':id')
   @IsClientOrAdmin()
+  @ApiBearerAuth()
   async getProductId(@Param('id') id: string) {
     const service = new ErrorHandlerAspect(
       new GetProductByIdApplicationService(this.productRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService),
