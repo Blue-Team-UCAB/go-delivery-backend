@@ -1,7 +1,7 @@
 import { Entity } from 'src/common/domain/entity';
 import { DirectionId } from '../value-objects/direction-id';
 import { DirectionLatitude } from '../value-objects/direction-latitude';
-import { DirectionLonguitud } from '../value-objects/direction-longuitude';
+import { DirectionLongitud } from '../value-objects/direction-longitude';
 import { DirectionDescription } from '../value-objects/direction-direction';
 import { DirectionName } from '../value-objects/direction-name';
 
@@ -10,7 +10,7 @@ export class Direction extends Entity<DirectionId> {
     id: DirectionId,
     private direction: DirectionDescription,
     private latitude: DirectionLatitude,
-    private longuitud: DirectionLonguitud,
+    private longitud: DirectionLongitud,
     private name: DirectionName,
   ) {
     super(id);
@@ -20,8 +20,8 @@ export class Direction extends Entity<DirectionId> {
     return this.latitude;
   }
 
-  get Longuitud(): DirectionLonguitud {
-    return this.longuitud;
+  get Longitud(): DirectionLongitud {
+    return this.longitud;
   }
 
   get Description(): DirectionDescription {
@@ -32,10 +32,10 @@ export class Direction extends Entity<DirectionId> {
     return this.name;
   }
 
-  modify(direction: DirectionDescription, latitude: DirectionLatitude, longuitud: DirectionLonguitud, name: DirectionName): void {
+  modify(direction: DirectionDescription, latitude: DirectionLatitude, longitud: DirectionLongitud, name: DirectionName): void {
     this.direction = direction;
     this.latitude = latitude;
-    this.longuitud = longuitud;
+    this.longitud = longitud;
     this.name = name;
   }
 }

@@ -4,13 +4,7 @@ import { ArrayMinSize, ArrayNotEmpty, IsArray, IsNumber, IsOptional, IsPositive,
 export class CreateOrderDto {
   @IsString()
   @MinLength(10)
-  direction: string;
-
-  @IsNumber()
-  longitude: number;
-
-  @IsNumber()
-  latitude: number;
+  id_direction: string;
 
   @IsOptional()
   @IsString()

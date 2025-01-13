@@ -6,7 +6,7 @@ import { ICustomerRepository } from '../domain/repositories/customer-repository.
 import { IdGenerator } from 'src/common/application/id-generator/id-generator.interface';
 import { DirectionId } from '../domain/value-objects/direction-id';
 import { DirectionDescription } from '../domain/value-objects/direction-direction';
-import { DirectionLonguitud } from '../domain/value-objects/direction-longuitude';
+import { DirectionLongitud } from '../domain/value-objects/direction-longitude';
 import { DirectionLatitude } from '../domain/value-objects/direction-latitude';
 import { DirectionName } from '../domain/value-objects/direction-name';
 
@@ -27,7 +27,7 @@ export class AddDirectionApplicationService implements IApplicationService<AddDi
       DirectionId.create(id),
       DirectionDescription.create(data.direction),
       DirectionLatitude.create(data.latitude),
-      DirectionLonguitud.create(data.longitude),
+      DirectionLongitud.create(data.longitude),
       DirectionName.create(data.name),
     );
 

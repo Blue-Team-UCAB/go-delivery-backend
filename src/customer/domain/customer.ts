@@ -13,7 +13,7 @@ import { Direction } from './entities/direction';
 import { DirectionId } from './value-objects/direction-id';
 import { DirectionDescription } from './value-objects/direction-direction';
 import { DirectionLatitude } from './value-objects/direction-latitude';
-import { DirectionLonguitud } from './value-objects/direction-longuitude';
+import { DirectionLongitud } from './value-objects/direction-longitude';
 import { DirectionAddedEvent } from './events/direction-added.event';
 import { DirectionNotFound } from './exceptions/direction-not-found.exception';
 import { DirectionName } from './value-objects/direction-name';
@@ -58,17 +58,17 @@ export class Customer extends AggregateRoot<CustomerId> {
     this.wallet.subtractAmount(amount);
   }
 
-  addDirection(id: DirectionId, direction: DirectionDescription, latitude: DirectionLatitude, longuitud: DirectionLonguitud, name_dir: DirectionName): void {
-    const addDirection = DirectionAddedEvent.create(new Direction(id, direction, latitude, longuitud, name_dir));
+  addDirection(id: DirectionId, direction: DirectionDescription, latitude: DirectionLatitude, longitud: DirectionLongitud, name_dir: DirectionName): void {
+    const addDirection = DirectionAddedEvent.create(new Direction(id, direction, latitude, longitud, name_dir));
     this.apply(addDirection);
   }
 
-  modifyDirection(id: DirectionId, direction: DirectionDescription, latitude: DirectionLatitude, longuitud: DirectionLonguitud, name_dir: DirectionName): void {
+  modifyDirection(id: DirectionId, direction: DirectionDescription, latitude: DirectionLatitude, longitud: DirectionLongitud, name_dir: DirectionName): void {
     const dir = this.direction.find(dir => dir.Id.equals(id));
     if (!dir) {
       throw new DirectionNotFound('Direction not found');
     }
-    dir.modify(direction, latitude, longuitud, name_dir);
+    dir.modify(direction, latitude, longitud, name_dir);
   }
 
   deleteDirection(id: DirectionId): void {

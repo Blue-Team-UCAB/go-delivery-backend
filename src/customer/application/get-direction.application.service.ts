@@ -20,7 +20,7 @@ export class GetDirectionApplicationService implements IApplicationService<GetDi
         name: direction.Value.Name.Name,
         direction: direction.Value.Description.Description,
         lat: direction.Value.Latitude.Latitude,
-        long: direction.Value.Longuitud.Longuitud,
+        long: direction.Value.Longitud.Longitud,
         favorite: false,
       },
       200,

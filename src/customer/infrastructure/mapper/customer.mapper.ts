@@ -12,7 +12,7 @@ import { Direction } from 'src/customer/domain/entities/direction';
 import { DirectionId } from 'src/customer/domain/value-objects/direction-id';
 import { DirectionDescription } from 'src/customer/domain/value-objects/direction-direction';
 import { DirectionLatitude } from 'src/customer/domain/value-objects/direction-latitude';
-import { DirectionLonguitud } from 'src/customer/domain/value-objects/direction-longuitude';
+import { DirectionLongitud } from 'src/customer/domain/value-objects/direction-longitude';
 import { DirectionORMEntity } from '../model/orm-direction.entity';
 import { DirectionName } from 'src/customer/domain/value-objects/direction-name';
 import { CustomerImage } from 'src/customer/domain/value-objects/customer-image';
@@ -31,7 +31,7 @@ export class CustomerMapper implements IMapper<Customer, CustomerORMEntity> {
         directionORM.id_Direction = direction.Id.Id;
         directionORM.direction_Direction = direction.Description.Description;
         directionORM.latitude_Direction = direction.Latitude.Latitude;
-        directionORM.longuitud_Direction = direction.Longuitud.Longuitud;
+        directionORM.longuitud_Direction = direction.Longitud.Longitud;
         directionORM.name_Direction = direction.Name.Name;
         return directionORM;
       });
@@ -52,7 +52,7 @@ export class CustomerMapper implements IMapper<Customer, CustomerORMEntity> {
           DirectionId.create(direction.id_Direction),
           DirectionDescription.create(direction.direction_Direction),
           DirectionLatitude.create(direction.latitude_Direction),
-          DirectionLonguitud.create(direction.longuitud_Direction),
+          DirectionLongitud.create(direction.longuitud_Direction),
           DirectionName.create(direction.name_Direction),
         );
       }),
