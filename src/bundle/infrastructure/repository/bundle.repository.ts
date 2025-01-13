@@ -117,7 +117,6 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
         );
       }
       const bundles = await query.getMany();
-      console.log(bundles);
 
       const resp = await Promise.all(bundles.map(bundle => this.bundleMapper.fromPersistenceToDomain(bundle, false)));
       return Result.success<Bundle[]>(resp, 200);
