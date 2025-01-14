@@ -9,10 +9,10 @@ export class CourierMovement {
     longitude: string,
     id: string,
   ): Promise<{
-    latitudeActual: string;
-    longitudeActual: string;
-    LongitudePuntoLlegada: string;
-    LatitudePuntoLlegada: string;
+    latActual: string;
+    longActual: string;
+    LongPuntoLlegada: string;
+    LatPuntoLlegada: string;
   }> {
     const resp = await this.movementRepository.findMovementByOrderId(id);
 
@@ -42,10 +42,10 @@ export class CourierMovement {
         currentStepIndex: 0,
       });
       return {
-        latitudeActual: '10.50817720739761',
-        longitudeActual: '-66.92005179744145',
-        LongitudePuntoLlegada: longitude,
-        LatitudePuntoLlegada: latitude,
+        latActual: '10.50817720739761',
+        longActual: '-66.92005179744145',
+        LongPuntoLlegada: longitude,
+        LatPuntoLlegada: latitude,
       };
     }
 
@@ -64,10 +64,10 @@ export class CourierMovement {
     await this.movementRepository.saveMovement(resp);
 
     return {
-      latitudeActual: nextLatitude.toString(),
-      longitudeActual: nextLongitude.toString(),
-      LongitudePuntoLlegada: resp.longitudePuntoLlegada,
-      LatitudePuntoLlegada: resp.latitudePuntoLlegada,
+      latActual: nextLatitude.toString(),
+      longActual: nextLongitude.toString(),
+      LongPuntoLlegada: resp.longitudePuntoLlegada,
+      LatPuntoLlegada: resp.latitudePuntoLlegada,
     };
   }
 }
