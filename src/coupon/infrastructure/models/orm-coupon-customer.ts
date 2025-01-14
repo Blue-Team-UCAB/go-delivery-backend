@@ -3,7 +3,6 @@ import { CouponORMEntity } from './orm-coupon.entity';
 import { CustomerORMEntity } from '../../../customer/infrastructure/model/orm-customer.entity';
 
 @Entity('CouponCustomer')
-@Unique(['coupon', 'customer'])
 export class CouponCustomerORMEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
@@ -14,6 +13,6 @@ export class CouponCustomerORMEntity {
   @ManyToOne(() => CustomerORMEntity, customer => customer.coupon_Customers)
   customer: CustomerORMEntity;
 
-  @Column('int')
+  @Column()
   remainingUses: number;
 }

@@ -7,32 +7,30 @@ import { Result } from '../../../common/domain/result-handler/result';
 @Injectable()
 export class CouponCustomerRepository extends Repository<CouponCustomerORMEntity> implements ICouponCustomerRepository {
   constructor(dataSource: DataSource) {
-    super(CouponCustomerRepository, dataSource.createEntityManager());
+    super(CouponCustomerORMEntity, dataSource.createEntityManager());
   }
 
-  async saveCouponCustomerRelation(couponId: string, customerId: string, remainingUses: number): Promise<Result<void>> {
+  async saveCouponCustomerRelation(couponId: string, customerId: string, remainingUses: number): Promise<Result<{ id: string }>> {
     try {
-      console.log(couponId, customerId, remainingUses);
-      const existingRelation = await this.createQueryBuilder('couponCustomer')
-        .select('couponCustomer.id')
-        .where('couponCustomer.couponId = :couponId', { couponId })
-        .andWhere('couponCustomer.customerIdCostumer = :customerId', { customerId })
+      const existingRelation = await this.createQueryBuilder('CouponCustomer')
+        .select(['CouponCustomer.id', 'CouponCustomer.coupon', 'CouponCustomer.customer', 'CouponCustomer.remainingUses'])
+        .where('CouponCustomer.coupon = :couponId', { couponId })
+        .andWhere('CouponCustomer.customer = :customerId', { customerId })
         .getOne();
-      console.log(existingRelation.id);
 
       if (existingRelation) {
-        return Result.fail<void>(null, 400, 'Coupon already claimed by this customer');
+        throw new Error('Coupon already claimed');
       }
 
-      const newRelation = new CouponCustomerORMEntity();
-      newRelation.coupon = { id: couponId } as any;
-      newRelation.customer = { id_Costumer: customerId } as any;
-      newRelation.remainingUses = remainingUses;
+      const couponCustomer = new CouponCustomerORMEntity();
+      couponCustomer.coupon = { id: couponId } as any;
+      couponCustomer.customer = { id_Costumer: customerId } as any;
+      couponCustomer.remainingUses = remainingUses;
+      await this.save(couponCustomer);
 
-      await this.save(newRelation);
-      return Result.success<void>(undefined, 200);
+      return Result.success<{ id: string }>({ id: couponId }, 200);
     } catch (error) {
-      return Result.fail<void>(new Error(error.message), 500, error.message);
+      return Result.fail<{ id: string }>(new Error(error.message), 500, error.message);
     }
   }
 }

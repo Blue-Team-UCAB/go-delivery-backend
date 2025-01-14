@@ -12,6 +12,8 @@ import { OrderRepository } from 'src/order/infrastructure/repository/order.repos
 import { CategoryRepository } from 'src/category/infrastructure/repository/category.repository';
 import { MovementRepository } from 'src/order/infrastructure/repository/movement.repository';
 import { PaymentMethodRepository } from 'src/payment/infrastructure/repository/payment-method.repository';
+import { CouponCustomerRepository } from 'src/coupon/infrastructure/repository/coupon-customer.repository';
+import { CourierRepository } from 'src/order/infrastructure/repository/courier.repository';
 
 export const ormDatabaseProviders = [
   {
@@ -87,6 +89,13 @@ export const ormDatabaseProviders = [
     inject: ['BaseDeDatos'],
   },
   {
+    provide: 'CourierRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new CourierRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
     provide: 'CourierMovementRepository',
     useFactory: (dataSource: DataSource) => {
       return new MovementRepository(dataSource);
@@ -101,38 +110,46 @@ export const ormDatabaseProviders = [
     inject: ['BaseDeDatos'],
   },
 
-  // {
-  //   provide: 'BundleRepository',
-  //   useFactory: (dataSource: DataSource) => {
-  //     return new BundleRepository(dataSource);
-  //   },
-  //   inject: ['BaseDeDatos'],
-  // },
-  // {
-  //   provide: 'DiscountRepository',
-  //   useFactory: (dataSource: DataSource) => {
-  //     return new DiscountRepository(dataSource);
-  //   },
-  //   inject: ['BaseDeDatos'],
-  // },
-  // {
-  //   provide: 'CouponRepository',
-  //   useFactory: (dataSource: DataSource) => {
-  //     return new CouponRepository(dataSource);
-  //   },
-  //   inject: ['BaseDeDatos'],
-  // },
-  // {
-  //   provide: 'OrderRepository',
-  //   useFactory: (dataSource: DataSource) => {
-  //     return new OrderRepository(dataSource);
-  //   },
-  //   inject: ['BaseDeDatos'],
-  // },
-  // {
-  //   provide: 'CategoryRepository',
-  //   useFactory: (dataSource: DataSource) => {
-  //     return new CategoryRepository(dataSource);
-  //   },
-  // },
+  {
+    provide: 'BundleRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new BundleRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'DiscountRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new DiscountRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'CouponRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new CouponRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'OrderRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new OrderRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'CategoryRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new CategoryRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'CouponCustomerRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new CouponCustomerRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
 ];
