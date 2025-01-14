@@ -16,7 +16,6 @@ export class ErrorHandlerAspect<T, E> implements IApplicationService<T, E> {
       }
       return result;
     } catch (error) {
-      console.log(error);
       this.errorHandler(error.message);
     }
   }
