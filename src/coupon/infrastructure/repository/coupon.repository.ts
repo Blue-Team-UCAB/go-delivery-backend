@@ -99,6 +99,29 @@ export class CouponRepository extends Repository<CouponORMEntity> implements ICo
     }
   }
 
+  async saveCouponCustomerRelation(couponId: string, customerId: string, remainingUses: number): Promise<Result<void>> {
+    try {
+      const coupon = await this.findOne({ where: { id: couponId }, relations: ['coupon_Customers'] });
+      if (!coupon) {
+        return Result.fail<void>(null, 404, 'Coupon not found');
+      }
+      const existingRelation = coupon.coupon_Customers.find(relation => relation.customer.id_Costumer === customerId);
+      if (existingRelation) {
+        return Result.fail<void>(null, 400, 'Coupon already claimed by this customer');
+      } else {
+        const newRelation = new CouponCustomerORMEntity();
+        newRelation.coupon = { id: couponId } as any;
+        newRelation.customer = { id_Costumer: customerId } as any;
+        newRelation.remainingUses = remainingUses;
+        coupon.coupon_Customers.push(newRelation);
+        await this.save(coupon);
+      }
+      return Result.success<void>(undefined, 200);
+    } catch (error) {
+      return Result.fail<void>(new Error(error.message), 500, error.message);
+    }
+  }
+
   async updateRemainingUses(couponId: string, customerId: string, remainingUses: number): Promise<Result<void>> {
     try {
       const result = await this.createQueryBuilder()

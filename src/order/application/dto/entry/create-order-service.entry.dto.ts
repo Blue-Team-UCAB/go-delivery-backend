@@ -1,9 +1,11 @@
 export interface CreateOrderServiceEntryDto {
-  id_direction: string;
   id_customer: string;
-  token_stripe?: string;
+  stripePaymentMethod?: string;
   id_stripe_customer?: string;
-  id_coupon?: string;
+  paymentId: string;
+  paymentMethod: string;
+  idUserDirection: string;
+  idCupon?: string;
   products: ProductBundleDto[];
   bundles?: ProductBundleDto[];
 }

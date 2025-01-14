@@ -78,7 +78,7 @@ export class OrderController {
     this.discountRepository = new DiscountRepository(this.dataSource);
   }
 
-  @Post('pay')
+  @Post('pay/stripe')
   @UseAuth()
   @IsClientOrAdmin()
   @ApiBearerAuth()

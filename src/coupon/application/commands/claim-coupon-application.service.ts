@@ -35,7 +35,7 @@ export class ClaimCouponApplicationService implements IApplicationService<ClaimC
     const couponCustomer = new CouponCustomer(customerId, reaminingUses);
     coupon.Customers.push(couponCustomer);
 
-    const saveResult = await this.couponRepository.saveCouponAggregate(coupon);
+    const saveResult = await this.couponRepository.saveCouponCustomerRelation(coupon.Id.Id, customerId.Id, reaminingUses.RemainingUses);
     if (!saveResult.isSuccess) {
       return Result.fail<ClaimCouponServiceResponseDto>(null, saveResult.StatusCode, saveResult.Message);
     }

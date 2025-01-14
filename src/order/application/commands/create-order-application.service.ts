@@ -109,9 +109,9 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     let coupon: Coupon;
     const currentDate = await this.dateService.now();
 
-    if (data.id_coupon) {
+    if (data.idCupon) {
       // If there is a coupon, apply it to the order
-      const couponResult = await this.couponRepository.findCouponById(data.id_coupon);
+      const couponResult = await this.couponRepository.findCouponById(data.idCupon);
       if (!couponResult.isSuccess) {
         return Result.fail<CreateOrderServiceResponseDto>(couponResult.Error, couponResult.StatusCode, couponResult.Message);
       }
@@ -148,7 +148,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       );
     }
 
-    const directionResult = await this.direcionRepository.findById(data.id_direction);
+    const directionResult = await this.direcionRepository.findById(data.idUserDirection);
 
     if (!directionResult.isSuccess) {
       return Result.fail<CreateOrderServiceResponseDto>(directionResult.Error, directionResult.StatusCode, directionResult.Message);
@@ -184,10 +184,11 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       coupon ? CouponId.create(coupon.Id.Id) : null,
     );
 
+    let paymentMethod: string = 'Wallet';
     // If the payment is with stripe, make the payment
     const regex = new RegExp('^pm_[a-zA-Z0-9]{24}$');
-    if (data.token_stripe && regex.test(data.token_stripe)) {
-      const paymentSuccess = await this.stripeService.PaymentIntent(totalAmount, data.token_stripe, data.id_stripe_customer, order.Id.Id);
+    if (data.stripePaymentMethod && regex.test(data.stripePaymentMethod)) {
+      const paymentSuccess = await this.stripeService.PaymentIntent(totalAmount, data.stripePaymentMethod, data.id_stripe_customer, order.Id.Id);
       if (!paymentSuccess) {
         return Result.fail<CreateOrderServiceResponseDto>(new Error('Payment failed'), 400, 'Payment failed');
       }
@@ -206,6 +207,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       if (!updatedWallet.isSuccess) {
         return Result.fail<CreateOrderServiceResponseDto>(updatedWallet.Error, updatedWallet.StatusCode, updatedWallet.Message);
       }
+      paymentMethod = 'Stripe';
     }
 
     const result = await this.orderRepository.saveOrderAggregate(order);
@@ -221,8 +223,9 @@ export class CreateOrderApplicationService implements IApplicationService<Create
           id: product.Id.Id,
           name: product.Name.Name,
           price: product.Price.Price,
-          imageUrl: imageUrlProduct,
+          images: [imageUrlProduct],
           quantity: product.Quantity.Quantity,
+          currency: 'USD',
         };
       }),
     );
@@ -234,8 +237,9 @@ export class CreateOrderApplicationService implements IApplicationService<Create
           id: bundle.Id.Id,
           name: bundle.Name.Name,
           price: bundle.Price.Price,
-          imageUrl: imageUrlBundle,
+          images: [imageUrlBundle],
           quantity: bundle.Quantity.Quantity,
+          currency: 'USD',
         };
       }),
     );
@@ -249,16 +253,22 @@ export class CreateOrderApplicationService implements IApplicationService<Create
 
     const response: CreateOrderServiceResponseDto = {
       id: order.Id.Id,
-      state: stateHistory,
+      orderState: stateHistory,
+      orderCreatedDate: await this.dateService.toUtcMinus4(order.CreatedDate.CreatedDate),
       totalAmount: order.TotalAmount.Amount,
       subtotalAmount: order.SubtotalAmount.Amount,
-      direction: {
-        direction: order.Direction.Direction,
-        longitude: order.Direction.Longitude,
-        latitude: order.Direction.Latitude,
+      currency: 'USD',
+      orderDirection: {
+        lat: order.Direction.Latitude,
+        long: order.Direction.Longitude,
       },
       products: products,
       bundles: bundles,
+      orderPayment: {
+        amount: totalAmount,
+        currency: 'USD',
+        paymentMethod: paymentMethod,
+      },
     };
 
     return Result.success<CreateOrderServiceResponseDto>(response, 200);

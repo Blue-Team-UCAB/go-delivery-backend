@@ -1,15 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { plainToInstance, Transform, Type } from 'class-transformer';
-import { ArrayMinSize, ArrayNotEmpty, IsArray, IsNumber, IsOptional, IsPositive, IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsPositive, IsString, IsUUID, MinLength, ValidateNested } from 'class-validator';
 
 export class CreateOrderDto {
+  @ApiProperty({
+    description: 'Payment identifier',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsString()
+  @IsUUID()
+  paymentId: string;
+
+  @ApiProperty({
+    description: 'Payment method',
+    example: 'credit_card',
+  })
+  @IsString()
+  paymentMethod: string;
+
   @ApiProperty({
     description: 'Customer address identifier',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsString()
-  @MinLength(10)
-  id_direction: string;
+  @IsUUID()
+  idUserDirection: string;
 
   @ApiProperty({
     description: 'Stripe token',
@@ -17,7 +32,7 @@ export class CreateOrderDto {
   })
   @IsOptional()
   @IsString()
-  token_stripe: string;
+  stripePaymentMethod: string;
 
   @ApiProperty({
     description: 'Coupon identifier',
@@ -25,7 +40,8 @@ export class CreateOrderDto {
   })
   @IsOptional()
   @IsString()
-  id_coupon: string;
+  @IsUUID()
+  idCupon: string;
 
   @ApiProperty({
     description: 'Products to add to the order',
@@ -82,6 +98,7 @@ export class CreateOrderDto {
 
 export class ProductBundleDto {
   @IsString()
+  @IsUUID()
   id: string;
 
   @IsNumber()
