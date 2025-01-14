@@ -8,7 +8,7 @@ export class MovementRepository extends Repository<OrderCourierMovementORMEntity
     super(OrderCourierMovementORMEntity, dataSource.createEntityManager());
   }
 
-  async saveMouvement(movement: OrderCourierMovementORMEntity): Promise<void> {
+  async saveMovement(movement: OrderCourierMovementORMEntity): Promise<void> {
     try {
       await this.save(movement);
     } catch (error) {
@@ -17,6 +17,10 @@ export class MovementRepository extends Repository<OrderCourierMovementORMEntity
   }
 
   async findMovementByOrderId(orderId: string): Promise<OrderCourierMovementORMEntity> {
-    throw new Error('Method not implemented.');
+    try {
+      return await this.createQueryBuilder('movement').where('movement.orders = :orderId', { orderId }).getOne();
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

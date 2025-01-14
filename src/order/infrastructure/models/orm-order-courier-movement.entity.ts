@@ -12,14 +12,26 @@ export class OrderCourierMovementORMEntity {
   @Column()
   latitudePuntoLlegada: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   longitudePuntoActual: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   latitudePuntoActual: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   lastUpdated: Date;
+
+  @Column('simple-json')
+  routeSteps: { lat: number; lng: number }[];
+
+  @Column()
+  currentStepIndex: number;
 
   @OneToOne(() => OrderORMEntity, order => order.id_Order, { onDelete: 'CASCADE', nullable: false })
   @JoinColumn()

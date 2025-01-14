@@ -37,6 +37,9 @@ import { ErrorHandlerAspect } from '../../../common/application/aspects/error-ha
 import { DirectionRepository } from '../../../customer/infrastructure/repository/direction-repository';
 import { DiscountRepository } from '../../../discount/infrastructure/repository/discount.repository';
 import { BestForTheCustomerStrategy } from '../../../common/infrastructure/select-discount-strategies/best-for-the-customer-strategy';
+import { OrderStates } from 'src/order/domain/value-objects/order-state';
+import { CourierMovement } from '../helper/courier-movement';
+import { MovementRepository } from '../repository/movement.repository';
 
 @ApiTags('Orders')
 @Controller('order')
@@ -54,6 +57,7 @@ export class OrderController {
   private readonly userRepository: IUserRepository;
   private readonly paymentRepository: PaymentRepository;
   private readonly discountRepository: DiscountRepository;
+  private readonly movementRepository: MovementRepository;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -76,6 +80,7 @@ export class OrderController {
     this.paymentRepository = new PaymentRepository(this.dataSource);
     this.directionRepositoy = new DirectionRepository(this.dataSource);
     this.discountRepository = new DiscountRepository(this.dataSource);
+    this.movementRepository = new MovementRepository(this.dataSource);
   }
 
   @Post('pay/stripe')
@@ -161,5 +166,28 @@ export class OrderController {
       throw new InternalServerErrorException('Error reporting order');
     });
     return (await service.execute({ ...data })).Value;
+  }
+
+  @Get('courier/position/:id')
+  @IsClientOrAdmin()
+  @ApiBearerAuth()
+  async getCourierPosition(@Param('id') id: string) {
+    const order = await this.orderRepository.getCourierParams(id);
+    if (!order.isSuccess()) {
+      throw new NotFoundException('Order not found');
+    }
+
+    /* const cancelledOrDelivered = order.Value.ordenState.some(state => state === OrderStates.CANCELLED || state === OrderStates.DELIVERED);
+    if (cancelledOrDelivered) {
+      throw new NotFoundException('Order is cancelled or delivered');
+    }
+
+    const shipped = order.Value.ordenState.some(state => state === OrderStates.SHIPPED);
+    if (!shipped) {
+      throw new NotFoundException('Order is not shipped');
+    }*/
+
+    const courierMovement = new CourierMovement(this.movementRepository);
+    return courierMovement.getCourierMovement(order.Value.latitude.toString(), order.Value.longitude.toString(), id);
   }
 }
