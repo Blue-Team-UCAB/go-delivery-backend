@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn
 import { WalletORMEntity } from './orm-wallet.entity';
 import { OrderORMEntity } from '../../../order/infrastructure/models/orm-order.entity';
 import { DirectionORMEntity } from './orm-direction.entity';
-import { CouponCustomerORMEntity } from 'src/coupon/infrastructure/models/orm-coupon-costumer';
+import { CouponCustomerORMEntity } from 'src/coupon/infrastructure/models/orm-coupon-customer';
 
 @Entity('Customer')
 export class CustomerORMEntity {

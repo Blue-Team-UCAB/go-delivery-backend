@@ -5,7 +5,7 @@ import { CouponORMEntity } from '../models/orm-coupon.entity';
 import { CouponMapper } from '../mappers/coupon.mapper';
 import { Coupon } from '../../domain/coupon';
 import { Result } from '../../../common/domain/result-handler/result';
-import { CouponCustomerORMEntity } from '../models/orm-coupon-costumer';
+import { CouponCustomerORMEntity } from '../models/orm-coupon-customer';
 
 @Injectable()
 export class CouponRepository extends Repository<CouponORMEntity> implements ICouponRepository {

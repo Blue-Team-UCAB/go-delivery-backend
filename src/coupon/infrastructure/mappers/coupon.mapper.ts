@@ -8,7 +8,7 @@ import { CouponPorcentage } from '../../domain/value-objects/coupon-porcentage';
 import { CouponCode } from '../../domain/value-objects/coupon-code';
 import { CouponMessage } from '../../domain/value-objects/coupon-message';
 import { CouponNumberUses } from '../../domain/value-objects/coupon-number-uses';
-import { CouponCustomerORMEntity } from '../models/orm-coupon-costumer';
+import { CouponCustomerORMEntity } from '../models/orm-coupon-customer';
 import { CouponCustomer } from '../../domain/entities/coupon-customer';
 import { CustomerId } from '../../../customer/domain/value-objects/customer-id';
 import { CouponCustomerRemainingUses } from '../../domain/value-objects/coupon-customer-remaining-uses';

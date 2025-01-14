@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { OrderORMEntity } from '../../../order/infrastructure/models/orm-order.entity';
-import { CouponCustomerORMEntity } from './orm-coupon-costumer';
+import { CouponCustomerORMEntity } from './orm-coupon-customer';
 
 @Entity('Coupon')
 export class CouponORMEntity {
