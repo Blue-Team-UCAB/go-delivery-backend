@@ -63,7 +63,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     const orderProducts: OrderProduct[] = [];
     for (const productDto of data.products ?? []) {
       const productResult = await this.productRepository.findProductById(productDto.id);
-      if (!productResult().isSuccess) {
+      if (!productResult.isSuccess()) {
         return Result.fail<CreateOrderServiceResponseDto>(productResult.Error, productResult.StatusCode, productResult.Message);
       }
       const product = productResult.Value;
@@ -255,6 +255,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       id: order.Id.Id,
       orderState: stateHistory,
       orderCreatedDate: await this.dateService.toUtcMinus4(order.CreatedDate.CreatedDate),
+      orderTimeCreated: order.CreatedDate.CreatedDate.toLocaleTimeString(),
       totalAmount: order.TotalAmount.Amount,
       subtotalAmount: order.SubtotalAmount.Amount,
       currency: 'USD',
