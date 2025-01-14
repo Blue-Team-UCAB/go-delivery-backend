@@ -18,11 +18,13 @@ import { AuthInterface } from '../../../common/infrastructure/auth-interface/aun
 import { GetCouponByIdApplicationService } from '../../application/queries/get-coupon-id.application.service';
 import { GetApplicableCouponsByCustomerApplicationService } from '../../application/queries/get-applicable-coupon-customer.application.service';
 import { ErrorHandlerAspect } from '../../../common/application/aspects/error-handler-aspect';
+import { CouponCustomerRepository } from '../repository/coupon-customer.repository';
 
 @ApiTags('Coupons')
 @Controller('coupon')
 export class CouponController {
   private readonly couponRepository: CouponRepository;
+  private readonly couponCustomerRepository: CouponCustomerRepository;
 
   constructor(
     @Inject('BaseDeDatos')
@@ -31,6 +33,7 @@ export class CouponController {
     private readonly dateService: DateService,
   ) {
     this.couponRepository = new CouponRepository(this.dataSource);
+    this.couponCustomerRepository = new CouponCustomerRepository(this.dataSource);
   }
 
   @Post()
@@ -70,7 +73,7 @@ export class CouponController {
   @IsClientOrAdmin()
   @ApiBearerAuth()
   async validateCoupon(@Body() claimCouponDto: ClaimCouponDto, @GetUser() user: AuthInterface) {
-    const service = new ErrorHandlerAspect(new ClaimCouponApplicationService(this.couponRepository, this.dateService), (error: Error) => {
+    const service = new ErrorHandlerAspect(new ClaimCouponApplicationService(this.couponRepository, this.couponCustomerRepository, this.dateService), (error: Error) => {
       throw new InternalServerErrorException('Error claiming coupon');
     });
     return (await service.execute({ ...claimCouponDto, id_customer: user.idCostumer })).Value;

@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { CouponORMEntity } from './orm-coupon.entity';
 import { CustomerORMEntity } from '../../../customer/infrastructure/model/orm-customer.entity';
 
 @Entity('CouponCustomer')
+@Unique(['coupon', 'customer'])
 export class CouponCustomerORMEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;

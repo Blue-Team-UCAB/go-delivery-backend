@@ -8,11 +8,13 @@ import { CustomerId } from '../../../customer/domain/value-objects/customer-id';
 import { IDateService } from '../../../common/application/date-service/date-service.interface';
 import { CouponCustomer } from '../../domain/entities/coupon-customer';
 import { CouponCustomerRemainingUses } from '../../domain/value-objects/coupon-customer-remaining-uses';
+import { ICouponCustomerRepository } from 'src/coupon/domain/repositories/coupon-customer-repository.interface';
 
 @Injectable()
 export class ClaimCouponApplicationService implements IApplicationService<ClaimCouponServiceEntryDto, ClaimCouponServiceResponseDto> {
   constructor(
     private readonly couponRepository: ICouponRepository,
+    private readonly couponCustomerRepository: ICouponCustomerRepository,
     private readonly dateService: IDateService,
   ) {}
 
@@ -35,7 +37,7 @@ export class ClaimCouponApplicationService implements IApplicationService<ClaimC
     const couponCustomer = new CouponCustomer(customerId, reaminingUses);
     coupon.Customers.push(couponCustomer);
 
-    const saveResult = await this.couponRepository.saveCouponCustomerRelation(coupon.Id.Id, customerId.Id, reaminingUses.RemainingUses);
+    const saveResult = await this.couponCustomerRepository.saveCouponCustomerRelation(coupon.Id.Id, customerId.Id, reaminingUses.RemainingUses);
     if (!saveResult.isSuccess) {
       return Result.fail<ClaimCouponServiceResponseDto>(null, saveResult.StatusCode, saveResult.Message);
     }
