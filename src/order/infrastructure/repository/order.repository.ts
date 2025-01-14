@@ -224,4 +224,25 @@ export class OrderRepository extends Repository<OrderORMEntity> implements IOrde
       return Result.fail<boolean>(null, 500, e.message);
     }
   }
+
+  async getCourierParams(id: string): Promise<Result<{ longitude: number; latitude: number; ordenState: string[] }>> {
+    try {
+      const order = await this.findOne({ where: { id_Order: id }, relations: ['order_StateHistory'] });
+
+      if (!order) {
+        return Result.fail<{ longitude: number; latitude: number; ordenState: string[] }>(null, 404, 'No existe la orden solicitada');
+      }
+
+      return Result.success<{ longitude: number; latitude: number; ordenState: string[] }>(
+        {
+          longitude: order.longitude_Order,
+          latitude: order.latitude_Order,
+          ordenState: order.order_StateHistory.map(state => state.state),
+        },
+        200,
+      );
+    } catch (e) {
+      return Result.fail<{ longitude: number; latitude: number; ordenState: string[] }>(null, 500, e.message);
+    }
+  }
 }
