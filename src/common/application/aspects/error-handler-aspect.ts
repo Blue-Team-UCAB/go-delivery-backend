@@ -10,6 +10,7 @@ export class ErrorHandlerAspect<T, E> implements IApplicationService<T, E> {
   async execute(data: T): Promise<Result<E>> {
     try {
       const result = await this.applicationService.execute(data);
+      console.log(result);
       if (!result.isSuccess()) {
         result.Error;
       }
