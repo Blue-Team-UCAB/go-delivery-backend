@@ -15,7 +15,7 @@ export class GetCategoryByPageApplicationService implements IApplicationService<
   async execute(data: GetCategoryPageServiceEntryDto): Promise<Result<GetCategoryPageServiceResponseDto>> {
     const categoryResult: Result<Category[]> = await this.categoryRepository.findAllCategories(data.page, data.perpage);
 
-    if (!categoryResult.isSuccess) {
+    if (!categoryResult.isSuccess()) {
       return Result.fail(categoryResult.Error, categoryResult.StatusCode, categoryResult.Message);
     }
 

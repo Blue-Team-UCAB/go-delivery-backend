@@ -22,7 +22,7 @@ export class ClaimCouponApplicationService implements IApplicationService<ClaimC
     const currentDate = await this.dateService.now();
     const couponResult = await this.couponRepository.findCouponByCode(data.code);
 
-    if (!couponResult.isSuccess || couponResult.Value === null) {
+    if (!couponResult.isSuccess()) {
       return Result.fail<ClaimCouponServiceResponseDto>(null, couponResult.StatusCode, couponResult.Message);
     }
     const coupon = couponResult.Value;
@@ -38,7 +38,7 @@ export class ClaimCouponApplicationService implements IApplicationService<ClaimC
     coupon.Customers.push(couponCustomer);
 
     const saveResult = await this.couponCustomerRepository.saveCouponCustomerRelation(coupon.Id.Id, customerId.Id, reaminingUses.RemainingUses);
-    if (!saveResult.isSuccess) {
+    if (!saveResult.isSuccess()) {
       return Result.fail<ClaimCouponServiceResponseDto>(null, saveResult.StatusCode, saveResult.Message);
     }
 

@@ -13,7 +13,7 @@ export class GetApplicableCouponsByCustomerApplicationService implements IApplic
 
   async execute(data: GetApplicableCouponsByCustomerServiceEntryDto): Promise<Result<GetApplicableCouponsByCustomerServiceResponseDto>> {
     const couponResult = await this.couponRepository.findApplicableCouponsByCustomer(data.id_customer);
-    if (!couponResult.isSuccess) {
+    if (!couponResult.isSuccess()) {
       return Result.fail<GetApplicableCouponsByCustomerServiceResponseDto>(couponResult.Error, couponResult.StatusCode, couponResult.Message);
     }
 

@@ -10,7 +10,7 @@ export class GetCouponByIdApplicationService implements IApplicationService<GetC
   async execute(data: GetCouponIdServiceEntryDto): Promise<Result<GetCouponIdServiceResponseDto>> {
     const couponResult = await this.couponRepository.findCouponById(data.id);
 
-    if (!couponResult.isSuccess) {
+    if (!couponResult.isSuccess()) {
       return Result.fail<GetCouponIdServiceResponseDto>(couponResult.Error, couponResult.StatusCode, couponResult.Message);
     }
 

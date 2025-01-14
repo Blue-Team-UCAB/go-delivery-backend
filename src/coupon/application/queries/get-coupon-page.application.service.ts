@@ -15,7 +15,7 @@ export class GetCouponPageApplicationService implements IApplicationService<GetC
   async execute(data: GetCouponPageServiceEntryDto): Promise<Result<GetCouponPageServiceResponseDto>> {
     const couponResult = await this.couponRepository.findAllCoupons(data.page, data.perpage, data.search);
 
-    if (!couponResult.isSuccess) {
+    if (!couponResult.isSuccess()) {
       return Result.fail<GetCouponPageServiceResponseDto>(couponResult.Error, couponResult.StatusCode, couponResult.Message);
     }
 

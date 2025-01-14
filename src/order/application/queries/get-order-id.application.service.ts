@@ -19,7 +19,7 @@ export class GetOrderByIdApplicationService implements IApplicationService<GetOr
   async execute(data: GetOrderIdServiceEntryDto): Promise<Result<GetOrderIdServiceResponseDto>> {
     const orderResult = await this.orderRepository.findOrderById(data.id);
 
-    if (!orderResult.isSuccess) {
+    if (!orderResult.isSuccess()) {
       return Result.fail<GetOrderIdServiceResponseDto>(orderResult.Error, orderResult.StatusCode, orderResult.Message);
     }
 

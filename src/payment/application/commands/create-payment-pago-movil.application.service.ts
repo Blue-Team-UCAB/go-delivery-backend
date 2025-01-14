@@ -28,7 +28,7 @@ export class CreatePaymentPagoMovilApplicationService implements IApplicationSer
   async execute(data: CreatePaymentEntryDto): Promise<Result<CreatePaymentResponseDto>> {
     const costumer = await this.customerRepository.findById(data.idCustomer);
 
-    if (!costumer.isSuccess) {
+    if (!costumer.isSuccess()) {
       return Result.fail<CreatePaymentResponseDto>(null, 400, 'Customer not found');
     }
 
@@ -53,13 +53,13 @@ export class CreatePaymentPagoMovilApplicationService implements IApplicationSer
 
     const updatedWallet = await this.walletRepository.saveWallet(costumer.Value.Wallet);
 
-    if (!updatedWallet.isSuccess) {
+    if (!updatedWallet.isSuccess()) {
       return Result.fail<CreatePaymentResponseDto>(null, 500, 'Internal server error');
     }
 
     const createdPayment = await this.paymentRepository.savePayment(payment);
 
-    if (!createdPayment.isSuccess) {
+    if (!createdPayment.isSuccess()) {
       return Result.fail<CreatePaymentResponseDto>(null, 500, 'Internal server error');
     }
 
