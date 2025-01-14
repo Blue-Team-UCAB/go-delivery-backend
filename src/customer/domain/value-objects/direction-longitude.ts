@@ -5,8 +5,9 @@ export class DirectionLongitud implements ValueObject<DirectionLongitud> {
   private readonly _longitud: string;
 
   constructor(longitud: string) {
-    const regex = new RegExp('^-?([0-9]{1,2}|1[0-7][0-9]|180)(.[0-9]{1,10})$');
-    if (!regex.test(longitud)) throw new InvalidDirectionLongitudeException(`Longitud ${longitud} is not valid`);
+    if (longitud.length < 1) {
+      throw new InvalidDirectionLongitudeException('Longitude is not valid');
+    }
     this._longitud = longitud;
   }
 

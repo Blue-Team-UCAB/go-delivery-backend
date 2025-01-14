@@ -6,11 +6,9 @@ import { AuthInterface } from 'src/common/infrastructure/auth-interface/aunt.int
 import { PushTokenDto } from '../dto/push-token.dto';
 import { AuthPushTokenUserApplicationService } from 'src/auth/application/services/auth-push-token.user.application.service';
 import { DataSource } from 'typeorm';
-
 import { UserRepository } from '../repository/user.repository';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { ErrorHandlerAspect } from 'src/common/application/aspects/error-handler-aspect';
-import { error } from 'console';
 
 @Controller('Notifications')
 export class NotificationsController {

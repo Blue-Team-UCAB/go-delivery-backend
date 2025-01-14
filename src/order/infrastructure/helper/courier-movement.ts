@@ -17,14 +17,17 @@ export class CourierMovement {
     const resp = await this.movementRepository.findMovementByOrderId(id);
 
     if (!resp) {
-      console.log(latitude, longitude);
       const API_KEY = 'AIzaSyC1rbw0WItY-_93PSQGY0ilpHr8G3RWEdM';
       const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${10.50817720739761},${-66.92005179744145}&destination=${latitude},${longitude}&mode=driving&key=${API_KEY}`;
-      console.log(url);
+
       const apiResponse = await axios.get(url);
 
       if (apiResponse.status !== 200) {
         throw new Error('Error al obtener la ruta de Google Maps');
+      }
+
+      if (!apiResponse.data.routes.length) {
+        throw new Error('No hay rutas disponibles');
       }
 
       const routeSteps = apiResponse.data.routes[0].legs[0].steps;

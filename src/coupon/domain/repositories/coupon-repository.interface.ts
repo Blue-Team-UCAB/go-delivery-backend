@@ -8,5 +8,6 @@ export interface ICouponRepository {
   saveCouponAggregate(coupon: Coupon): Promise<Result<Coupon>>;
   updateRemainingUses(couponId: string, customerId: string, remainingUses: number): Promise<Result<void>>;
   findApplicableCouponsByCustomer(customerId: string): Promise<Result<Coupon[]>>;
+  saveCouponCustomerRelation(couponId: string, customerId: string, remainingUses: number): Promise<Result<void>>;
   //validateCoupon(code: string, currentDate: Date, customerId: string): Promise<Result<Coupon>>;
 }
