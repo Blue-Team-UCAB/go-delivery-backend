@@ -26,6 +26,10 @@ export class CourierMovement {
         throw new Error('Error al obtener la ruta de Google Maps');
       }
 
+      if (!apiResponse.data.routes.length) {
+        throw new Error('No hay rutas disponibles');
+      }
+
       const routeSteps = apiResponse.data.routes[0].legs[0].steps;
       const steps = routeSteps.map((step: any) => step.end_location);
 
