@@ -12,7 +12,7 @@ export class MovementRepository extends Repository<OrderCourierMovementORMEntity
     try {
       await this.save(movement);
     } catch (error) {
-      console.log(error);
+      throw new Error('Error al guardar el movimiento');
     }
   }
 
@@ -20,7 +20,7 @@ export class MovementRepository extends Repository<OrderCourierMovementORMEntity
     try {
       return await this.createQueryBuilder('movement').where('movement.orders = :orderId', { orderId }).getOne();
     } catch (error) {
-      console.log(error);
+      throw new Error('Error al buscar el movimiento');
     }
   }
 }
