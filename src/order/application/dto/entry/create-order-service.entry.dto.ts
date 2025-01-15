@@ -6,7 +6,7 @@ export interface CreateOrderServiceEntryDto {
   paymentMethod: string;
   idUserDirection: string;
   idCupon?: string;
-  products: ProductBundleDto[];
+  products?: ProductBundleDto[];
   bundles?: ProductBundleDto[];
 }
 
