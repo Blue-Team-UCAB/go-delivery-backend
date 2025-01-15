@@ -1,10 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiExcludeController, ApiTags } from '@nestjs/swagger';
 import { ChatGptService } from 'src/common/infrastructure/providers/services/chatGtp.service';
 import { IaMakeRequestDto } from '../dto/ia-make-request.dto';
 import { IaResponseDto } from 'src/common/application/IA-Service/Ia-response.dto';
 import { IsClientOrAdmin } from 'src/auth/infrastructure/jwt/decorator/isClientOrAdmin.decorator';
 
+@ApiExcludeController()
 @ApiTags('IA')
 @Controller('ia')
 export class IAController {

@@ -33,7 +33,7 @@ import { DiscountController } from './discount/infrastructure/controllers/discou
 import { UserController } from './customer/infrastructure/controller/costumer.controller';
 import { NotificationsController } from './auth/infrastructure/controller/notification.controller';
 import { BestForTheCustomerStrategy } from './common/infrastructure/select-discount-strategies/best-for-the-customer-strategy';
-import { IAController } from './IA/infrastructure/controllers/controller';
+import { IAController } from './IA/infrastructure/controllers/ia.controller';
 
 @Module({
   imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule, HttpModule],
