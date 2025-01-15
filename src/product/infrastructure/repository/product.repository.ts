@@ -46,7 +46,7 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
     }
   }
 
-  async findAllProducts(page: number, perpage: number, category?: string, name?: string, price?: string, popular?: string, discount?: string): Promise<Result<Product[]>> {
+  async findAllProducts(page: number, perpage: number, category?: string[], name?: string, price?: string, popular?: string, discount?: string): Promise<Result<Product[]>> {
     try {
       const skip = perpage * page - perpage;
       const schema = process.env.PGDB_SCHEMA;
@@ -71,8 +71,8 @@ export class ProductRepository extends Repository<ProductoORM> implements IProdu
         .skip(skip)
         .take(perpage);
 
-      if (category) {
-        query.andWhere('category.name_Category = :category', { category });
+      if (category && category.length > 0) {
+        query.andWhere('category.name_Category LIKE ANY(:categoryNames)', { categoryNames: category.map(name => name) });
       }
 
       if (name) {
