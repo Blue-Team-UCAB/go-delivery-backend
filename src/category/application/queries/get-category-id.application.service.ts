@@ -14,7 +14,7 @@ export class GetCategoryIdApplicationService implements IApplicationService<GetC
   async execute(data: GetCategoryIdServiceEntryDto): Promise<Result<GetCategoryIdServiceResponseDto>> {
     const categoryResult = await this.categoryRepository.findCategoryById(data.id);
 
-    if (!categoryResult.isSuccess) {
+    if (!categoryResult.isSuccess()) {
       return Result.fail(categoryResult.Error, categoryResult.StatusCode, categoryResult.Message);
     }
 

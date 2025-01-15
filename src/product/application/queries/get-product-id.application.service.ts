@@ -29,7 +29,7 @@ export class GetProductByIdApplicationService implements IApplicationService<Get
     const currentDate = await this.dateService.now();
     const discounts: Result<Discount[]> = await this.discountRepository.findDiscountByProduct(productResult.Value, currentDate);
 
-    if (!discounts.isSuccess) {
+    if (!discounts.isSuccess()) {
       return Result.fail(discounts.Error, discounts.StatusCode, discounts.Message);
     }
 

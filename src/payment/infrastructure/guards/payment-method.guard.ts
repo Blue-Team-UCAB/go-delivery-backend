@@ -18,7 +18,7 @@ export class PaymentMethodGuard implements CanActivate {
 
     const paymentMethodsResult = await this.paymentMethodService.getPaymentMethods();
 
-    if (!paymentMethodsResult.isSuccess) {
+    if (!paymentMethodsResult.isSuccess()) {
       throw new ForbiddenException('No se pudo verificar los métodos de pago');
     }
 

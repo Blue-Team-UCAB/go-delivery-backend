@@ -63,7 +63,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     const orderProducts: OrderProduct[] = [];
     for (const productDto of data.products ?? []) {
       const productResult = await this.productRepository.findProductById(productDto.id);
-      if (!productResult.isSuccess) {
+      if (!productResult.isSuccess()) {
         return Result.fail<CreateOrderServiceResponseDto>(productResult.Error, productResult.StatusCode, productResult.Message);
       }
       const product = productResult.Value;
@@ -82,7 +82,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     const orderBundles: OrderBundle[] = [];
     for (const bundleDto of data.bundles ?? []) {
       const bundleResult = await this.bundleRepository.findBundleById(bundleDto.id);
-      if (!bundleResult.isSuccess) {
+      if (!bundleResult.isSuccess()) {
         return Result.fail<CreateOrderServiceResponseDto>(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
       }
       const bundle = bundleResult.Value;
@@ -112,7 +112,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     if (data.idCupon) {
       // If there is a coupon, apply it to the order
       const couponResult = await this.couponRepository.findCouponById(data.idCupon);
-      if (!couponResult.isSuccess) {
+      if (!couponResult.isSuccess()) {
         return Result.fail<CreateOrderServiceResponseDto>(couponResult.Error, couponResult.StatusCode, couponResult.Message);
       }
       coupon = couponResult.Value;
@@ -122,7 +122,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       // Update the remaining uses of the coupon
       if (couponCustomer) {
         const updateResult = await this.couponRepository.updateRemainingUses(coupon.Id.Id, customerId.Id, couponCustomer.RemainingUses.RemainingUses);
-        if (!updateResult.isSuccess) {
+        if (!updateResult.isSuccess()) {
           return Result.fail<CreateOrderServiceResponseDto>(null, updateResult.StatusCode, updateResult.Message);
         }
       }
@@ -150,7 +150,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
 
     const directionResult = await this.direcionRepository.findById(data.idUserDirection);
 
-    if (!directionResult.isSuccess) {
+    if (!directionResult.isSuccess()) {
       return Result.fail<CreateOrderServiceResponseDto>(directionResult.Error, directionResult.StatusCode, directionResult.Message);
     }
 
@@ -194,7 +194,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       }
     } else {
       const customerResult = await this.customerRepository.findById(data.id_customer);
-      if (!customerResult.isSuccess) {
+      if (!customerResult.isSuccess()) {
         return Result.fail<CreateOrderServiceResponseDto>(customerResult.Error, customerResult.StatusCode, customerResult.Message);
       }
       const customer = customerResult.Value;
@@ -204,7 +204,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       customer.subtractWallet(WalletAmount.create(totalAmount));
       const updatedWallet = await this.walletRepository.saveWallet(customer.Wallet);
 
-      if (!updatedWallet.isSuccess) {
+      if (!updatedWallet.isSuccess()) {
         return Result.fail<CreateOrderServiceResponseDto>(updatedWallet.Error, updatedWallet.StatusCode, updatedWallet.Message);
       }
       paymentMethod = 'Stripe';
@@ -255,6 +255,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       id: order.Id.Id,
       orderState: stateHistory,
       orderCreatedDate: await this.dateService.toUtcMinus4(order.CreatedDate.CreatedDate),
+      orderTimeCreated: order.CreatedDate.CreatedDate.toLocaleTimeString(),
       totalAmount: order.TotalAmount.Amount,
       subtotalAmount: order.SubtotalAmount.Amount,
       currency: 'USD',

@@ -1,13 +1,9 @@
 export interface GetOrderPageServiceResponseDto {
-  orders: {
-    id: string;
-    last_state: StateHistoryDto;
-    totalAmount: number;
-    summary_order: string;
-  }[];
-}
-
-export class StateHistoryDto {
-  state: string;
-  date: Date;
+  id: string;
+  last_state: {
+    state: string;
+    date: Date;
+  };
+  totalAmount: number;
+  summary_order: string;
 }

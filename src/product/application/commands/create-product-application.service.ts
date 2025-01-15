@@ -38,7 +38,7 @@ export class createProductApplicationService implements IApplicationService<Crea
     const categories = await Promise.all(
       data.categories.map(async categoryId => {
         const categoryResult = await this.categoryRepository.findCategoryById(categoryId);
-        if (!categoryResult.isSuccess) {
+        if (!categoryResult.isSuccess()) {
           throw new Error(`Category with ID ${categoryId} not found`);
         }
         const category = categoryResult.Value;

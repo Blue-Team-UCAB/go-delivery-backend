@@ -12,7 +12,7 @@ import { IDiscountRepository } from '../../../discount/domain/repositories/disco
 import { IStrategyToSelectDiscount } from '../../../common/domain/discount-strategy/select-discount-strategy.interface';
 
 @Injectable()
-export class GetBundleByPageApplicationService implements IApplicationService<GetBundlePageServiceEntryDto, GetBundlePageServiceResponseDto> {
+export class GetBundleByPageApplicationService implements IApplicationService<GetBundlePageServiceEntryDto, GetBundlePageServiceResponseDto[]> {
   constructor(
     private readonly bundleRepository: IBundleRepository,
     private readonly discountRepository: IDiscountRepository,
@@ -21,10 +21,10 @@ export class GetBundleByPageApplicationService implements IApplicationService<Ge
     private readonly dateService: IDateService,
   ) {}
 
-  async execute(data: GetBundlePageServiceEntryDto): Promise<Result<GetBundlePageServiceResponseDto>> {
+  async execute(data: GetBundlePageServiceEntryDto): Promise<Result<GetBundlePageServiceResponseDto[]>> {
     const bundleResult: Result<Bundle[]> = await this.bundleRepository.findAllBundles(data.page, data.perpage, data.name, data.price, data.popular, data.discount);
 
-    if (!bundleResult.isSuccess) {
+    if (!bundleResult.isSuccess()) {
       return Result.fail(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
     }
 
@@ -59,10 +59,6 @@ export class GetBundleByPageApplicationService implements IApplicationService<Ge
       }),
     );
 
-    const response: GetBundlePageServiceResponseDto = {
-      bundles: bundles,
-    };
-
-    return Result.success(response, 200);
+    return Result.success<GetBundlePageServiceResponseDto[]>(bundles, 200);
   }
 }

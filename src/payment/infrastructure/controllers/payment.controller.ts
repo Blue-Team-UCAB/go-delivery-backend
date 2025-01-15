@@ -138,7 +138,7 @@ export class PaymentController {
   @ApiBearerAuth()
   async getPayments() {
     const resp = await this.paymentMethodRepository.getOnlyActivePaymentMethods();
-    if (!resp.isSuccess) {
+    if (!resp.isSuccess()) {
       throw new UnauthorizedException('Error al obtener los metodos de pago');
     }
 
@@ -160,7 +160,7 @@ export class PaymentController {
   @ApiBearerAuth()
   async disablePaymentMethod(@Body() data: EnableDisablePaymentMethodEntryDto) {
     const resp = await this.paymentMethodRepository.updatePaymentMethod(data.id_payment_method, false);
-    if (!resp.isSuccess) {
+    if (!resp.isSuccess()) {
       throw new UnauthorizedException('Error al deshabilitar el metodo de pago');
     }
     return {
@@ -174,7 +174,7 @@ export class PaymentController {
   @ApiBearerAuth()
   async enablePaymentMethod(@Body() data: EnableDisablePaymentMethodEntryDto) {
     const resp = await this.paymentMethodRepository.updatePaymentMethod(data.id_payment_method, true);
-    if (!resp.isSuccess) {
+    if (!resp.isSuccess()) {
       throw new UnauthorizedException('Error al habilitar el metodo de pago');
     }
     return {
@@ -198,7 +198,7 @@ export class PaymentController {
       throw new UnauthorizedException('Error al crear el metodo de pago');
     }
     const resp = await this.paymentMethodRepository.createPaymentMethod({ id_PaymentMethod: uuid, name_PaymentMethod: data.name, state_PaymentMethod: true, image_PaymentMethod: imagekey });
-    if (!resp.isSuccess) {
+    if (!resp.isSuccess()) {
       throw new UnauthorizedException('Error al crear el metodo de pago');
     }
     return {

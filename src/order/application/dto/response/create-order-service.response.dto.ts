@@ -2,6 +2,7 @@ export interface CreateOrderServiceResponseDto {
   id: string;
   orderState: StateHistoryDto[];
   orderCreatedDate: Date;
+  orderTimeCreated: string;
   totalAmount: number;
   subtotalAmount: number;
   currency: string;

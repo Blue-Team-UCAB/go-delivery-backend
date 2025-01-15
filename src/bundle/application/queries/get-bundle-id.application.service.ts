@@ -27,13 +27,13 @@ export class GetBundleByIdApplicationService implements IApplicationService<GetB
   async execute(data: GetBundleIdServiceEntryDto): Promise<Result<GetBundleIdServiceResponseDto>> {
     const bundleResult: Result<Bundle> = await this.bundleRepository.findBundleById(data.id);
 
-    if (!bundleResult.isSuccess) {
+    if (!bundleResult.isSuccess()) {
       return Result.fail(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
     }
 
     const currentDate = await this.dateService.now();
     const discounts: Result<Discount[]> = await this.discountRepository.findDiscountByBundle(bundleResult.Value, currentDate);
-    if (!discounts.isSuccess) {
+    if (!discounts.isSuccess()) {
       return Result.fail(discounts.Error, discounts.StatusCode, discounts.Message);
     }
 

@@ -15,7 +15,7 @@ export class GetWalletAmountApplicationService implements IApplicationService<Ge
   async execute(data: GetWalletAmountEntryDto): Promise<Result<GetWalletAmountResponseDto>> {
     const customer = await this.costumerRepository.findById(data.idCustomer);
 
-    if (!customer.isSuccess) {
+    if (!customer.isSuccess()) {
       return Result.fail<GetWalletAmountResponseDto>(null, 400, 'Customer not found');
     }
 
@@ -23,7 +23,7 @@ export class GetWalletAmountApplicationService implements IApplicationService<Ge
 
     const wallet = await this.walletRepository.findById(walletId);
 
-    if (!wallet.isSuccess) {
+    if (!wallet.isSuccess()) {
       return Result.fail<GetWalletAmountResponseDto>(null, 400, 'Wallet not found');
     }
 
