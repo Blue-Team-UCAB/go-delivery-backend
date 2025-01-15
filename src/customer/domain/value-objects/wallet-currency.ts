@@ -5,7 +5,7 @@ export class WalletCurrency implements ValueObject<WalletCurrency> {
   private readonly _currency: string;
 
   constructor(currency: string) {
-    if (!['USD', 'VES'].includes(currency)) throw new InvalidWalletCurrencyException(`Currency ${currency} is not valid`);
+    if (!['USD', 'VES', 'EUR'].includes(currency)) throw new InvalidWalletCurrencyException(`Currency ${currency} is not valid`);
     this._currency = currency;
   }
 

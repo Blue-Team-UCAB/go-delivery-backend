@@ -25,7 +25,7 @@ export class GetCategoryByPageApplicationService implements IApplicationService<
         return {
           id: category.Id.Id,
           name: category.Name.Name,
-          imageUrl: imageUrl,
+          image: imageUrl,
         };
       }),
     );

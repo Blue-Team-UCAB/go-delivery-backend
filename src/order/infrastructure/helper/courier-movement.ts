@@ -53,8 +53,17 @@ export class CourierMovement {
     }
 
     const { routeSteps, currentStepIndex } = resp;
-    if (!routeSteps || currentStepIndex >= routeSteps.length) {
+    if (!routeSteps) {
       throw new Error('No hay más pasos en la ruta');
+    }
+
+    if (currentStepIndex >= routeSteps.length) {
+      return {
+        latActual: resp.latitudePuntoActual,
+        longActual: resp.longitudePuntoActual,
+        LongPuntoLlegada: resp.longitudePuntoLlegada,
+        LatPuntoLlegada: resp.latitudePuntoLlegada,
+      };
     }
 
     const nextStep = routeSteps[currentStepIndex];

@@ -67,7 +67,7 @@ export class CreateOrderDto {
 
     throw new Error('Invalid type for products, expected string or array');
   })
-  products: ProductBundleDto[];
+  products?: ProductBundleDto[];
 
   @ApiProperty({
     description: 'Bundles to add to the order',
