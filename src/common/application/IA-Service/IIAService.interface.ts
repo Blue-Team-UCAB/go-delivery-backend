@@ -1,3 +1,5 @@
+import { IaResponseDto } from './Ia-response.dto';
+
 export interface IIaService {
-  makeRequest(message: string): Promise<string>;
+  makeRequest(message: string): Promise<IaResponseDto>;
 }

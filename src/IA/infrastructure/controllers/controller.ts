@@ -2,6 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ChatGptService } from 'src/common/infrastructure/providers/services/chatGtp.service';
 import { IaMakeRequestDto } from '../dto/ia-make-request.dto';
+import { IaResponseDto } from 'src/common/application/IA-Service/Ia-response.dto';
 
 @ApiTags('IA')
 @Controller('ia')
@@ -12,7 +13,7 @@ export class IAController {
     this.ia_Service = new ChatGptService();
   }
   @Post('make/request')
-  async makeRequest(@Body() message: IaMakeRequestDto): Promise<string> {
+  async makeRequest(@Body() message: IaMakeRequestDto) {
     try {
       const response = await this.ia_Service.makeRequest(message.mensage);
       return response;
