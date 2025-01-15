@@ -122,9 +122,9 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       // Update the remaining uses of the coupon
       if (couponCustomer) {
         const updateResult = await this.couponRepository.updateRemainingUses(coupon.Id.Id, customerId.Id, couponCustomer.RemainingUses.RemainingUses);
-        if (!updateResult.isSuccess()) {
-          return Result.fail<CreateOrderServiceResponseDto>(null, updateResult.StatusCode, updateResult.Message);
-        }
+        // if (!updateResult.isSuccess()) {
+        //   return Result.fail<CreateOrderServiceResponseDto>(null, updateResult.StatusCode, updateResult.Message);
+        // }
       }
       totalAmount = await CalculateOrderTotalDomainService.calculate(
         orderProducts,
@@ -181,7 +181,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       dataOrder.bundles,
       null,
       null,
-      coupon ? CouponId.create(coupon.Id.Id) : null,
+      data.idCupon ? CouponId.create(coupon.Id.Id) : null,
     );
 
     let paymentMethod: string = 'Wallet';
