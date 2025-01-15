@@ -62,10 +62,15 @@ export class CourierMovement {
     }
 
     if (currentStepIndex >= routeSteps.length) {
-      await this.changeOrderStatusApplicationService.execute({ orderId: id, status: 'DELIVERED' });
+      const respApp = await this.changeOrderStatusApplicationService.execute({ orderId: id, status: 'DELIVERED' });
+
+      if (!respApp.isSuccess()) {
+        throw new Error('Error al cambiar el estado de la orden');
+      }
+
       return {
-        latActual: resp.latitudePuntoActual,
-        longActual: resp.longitudePuntoActual,
+        latActual: resp.latitudePuntoLlegada,
+        longActual: resp.longitudePuntoLlegada,
         LongPuntoLlegada: resp.longitudePuntoLlegada,
         LatPuntoLlegada: resp.latitudePuntoLlegada,
       };
