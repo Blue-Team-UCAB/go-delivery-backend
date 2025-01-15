@@ -162,7 +162,7 @@ export class CreateOrderApplicationService implements IApplicationService<Create
       customerId: CustomerId.create(data.id_customer),
       stateHistory: [OrderState.create(OrderStates.CREATED, new Date())],
       createdDate: OrderCreatedDate.create(new Date()),
-      direction: OrderDirection.create(direction.Description.Description, longitude, latitude),
+      direction: OrderDirection.create(direction.Description.Description, latitude, longitude),
       totalAmount: OrderTotalAmount.create(totalAmount),
       subtotalAmount: OrderSubtotalAmount.create(subtotalAmount),
       products: orderProducts,
