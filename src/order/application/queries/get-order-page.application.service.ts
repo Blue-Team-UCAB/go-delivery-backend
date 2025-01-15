@@ -8,17 +8,17 @@ import { Order } from '../../domain/order';
 import { IDateService } from '../../../common/application/date-service/date-service.interface';
 
 @Injectable()
-export class GetOrderByPageApplicationService implements IApplicationService<GetOrderPageServiceEntryDto, GetOrderPageServiceResponseDto> {
+export class GetOrderByPageApplicationService implements IApplicationService<GetOrderPageServiceEntryDto, GetOrderPageServiceResponseDto[]> {
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly dateService: IDateService,
   ) {}
 
-  async execute(data: GetOrderPageServiceEntryDto): Promise<Result<GetOrderPageServiceResponseDto>> {
+  async execute(data: GetOrderPageServiceEntryDto): Promise<Result<GetOrderPageServiceResponseDto[]>> {
     const orderResult: Result<Order[]> = await this.orderRepository.findAllOrders(data.page, data.perpage, data.id_customer, data.status);
 
     if (!orderResult.isSuccess()) {
-      return Result.fail<GetOrderPageServiceResponseDto>(orderResult.Error, orderResult.StatusCode, orderResult.Message);
+      return Result.fail<GetOrderPageServiceResponseDto[]>(orderResult.Error, orderResult.StatusCode, orderResult.Message);
     }
 
     const orders = await Promise.all(
@@ -42,6 +42,6 @@ export class GetOrderByPageApplicationService implements IApplicationService<Get
       }),
     );
 
-    return Result.success<GetOrderPageServiceResponseDto>({ orders }, 200);
+    return Result.success<GetOrderPageServiceResponseDto[]>(orders, 200);
   }
 }
