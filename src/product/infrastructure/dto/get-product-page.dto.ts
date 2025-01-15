@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsArray, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class GetProductPageDto {
@@ -17,6 +17,7 @@ export class GetProductPageDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   category?: string[];
 
   @IsOptional()

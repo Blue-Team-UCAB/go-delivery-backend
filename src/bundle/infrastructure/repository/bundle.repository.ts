@@ -65,7 +65,7 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
     }
   }
 
-  async findAllBundles(page: number, perpage: number, category?: string, name?: string, price?: string, popular?: string, discount?: string): Promise<Result<Bundle[]>> {
+  async findAllBundles(page: number, perpage: number, category?: string[], name?: string, price?: string, popular?: string, discount?: string): Promise<Result<Bundle[]>> {
     try {
       const skip = perpage * page - perpage;
       const schema = process.env.PGDB_SCHEMA;
@@ -91,7 +91,7 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
         .take(perpage);
 
       if (category) {
-        query.andWhere('category.name_Category = :category', { category });
+        query.andWhere('category.name_Category LIKE ANY(:categoryNames)', { categoryNames: category.map(name => name) });
       }
 
       if (name) {
