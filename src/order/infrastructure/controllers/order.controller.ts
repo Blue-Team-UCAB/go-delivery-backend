@@ -177,7 +177,7 @@ export class OrderController {
       throw new NotFoundException('Order not found');
     }
 
-    /* const cancelledOrDelivered = order.Value.ordenState.some(state => state === OrderStates.CANCELLED || state === OrderStates.DELIVERED);
+    const cancelledOrDelivered = order.Value.ordenState.some(state => state === OrderStates.CANCELLED || state === OrderStates.DELIVERED);
     if (cancelledOrDelivered) {
       throw new NotFoundException('Order is cancelled or delivered');
     }
@@ -185,8 +185,8 @@ export class OrderController {
     const shipped = order.Value.ordenState.some(state => state === OrderStates.SHIPPED);
     if (!shipped) {
       throw new NotFoundException('Order is not shipped');
-    }*/
-    console.log('order', order.Value);
+    }
+
     const courierMovement = new CourierMovement(this.movementRepository);
     return courierMovement.getCourierMovement(order.Value.latitude.toString(), order.Value.longitude.toString(), id);
   }
