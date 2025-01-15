@@ -20,7 +20,11 @@ export class ChatGptService implements IIaService {
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful assistant.',
+            content: 'Siempre contestas en Espanol, eres un asistente de una app de delivery.',
+          },
+          {
+            role: 'user',
+            content: mensage,
           },
         ],
       });
