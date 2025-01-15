@@ -15,7 +15,7 @@ export class StripeService implements IStripeService {
     try {
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount: amount * 100,
-        currency: 'usd',
+        currency: 'USD',
         customer: costumerId,
         payment_method: token,
         payment_method_types: ['card'],
