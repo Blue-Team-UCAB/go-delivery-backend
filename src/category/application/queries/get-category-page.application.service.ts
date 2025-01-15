@@ -6,13 +6,13 @@ import { IStorageS3Service } from '../../../common/application/s3-storage-servic
 import { Result } from 'src/common/domain/result-handler/result';
 import { Category } from '../../domain/category';
 
-export class GetCategoryByPageApplicationService implements IApplicationService<GetCategoryPageServiceEntryDto, GetCategoryPageServiceResponseDto> {
+export class GetCategoryByPageApplicationService implements IApplicationService<GetCategoryPageServiceEntryDto, GetCategoryPageServiceResponseDto[]> {
   constructor(
     private readonly categoryRepository: ICategoryRepository,
     private readonly s3Service: IStorageS3Service,
   ) {}
 
-  async execute(data: GetCategoryPageServiceEntryDto): Promise<Result<GetCategoryPageServiceResponseDto>> {
+  async execute(data: GetCategoryPageServiceEntryDto): Promise<Result<GetCategoryPageServiceResponseDto[]>> {
     const categoryResult: Result<Category[]> = await this.categoryRepository.findAllCategories(data.page, data.perpage);
 
     if (!categoryResult.isSuccess()) {
@@ -30,10 +30,6 @@ export class GetCategoryByPageApplicationService implements IApplicationService<
       }),
     );
 
-    const response: GetCategoryPageServiceResponseDto = {
-      categories: categories,
-    };
-
-    return Result.success(response, 200);
+    return Result.success<GetCategoryPageServiceResponseDto[]>(categories, 200);
   }
 }

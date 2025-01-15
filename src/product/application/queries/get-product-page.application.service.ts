@@ -10,7 +10,7 @@ import { IDiscountRepository } from '../../../discount/domain/repositories/disco
 import { IStrategyToSelectDiscount } from '../../../common/domain/discount-strategy/select-discount-strategy.interface';
 import { IDateService } from '../../../common/application/date-service/date-service.interface';
 
-export class GetProductByPageApplicationService implements IApplicationService<GetProductPageServiceEntryDto, GetProductPageServiceResponseDto> {
+export class GetProductByPageApplicationService implements IApplicationService<GetProductPageServiceEntryDto, GetProductPageServiceResponseDto[]> {
   constructor(
     private readonly productRepository: IProductRepository,
     private readonly discountRepository: IDiscountRepository,
@@ -19,7 +19,7 @@ export class GetProductByPageApplicationService implements IApplicationService<G
     private readonly dateService: IDateService,
   ) {}
 
-  async execute(data: GetProductPageServiceEntryDto): Promise<Result<GetProductPageServiceResponseDto>> {
+  async execute(data: GetProductPageServiceEntryDto): Promise<Result<GetProductPageServiceResponseDto[]>> {
     const productResult: Result<Product[]> = await this.productRepository.findAllProducts(data.page, data.perpage, data.category, data.name, data.price, data.popular, data.discount);
 
     if (!productResult.isSuccess()) {
@@ -57,10 +57,6 @@ export class GetProductByPageApplicationService implements IApplicationService<G
       }),
     );
 
-    const response: GetProductPageServiceResponseDto = {
-      products: products,
-    };
-
-    return Result.success(response, 200);
+    return Result.success<GetProductPageServiceResponseDto[]>(products, 200);
   }
 }
