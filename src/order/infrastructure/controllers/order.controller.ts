@@ -187,7 +187,7 @@ export class OrderController {
       throw new NotFoundException('Order is not shipped');
     }
 
-    const courierMovement = new CourierMovement(this.movementRepository);
+    const courierMovement = new CourierMovement(this.movementRepository, new ChangeOrderStatusApplicationService(this.orderRepository, this.publisher, this.courierRepository, this.userRepository));
     return courierMovement.getCourierMovement(order.Value.latitude.toString(), order.Value.longitude.toString(), id);
   }
 }

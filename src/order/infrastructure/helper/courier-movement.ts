@@ -1,8 +1,12 @@
 import axios from 'axios';
 import { MovementRepository } from '../repository/movement.repository';
+import { ChangeOrderStatusApplicationService } from 'src/order/application/commands/chage-order-status.application.service';
 
 export class CourierMovement {
-  constructor(private readonly movementRepository: MovementRepository) {}
+  constructor(
+    private readonly movementRepository: MovementRepository,
+    private readonly changeOrderStatusApplicationService: ChangeOrderStatusApplicationService,
+  ) {}
 
   async getCourierMovement(
     latitude: string,
@@ -58,6 +62,7 @@ export class CourierMovement {
     }
 
     if (currentStepIndex >= routeSteps.length) {
+      await this.changeOrderStatusApplicationService.execute({ orderId: id, status: 'DELIVERED' });
       return {
         latActual: resp.latitudePuntoActual,
         longActual: resp.longitudePuntoActual,
