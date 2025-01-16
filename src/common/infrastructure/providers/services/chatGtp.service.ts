@@ -1,6 +1,6 @@
 import { OpenAI } from 'openai';
 import { IaResponseDto } from 'src/common/application/IA-Service/Ia-response.dto';
-import { IIaService } from 'src/common/application/IA-Service/IIAService.interface';
+import { ComboDtoIA, IIaService, ProdcutDtoIA } from 'src/common/application/IA-Service/IIAService.interface';
 import axios from 'axios';
 
 export class ChatGptService implements IIaService {
@@ -45,33 +45,65 @@ export class ChatGptService implements IIaService {
     }
   }
 
-  async getCard(idCustomer: string): Promise<IaResponseDto> {
-    const { contexto, contextoUser } = await this.getRequests(idCustomer);
+  async getCard(idCustomer: string): Promise<{ products: ProdcutDtoIA[]; combos: ComboDtoIA[] }> {
+    let hacerPregunta = true;
 
-    const response = await this.openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: [
-        {
-          role: 'system',
-          content: `{contexto: ${contexto},el usuario ha tenido compras frecuentes de : ${contextoUser}}, 
-          retorname solo Ids de productos que puedan interesarle al usuario, con una cantidad que le pueda interesar, es para hacerle una recomendacion y armarle un carrito,
-           el id retornalo en una variable llamada IdProducto si es de producto, si es de Combo en una variable llamada IdCombo, junto a la cantidad de cada uno. 
-           armalo con la siguiente estructura:
-           {productos:{[IdProducto:'',cantidad:'']},combos:{[IdComboL:'',cantidad:'']}}`,
-        },
-      ],
-    });
-    const resp = response.choices[0].message.content;
+    while (hacerPregunta) {
+      try {
+        const { contexto, contextoUser } = await this.getRequests(idCustomer);
 
-    return {
-      bot_id: '1',
-      response: resp,
-      timestamp: new Date().toISOString(),
-    };
+        const response = await this.openai.chat.completions.create({
+          model: 'gpt-4',
+          messages: [
+            {
+              role: 'system',
+              content: `{contexto: ${contexto},el usuario ha tenido compras frecuentes de : ${contextoUser}}, 
+          retorname solo Ids de productos que puedan interesarle al usuario, con una cantidad que le pueda interesar, y un monto que pueda pagar
+          es para hacerle una recomendacion y armarle un carrito sorpresa.
+          el id retornalo en una variable llamada IdProducto si es de producto, si es de Combo en una variable llamada IdCombo, junto a la cantidad de cada uno. 
+          armalo con la siguiente estructura, y simpre responde con esta estructura, respetando las comas, las comillas y las llaves, y coloca en una sola linea:
+          [{'IdProducto':'','cantidad':''},{'IdComboL':'','cantidad':''}]`,
+            },
+          ],
+        });
+
+        const resp = response.choices[0].message.content;
+
+        const { products, combos } = this.formatResponse(resp);
+        hacerPregunta = false;
+        console.log(products, combos);
+        return { products, combos };
+      } catch (error) {
+        continue;
+      }
+    }
   }
-  catch(error) {
-    console.log(error);
-    throw new Error('Error in the request');
+
+  formatResponse(response: string): { products: ProdcutDtoIA[]; combos: ComboDtoIA[] } {
+    try {
+      const responseParsed: any[] = JSON.parse(response.replace(/'/g, '"'));
+
+      const products: ProdcutDtoIA[] = [];
+      const combos: ComboDtoIA[] = [];
+
+      responseParsed.forEach((element: any) => {
+        if (element.IdProducto) {
+          products.push({
+            idProduct: element.IdProducto,
+            cantidad: parseInt(element.cantidad, 10),
+          });
+        } else if (element.IdCombo) {
+          combos.push({
+            idCombo: element.IdCombo,
+            cantidad: parseInt(element.cantidad, 10),
+          });
+        }
+      });
+
+      return { products, combos };
+    } catch (error) {
+      throw new Error('Error al parsear la respuesta');
+    }
   }
 
   async getRequests(idCustomer: string): Promise<{ contexto: string; contextoUser: string }> {
