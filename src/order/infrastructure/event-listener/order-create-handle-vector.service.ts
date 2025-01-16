@@ -7,7 +7,7 @@ import axios from 'axios';
 export class OrderVectorModifyService<T extends { id: string; customerId: string }> implements IListener<T> {
   @EventPattern('OrdenVectorModify')
   async handle(@Payload() data: T, @Ctx() context: RmqContext) {
-    const url = `http://127.0.0.1:8000/api/orden/orden`;
+    const url = `https://admin.godely.net/api/orden/orden`;
     const apiResponse = await axios.post(url, data);
     if (apiResponse.status !== 200) {
       throw new Error('Error al obtener la ruta de Google Maps');
