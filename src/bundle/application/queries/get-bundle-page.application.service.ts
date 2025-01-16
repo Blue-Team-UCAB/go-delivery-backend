@@ -23,7 +23,6 @@ export class GetBundleByPageApplicationService implements IApplicationService<Ge
 
   async execute(data: GetBundlePageServiceEntryDto): Promise<Result<GetBundlePageServiceResponseDto[]>> {
     const bundleResult: Result<Bundle[]> = await this.bundleRepository.findAllBundles(data.page, data.perpage, data.category, data.name, data.price, data.popular, data.discount);
-
     if (!bundleResult.isSuccess()) {
       return Result.fail(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
     }
@@ -33,9 +32,8 @@ export class GetBundleByPageApplicationService implements IApplicationService<Ge
     const bundles = await Promise.all(
       bundleResult.Value.map(async bundle => {
         const imageUrl: string = await this.s3Service.getFile(bundle.ImageUrl.Url);
-
         const discounts: Result<Discount[]> = await this.discountRepository.findDiscountByBundle(bundle, currentDate);
-        const discount: Discount = discounts.Value.length > 0 ? this.selectDiscountStrategy.selectDiscount(discounts.Value) : null;
+        const discount: Discount = discounts.isSuccess() && discounts.Value.length > 0 ? this.selectDiscountStrategy.selectDiscount(discounts.Value) : null;
 
         return {
           id: bundle.Id.Id,
@@ -47,14 +45,7 @@ export class GetBundleByPageApplicationService implements IApplicationService<Ge
           weight: bundle.Weight.Weight,
           measurement: 'gr',
           images: [imageUrl],
-          discount: discount
-            ? [
-                {
-                  id: discount.Id.Id,
-                  percentage: discount.Percentage.Percentage,
-                },
-              ]
-            : [],
+          discount: discount ? [{ id: discount.Id.Id, percentage: discount.Percentage.Percentage }] : [],
         };
       }),
     );
