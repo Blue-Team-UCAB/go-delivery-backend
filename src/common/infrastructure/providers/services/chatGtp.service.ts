@@ -43,7 +43,9 @@ export class ChatGptService implements IIaService {
       const resp = response.choices[0].message.content;
 
       return {
+        bot_id: '1',
         response: resp,
+        timestamp: new Date().toISOString(),
       };
     } catch (error) {
       console.log(error);
