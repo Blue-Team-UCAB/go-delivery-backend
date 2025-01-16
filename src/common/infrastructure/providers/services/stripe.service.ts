@@ -13,6 +13,7 @@ export class StripeService implements IStripeService {
 
   async PaymentIntent(amount: number, token: string, costumerId: string, idOrder: string): Promise<boolean> {
     try {
+      amount = Math.floor(amount * 100) / 100;
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount: amount * 100,
         currency: 'USD',
