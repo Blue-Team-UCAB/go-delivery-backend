@@ -90,7 +90,6 @@ export class ChatGptService implements IIaService {
 
         const { products, combos } = this.formatResponse(resp);
         hacerPregunta = false;
-        console.log(products, combos);
         return { products, combos };
       } catch (error) {
         continue;

@@ -48,7 +48,6 @@ export class IAController {
       const response = await this.ia_Service.makeRequest(message.message, user.idCostumer);
       return response;
     } catch (error) {
-      console.log(error);
       throw new Error('Error in the request');
     }
   }
@@ -92,7 +91,6 @@ export class IAController {
 
       return { products: productsResponseWithQuantity, combos: combosResponseWithQuantity };
     } catch (error) {
-      console.log(error);
       throw new Error('Error in the request');
     }
   }
