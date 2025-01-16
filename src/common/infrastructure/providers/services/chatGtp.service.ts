@@ -60,7 +60,7 @@ export class ChatGptService implements IIaService {
               content: `{contexto: ${contexto},el usuario ha tenido compras frecuentes de : ${contextoUser}}, 
               retorname solo Ids de productos que puedan interesarle al usuario, con una cantidad que le pueda interesar, y un monto que pueda pagar relacionado a sus ordenes anteriores,
               se bastante creativo,es para hacerle una recomendacion y armarle un carrito sorpresa con cosas relacionadas a sus gustos, para que conozca nuevos productos y nuevas aventuras.
-              el id retornalo en una variable llamada IdProducto si es de producto, si es de Combo en una variable llamada IdCombo, junto a la cantidad de cada uno. 
+              el id retornalo en una variable llamada IdProducto si es de producto, si es de Combo en una variable llamada IdCombo, junto a la cantidad de cada uno, maximo 5 productos y 2 combos maximo. 
               armalo con la siguiente estructura, y simpre responde con esta estructura, respetando las comas, las comillas y las llaves, y coloca en una sola linea:
               [{'IdProducto':'','cantidad':''},{'IdComboL':'','cantidad':''}]`,
             },
