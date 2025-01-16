@@ -40,6 +40,8 @@ import { CalculateOrderSubTotalDomainService } from '../../domain/services/calcu
 import { IStrategyToSelectDiscount } from '../../../common/domain/discount-strategy/select-discount-strategy.interface';
 import { CalculateOrderTotalDomainService } from 'src/order/domain/services/calculate-order-total-domain.service';
 import { IDiscountRepository } from 'src/discount/domain/repositories/discount-repository.interface';
+import { IPublisher } from 'src/common/application/events/eventPublisher.interface';
+import { InternalServerError } from 'openai';
 
 export class CreateOrderApplicationService implements IApplicationService<CreateOrderServiceEntryDto, CreateOrderServiceResponseDto> {
   constructor(
@@ -56,10 +58,12 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     private readonly dateService: IDateService,
     private readonly selectDiscountStrategy: IStrategyToSelectDiscount,
     private readonly discountRepository: IDiscountRepository,
+    private readonly publishEvent: IPublisher<{ id: string; customerId: string }>,
   ) {}
 
   async execute(data: CreateOrderServiceEntryDto): Promise<Result<CreateOrderServiceResponseDto>> {
     // Get all products from the order
+
     const orderProducts: OrderProduct[] = [];
     for (const productDto of data.products ?? []) {
       const productResult = await this.productRepository.findProductById(productDto.id);
@@ -185,12 +189,12 @@ export class CreateOrderApplicationService implements IApplicationService<Create
     );
 
     let paymentMethod: string = 'Wallet';
-    // If the payment is with stripe, make the payment
+
     const regex = new RegExp('^pm_[a-zA-Z0-9]{24}$');
     if (data.stripePaymentMethod && regex.test(data.stripePaymentMethod)) {
       const paymentSuccess = await this.stripeService.PaymentIntent(totalAmount, data.stripePaymentMethod, data.id_stripe_customer, order.Id.Id);
-      if (!paymentSuccess) {
-        return Result.fail<CreateOrderServiceResponseDto>(new Error('Payment failed'), 400, 'Payment failed');
+      if (paymentSuccess === false) {
+        return Result.fail<CreateOrderServiceResponseDto>(null, 400, 'Payment failed');
       }
     } else {
       const customerResult = await this.customerRepository.findById(data.id_customer);
@@ -250,6 +254,11 @@ export class CreateOrderApplicationService implements IApplicationService<Create
         date: await this.dateService.toUtcMinus4(state.Date),
       })),
     );
+
+    const respEventPublish = await this.publishEvent.publish('OrdenVectorModify', {
+      id: order.Id.Id,
+      customerId: order.CustomerId.Id,
+    });
 
     const response: CreateOrderServiceResponseDto = {
       id: order.Id.Id,

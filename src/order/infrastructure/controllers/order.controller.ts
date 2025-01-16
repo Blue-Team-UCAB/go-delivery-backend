@@ -65,6 +65,7 @@ export class OrderController {
     private readonly s3Service: S3Service,
     private readonly dateService: DateService,
     private readonly publisher: EventPublisher<DomainEventBase>,
+    private readonly publisherVector: EventPublisher<{ id: string; customerId: string }>,
     private readonly bestForTheCustomerStrategy: BestForTheCustomerStrategy,
   ) {
     this.uuidCreator = new UuidGenerator();
@@ -103,6 +104,7 @@ export class OrderController {
         this.dateService,
         this.bestForTheCustomerStrategy,
         this.discountRepository,
+        this.publisherVector,
       ),
       (error: Error) => {
         throw new InternalServerErrorException('Error creating order');
