@@ -56,7 +56,7 @@ export class ChatGptService implements IIaService {
           model: 'gpt-4',
           messages: [
             {
-              role: 'system',
+              role: 'assistant',
               content: `{
               Quienes somos? : ${contexto}.\n,
 
