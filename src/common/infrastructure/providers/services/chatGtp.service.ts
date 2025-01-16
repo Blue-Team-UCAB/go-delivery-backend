@@ -22,9 +22,18 @@ export class ChatGptService implements IIaService {
         model: 'gpt-4',
         messages: [
           {
-            role: 'system',
-            content: `{contexto: ${contexto},el usuario ha tenido compras frecuentes de : ${contextoUser}}, 
-            ayudalo recomendadole cosas que le puedan interesar, siempre y cuando te pregunta, lleva la conversacion de manera natural, se consiso y breve`,
+            role: 'assistant',
+            content: `Quienes somos? : ${contexto}.\n,
+              El usuario ha tenido compras frecuentes de los siguientes productos y combos, marcando sus preferencias: ${contextoUser}}.\n, 
+              
+              Ahora que sabemos que le gusta al usuario, vamos a interactuar con el, tu seras su asistente personal y podras ayudarlo de manera amigable, 
+              consisa y precisa, respondiendo a sus inquietudes, y ayudandolo en lo que necesite, recuerda que el cliente es lo mas importante, y que tu eres el mejor 
+              en aydarlo.\n 
+
+              Recuerda Tratarlo de manera amigable, dando respuestas en una sola linea y cortas, maximo usemos 20 palabras y recuerda tener coherencia en tus respuestas.\n
+
+              Se amable y cordial, y nunca lo dejes sin respuesta, recuerda que el cliente es lo mas importante, y que tu eres el mejor en ayudarlo.\n
+              `,
           },
           {
             role: 'user',
