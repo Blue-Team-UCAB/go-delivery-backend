@@ -45,7 +45,7 @@ export class IAController {
   @IsClientOrAdmin()
   async makeRequest(@Body() message: IaMakeRequestDto, @GetUser() user: AuthInterface) {
     try {
-      const response = await this.ia_Service.makeRequest(message.mensage, user.idCostumer);
+      const response = await this.ia_Service.makeRequest(message.message, user.idCostumer);
       return response;
     } catch (error) {
       console.log(error);
