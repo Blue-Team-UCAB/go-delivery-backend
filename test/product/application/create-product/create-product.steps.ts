@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import { createProductApplicationService } from 'src/product/application/commands/create-product-application.service';
 import { ProductRepositoryMock } from 'test/product/infraestructure/product-repository.mock';
-import { CategoryRepositoryMock } from 'test/category/category-repository.mock';
+import { CategoryRepositoryMock } from 'test/category/infraestructure/category-repository.mock';
 import { IdGeneratorMock } from 'test/common/infraestructure/id-Generato.mock';
 import { S3ServiceMock } from 'test/common/infraestructure/s3-service.mock';
 import { PublisherMock } from 'test/common/infraestructure/publisher.mock';
