@@ -33,7 +33,7 @@ export class GetProductByPageApplicationService implements IApplicationService<G
         const imageUrl: string = await this.s3Service.getFile(product.ImageUrl.Url);
 
         const discounts: Result<Discount[]> = await this.discountRepository.findDiscountByProduct(product, currentDate);
-        const discount: Discount = discounts.Value.length > 0 ? this.selectDiscountStrategy.selectDiscount(discounts.Value) : null;
+        const discount: Discount = discounts.isSuccess() && discounts.Value.length > 0 ? this.selectDiscountStrategy.selectDiscount(discounts.Value) : null;
 
         return {
           id: product.Id.Id,
@@ -45,14 +45,7 @@ export class GetProductByPageApplicationService implements IApplicationService<G
           weight: product.Weight.Weight,
           measurement: product.Measurement.Measurement,
           images: [imageUrl],
-          discount: discount
-            ? [
-                {
-                  id: discount.Id.Id,
-                  percentage: discount.Percentage.Percentage,
-                },
-              ]
-            : [],
+          discount: discount ? [{ id: discount.Id.Id, percentage: discount.Percentage.Percentage }] : [],
         };
       }),
     );

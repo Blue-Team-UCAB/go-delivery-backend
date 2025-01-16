@@ -62,14 +62,14 @@ export class BundleController {
   @IsClientOrAdmin()
   @ApiBearerAuth()
   async getBundleByPage(@Query(ValidationPipe) query: GetBundlePageDto) {
-    const { page, perpage } = query;
+    const { page, perpage, category, name, price, popular, discount } = query;
     const service = new ErrorHandlerAspect(
       new GetBundleByPageApplicationService(this.bundleRepository, this.discountRepository, this.bestForTheCustomerStrategy, this.s3Service, this.dateService),
       (error: Error) => {
         throw new InternalServerErrorException(error.message);
       },
     );
-    return (await service.execute({ page, perpage })).Value;
+    return (await service.execute({ page, perpage, category, name, price, popular, discount })).Value;
   }
 
   @Get(':id')

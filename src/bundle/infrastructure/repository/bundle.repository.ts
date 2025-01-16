@@ -90,7 +90,7 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
         .skip(skip)
         .take(perpage);
 
-      if (category) {
+      if (category && category.length > 0) {
         query.andWhere('category.name_Category LIKE ANY(:categoryNames)', { categoryNames: category.map(name => name) });
       }
 
