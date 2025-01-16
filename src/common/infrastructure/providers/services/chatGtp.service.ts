@@ -57,7 +57,9 @@ export class ChatGptService implements IIaService {
           messages: [
             {
               role: 'system',
-              content: `{Contexto: ${contexto}.\n,
+              content: `{
+              Quienes somos? : ${contexto}.\n,
+
               El usuario ha tenido compras frecuentes de los siguientes productos y combos, marcando sus preferencias: ${contextoUser}}.\n, 
 
               Ahora que sabemos que le gusta al usuario, vamos a recomendarle algo que le pueda interesar,
