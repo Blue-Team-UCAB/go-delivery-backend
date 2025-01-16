@@ -31,4 +31,18 @@ export class IAController {
       throw new Error('Error in the request');
     }
   }
+
+  @Post('random/card')
+  @ApiBearerAuth()
+  @UseAuth()
+  @IsClientOrAdmin()
+  async randomCard(@GetUser() user: AuthInterface) {
+    try {
+      const response = await this.ia_Service.getCard(user.idCostumer);
+      return response;
+    } catch (error) {
+      console.log(error);
+      throw new Error('Error in the request');
+    }
+  }
 }
