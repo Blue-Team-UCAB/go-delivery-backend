@@ -65,7 +65,7 @@ export class ChatGptService implements IIaService {
               se bastante creativo. Tienes la responsabilidad en hacerle una buena recomendacion y armarle un carrito especial y sopresa en nuestra super app,
               para que conozca nuevos productos y nuevas aventuras, recuerda que el cliente es lo mas importante, y que tu eres el mejor en hacer recomendaciones,
 
-              Porfavoe el id retornalo en una variable llamada IdProducto si es de producto, si es de Combo en una variable llamada IdCombo,
+              Porfavor el id retornalo en una variable llamada IdProducto si es de producto, si es de Combo en una variable llamada IdCombo,
               armalo con la siguiente estructura, y simpre responde con esta estructura, respetando las comas, las comillas y las llaves, y coloca en una sola linea:
               [{'IdProducto':'','cantidad':''},{'IdComboL':'','cantidad':''}]`,
             },
