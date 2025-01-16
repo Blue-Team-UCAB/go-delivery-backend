@@ -63,7 +63,10 @@ export class ChatGptService implements IIaService {
               Ahora que sabemos que le gusta al usuario, vamos a recomendarle algo que le pueda interesar,
               retorname solo Ids de productos que puedan interesarle, con una cantidad factible para el, y un monto que pueda pagar,
               se bastante creativo. Tienes la responsabilidad en hacerle una buena recomendacion y armarle un carrito especial y sopresa en nuestra super app,
-              para que conozca nuevos productos y nuevas aventuras, recuerda que el cliente es lo mas importante, y que tu eres el mejor en hacer recomendaciones,
+              para que conozca nuevos productos y nuevas aventuras, recuerda que el cliente es lo mas importante, y que tu eres el mejor en hacer recomendaciones.\n
+
+              Recuerda leer muy bien la descripcion de los productos y combos, para que puedas hacer una recomendacion acertada, junto a sus categorias. Ve bien el perfil del usuario
+              y hazlo de la mejor forma, busca que la compra tenga sentido y que no sean itenes aleatorios, es decir buscale un sentido a la compra, y que sea algo que le pueda interesar.\n
 
               Porfavor el id retornalo en una variable llamada IdProducto si es de producto, si es de Combo en una variable llamada IdCombo,
               armalo con la siguiente estructura, y simpre responde con esta estructura, respetando las comas, las comillas y las llaves, y coloca en una sola linea:
