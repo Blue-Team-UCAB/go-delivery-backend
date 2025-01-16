@@ -26,8 +26,6 @@ export class ChatGptService implements IIaService {
       const contexto = apiResponse.data.contexto;
       const contextoUser = apiResponse.data.contexto_Customer;
 
-      console.log(contexto, contextoUser);
-
       const response = await this.openai.chat.completions.create({
         model: 'gpt-4',
         messages: [
