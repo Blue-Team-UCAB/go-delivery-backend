@@ -16,5 +16,5 @@ export class IaMakeRequestDto {
   })
   @IsString()
   @IsNotEmpty()
-  mensage: string;
+  message: string;
 }
