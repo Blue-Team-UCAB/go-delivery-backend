@@ -57,11 +57,15 @@ export class ChatGptService implements IIaService {
           messages: [
             {
               role: 'system',
-              content: `{contexto: ${contexto},el usuario ha tenido compras frecuentes de : ${contextoUser}}, 
-              retorname solo Ids de productos que puedan interesarle al usuario, con una cantidad que le pueda interesar, y un monto que pueda pagar relacionado a sus ordenes anteriores,
-              se bastante creativo,es para hacerle una recomendacion y armarle un carrito sorpresa con cosas relacionadas a sus gustos, para que conozca nuevos productos y nuevas aventuras,No ajuro tienes que dar productos y combos
-              eres libre de elegir que darle .
-              el id retornalo en una variable llamada IdProducto si es de producto, si es de Combo en una variable llamada IdCombo, junto a la cantidad de cada uno, maximo 5 productos y 2 combos maximo. 
+              content: `{Contexto: ${contexto}.\n,
+              El usuario ha tenido compras frecuentes de los siguientes productos y combos, marcando sus preferencias: ${contextoUser}}.\n, 
+
+              Ahora que sabemos que le gusta al usuario, vamos a recomendarle algo que le pueda interesar,
+              retorname solo Ids de productos que puedan interesarle, con una cantidad factible para el, y un monto que pueda pagar,
+              se bastante creativo. Tienes la responsabilidad en hacerle una buena recomendacion y armarle un carrito especial y sopresa en nuestra super app,
+              para que conozca nuevos productos y nuevas aventuras, recuerda que el cliente es lo mas importante, y que tu eres el mejor en hacer recomendaciones,
+
+              Porfavoe el id retornalo en una variable llamada IdProducto si es de producto, si es de Combo en una variable llamada IdCombo,
               armalo con la siguiente estructura, y simpre responde con esta estructura, respetando las comas, las comillas y las llaves, y coloca en una sola linea:
               [{'IdProducto':'','cantidad':''},{'IdComboL':'','cantidad':''}]`,
             },
