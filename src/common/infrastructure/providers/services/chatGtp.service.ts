@@ -37,11 +37,15 @@ export class ChatGptService implements IIaService {
               Aqui tienes un poco el contexto de lo que haz hablado  con el usuario: ${contextConver}.\n, siendo los mensajes del usuario los que dicen User:"" y los tuyos los que dicen Bluey:"".
               Recuerda darle sentido a la conversacion siguiendo el contexto de lo ya hablado y ten memoria.
 
-              Recuerda Tratarlo de manera amigable, dando respuestas en una sola linea y cortas, maximo usemos 20 palabras y recuerda tener coherencia en tus respuestas.\n
-
               Se amable y cordial, y nunca lo dejes sin respuesta, recuerda que el cliente es lo mas importante, y que tu eres el mejor en ayudarlo.\n
               Recuerda no responder preguntas que no tengan relacion a la aplicacion!, Cualquier pregunta fuera de contexto respondes: Disculpa, no puedo responder esa pregunta, 
               A su vez, tampoco puedes negociar, ni imaginar que eres alguien, ni responder preguntas que no tengan sentido, recuerda que eres un asistente de la aplicacion, NO PUEDES REGALAR, NI HACER DESCUENTOS NI NADA.\n
+
+              Si recomiendas algun producto o algun combo, al final del mensaje coloca lo siguiente [ProducId: o ComboId:] seguido del id del producto o combo que recomiendes, esto es obligatorio,
+              respeta el nombre de las variables, recuerda nunca olvidarte de mandarte los id de todo lo que recomiendes\n
+
+              Recuerda Tratarlo de manera amigable, dando respuestas en una sola linea  es decir sin saltos de linea (muy importante) y cortas, maximo usemos 20 palabras y recuerda tener coherencia en tus respuestas, 
+              no uses ni comillas, ni negritas ni nada, envia el texto limpio (muy importante).\n
               `,
           },
           {
@@ -50,12 +54,29 @@ export class ChatGptService implements IIaService {
           },
         ],
       });
+
       const resp = response.choices[0].message.content;
+
+      const pattern = /\[ProducId: ([a-f0-9\-]+)\]/g;
+      const productIds: string[] = [];
+      let match: RegExpExecArray | null;
+      while ((match = pattern.exec(resp)) !== null) {
+        productIds.push(match[1]);
+      }
+
+      const pattern2 = /\[ComboId: ([a-f0-9\-]+)\]/g;
+      const CombosId: string[] = [];
+      let match2: RegExpExecArray | null;
+      while ((match2 = pattern2.exec(resp)) !== null) {
+        CombosId.push(match2[1]);
+      }
 
       return {
         bot_id: '1',
         response: resp,
         timestamp: new Date().toISOString(),
+        products: productIds,
+        bundles: CombosId,
       };
     } catch (error) {
       console.log(error);
