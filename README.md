@@ -8,20 +8,24 @@
 
 # Arquitectura
 
+---
+
 La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domain-Driven Design (DDD)** y **Behavior-Driven Development (BDD)** para garantizar un sistema flexible, escalable y de fácil mantenimiento.
 
 # Herramientas
+
+---
 
 <div align="center">
   <img src="https://nestjs.com/img/logo-small.svg" alt="NestJS Logo" width="50" style="margin: 10px;">
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" alt="PostgreSQL Logo" width="50" style="margin: 10px;">
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg" alt="Django Logo" width="50" style="margin: 10px;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/OpenAI_Logo.svg" alt="OpenAI Logo" width="50" style="margin: 10px;">
-  <img src="https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png" alt="AWS Logo" width="50" style="margin: 10px;">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/OPENIA.svg" alt="OpenAI Logo" width="50" style="margin: 10px;">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/AWS.jpg" alt="AWS Logo" width="50" style="margin: 10px;">
   <img src="https://stripe.com/img/v3/home/twitter.png" alt="Stripe Logo" width="50" style="margin: 10px;">
-  <img src="https://www.rabbitmq.com/img/Rabbit.png" alt="RabbitMQ Logo" width="50" style="margin: 10px;">
-  <img src="https://www.gstatic.com/devrel-devsite/prod/vb206ea381ebcb7d1b4d4b55f4b6c9aa82c085e5feca53fa4db62b1fd8e96930e/firebase/images/lockup.svg" alt="Firebase Logo" width="50" style="margin: 10px;">
-  <img src="https://cdn.worldvectorlogo.com/logos/nodemailer.svg" alt="Nodemailer Logo" width="50" style="margin: 10px;">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/Rabit.png" alt="RabbitMQ Logo" width="50" style="margin: 10px;">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/firabese.png" alt="Firebase Logo" width="50" style="margin: 10px;">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/nodemailer.svg" alt="Nodemailer Logo" width="50" style="margin: 10px;">
   <img src="https://www.svgrepo.com/show/331488/mongodb.svg" alt="MongoDB Logo" width="50" style="margin: 10px;">
 </div>
 
@@ -54,9 +58,9 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
      npm run start:dev
      ```
 
----
-
 ## Autores
+
+---
 
 <div align="center">
   <table>
@@ -75,5 +79,8 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
 
 ## Copyright
 
+---
+
 Este proyecto es parte del curso de desarrollo de software de la **Universidad Católica Andrés Bello (UCAB)**. No se permite la reproducción, distribución ni modificación sin autorización previa.
+
 © 2025 **Blue Team**, todos los derechos reservados.
