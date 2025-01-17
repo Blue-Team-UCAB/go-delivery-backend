@@ -20,7 +20,7 @@ Proyecto de Desarrollo de Software de la Universidad Catolica Andres Bello
 2. **Configura el archivo `.env`**:
 
    - En la raíz del proyecto, crea un archivo llamado `.env`.
-   - Agrega las siguientes variables de entorno en el archivo `.env`:
+   - Agrega tus variables de entorno, giandote del archivo llamado `.env.template`
 
 3. **Instala las Dependencias del Proyecto**:
 
@@ -29,14 +29,7 @@ Proyecto de Desarrollo de Software de la Universidad Catolica Andres Bello
      npm install
      ```
 
-4. **Levanta los Servicios con Docker (opcional)**:
-
-   - Si prefieres usar Docker, asegúrate de tener Docker y Docker Compose instalados, luego ejecuta:
-     ```bash
-     docker-compose up
-     ```
-
-5. **Inicia la Aplicación**:
+4. **Inicia la Aplicación**:
    - Finalmente, para iniciar la aplicación en modo desarrollo, ejecuta:
      ```bash
      npm run start:dev
