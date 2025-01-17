@@ -13,16 +13,16 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
 # Herramientas
 
 <div align="center">
-  <img src="https://nestjs.com/img/logo-small.svg" alt="NestJS Logo" width="50" style="margin: 10px;">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" alt="PostgreSQL Logo" width="50" style="margin: 10px;">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg" alt="Django Logo" width="50" style="margin: 10px;">
-  <img src="https://godely.s3.us-east-1.amazonaws.com/OPENIA.svg" alt="OpenAI Logo" width="50" style="margin: 10px;">
-  <img src="https://godely.s3.us-east-1.amazonaws.com/AWS.jpg" alt="AWS Logo" width="50" style="margin: 10px;">
-  <img src="https://stripe.com/img/v3/home/twitter.png" alt="Stripe Logo" width="50" style="margin: 10px;">
-  <img src="https://godely.s3.us-east-1.amazonaws.com/Rabit.png" alt="RabbitMQ Logo" width="50" style="margin: 10px;">
-  <img src="https://godely.s3.us-east-1.amazonaws.com/firabese.png" alt="Firebase Logo" width="50" style="margin: 10px;">
-  <img src="https://godely.s3.us-east-1.amazonaws.com/nodemailer.svg" alt="Nodemailer Logo" width="50" style="margin: 10px;">
-  <img src="https://www.svgrepo.com/show/331488/mongodb.svg" alt="MongoDB Logo" width="50" style="margin: 10px;">
+  <img src="https://nestjs.com/img/logo-small.svg" alt="NestJS Logo" width="50" style="margin: 5%;">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" alt="PostgreSQL Logo" width="50" style="margin: 5%;">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg" alt="Django Logo" width="50" style="margin: 5%;">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/OPENIA.svg" alt="OpenAI Logo" width="50" style="margin: 5%;">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/AWS.jpg" alt="AWS Logo" width="50" style="margin: 5%;">
+  <img src="https://stripe.com/img/v3/home/twitter.png" alt="Stripe Logo" width="50" style="margin: 5%;">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/Rabit.png" alt="RabbitMQ Logo" width="50" style="margin: 5%;">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/firabese.png" alt="Firebase Logo" width="50" style="margin: 5%;">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/nodemailer.svg" alt="Nodemailer Logo" width="50" style="margin: 5%;">
+  <img src="https://www.svgrepo.com/show/331488/mongodb.svg" alt="MongoDB Logo" width="50" style="margin: 5%;">
 </div>
 
 # Instalación
