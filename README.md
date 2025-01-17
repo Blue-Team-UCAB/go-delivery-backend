@@ -6,6 +6,10 @@
 
 Proyecto de Desarrollo de Software de la Universidad Catolica Andres Bello
 
+# Arquitectura
+
+La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domain-Driven Design (DDD)** y **Behavior-Driven Development (BDD)** para garantizar un sistema flexible, escalable y de fácil mantenimiento.
+
 # Instalación
 
 ---
