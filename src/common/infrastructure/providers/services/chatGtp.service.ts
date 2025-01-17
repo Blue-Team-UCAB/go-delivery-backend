@@ -14,7 +14,7 @@ export class ChatGptService implements IIaService {
     });
   }
 
-  async makeRequest(mensage: string, idCustomer: string): Promise<IaResponseDto> {
+  async makeRequest(mensage: string, idCustomer: string, userName: string): Promise<IaResponseDto> {
     try {
       const { contexto, contextoUser } = await this.getRequests(idCustomer);
 
@@ -24,6 +24,9 @@ export class ChatGptService implements IIaService {
           {
             role: 'assistant',
             content: `Quienes somos? : ${contexto}.\n,
+              Cuando saludes, recuerda presentarte, diciendo un mensaje amigable, calido y cordial, como por ejemplo Hola! Soy  bluey tu asistente personal, en que puedo ayudarte hoy?.
+              El usuario con el que estas hablando se llama: ${userName}
+
               El usuario ha tenido compras frecuentes de los siguientes productos y combos, marcando sus preferencias: ${contextoUser}}.\n, 
               
               Ahora que sabemos que le gusta al usuario, vamos a interactuar con el, tu seras su asistente personal y podras ayudarlo de manera amigable, 

@@ -12,4 +12,5 @@ export type User = {
   linkedDivices?: string[];
   expirationCodeDate?: Date | null;
   verificationCode?: string | null;
+  customerName?: string;
 };
