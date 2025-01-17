@@ -46,11 +46,11 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
 <table>
   <tr>
     <td align="center">
-      <img src="https://godely.s3.us-east-1.amazonaws.com/ChristianGomes.jpg" alt="Christian Gomes" width="150">
+      <img src="https://godely.s3.us-east-1.amazonaws.com/ChristianGomes.jpg" alt="Christian Gomes" width="150" height="170">
       <p><strong>Christian Gomes</strong></p>
     </td>
     <td align="center">
-      <img src="https://godely.s3.us-east-1.amazonaws.com/Estefany+Torres.jpg" alt="Estefany Torres" width="150">
+      <img src="https://godely.s3.us-east-1.amazonaws.com/Estefany+Torres.jpg" alt="Estefany Torres" width="150" height="170">
       <p><strong>Estefany Torres</strong></p>
     </td>
   </tr>
