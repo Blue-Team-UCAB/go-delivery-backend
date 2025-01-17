@@ -20,6 +20,12 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
 
 # Modelo Hexagonal
 
+<div align="center">
+  <a href="https://godely.s3.us-east-1.amazonaws.com/GoDely+-+Documentaci%C3%B3n+-+Modelo+de+Domino+V2+(1).svg" >
+    <img src="https://godely.s3.us-east-1.amazonaws.com/GoDely+-+Documentaci%C3%B3n+-+Modelo+de+Domino+V2+(1).svg" alr="Dominio" width="500px" height=""  >
+  </a>
+</div>
+
 # Herramientas
 
 <div align="center">
