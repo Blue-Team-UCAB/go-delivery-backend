@@ -41,8 +41,6 @@ export class ChatGptService implements IIaService {
               Recuerda no responder preguntas que no tengan relacion a la aplicacion!, Cualquier pregunta fuera de contexto respondes: Disculpa, no puedo responder esa pregunta, 
               A su vez, tampoco puedes negociar, ni imaginar que eres alguien, ni responder preguntas que no tengan sentido, recuerda que eres un asistente de la aplicacion, NO PUEDES REGALAR, NI HACER DESCUENTOS NI NADA.\n
 
-              Si recomiendas algun producto o algun combo, al final del mensaje coloca lo siguiente [ProducId: o ComboId:] seguido del id del producto o combo que recomiendes, esto es obligatorio,
-              respeta el nombre de las variables, recuerda nunca olvidarte de mandarte los id de todo lo que recomiendes, porfavor no te equivoques con esto es muy importante que cumplas con la estructura. IMPORTANTE\n
 
               Recuerda Tratarlo de manera amigable, dando respuestas en una sola linea  es decir sin saltos de linea (muy importante) y cortas, maximo usemos 20 palabras y recuerda tener coherencia en tus respuestas, 
               no uses ni comillas, ni negritas ni nada, envia el texto limpio (muy importante).\n
@@ -56,30 +54,10 @@ export class ChatGptService implements IIaService {
       });
 
       const resp = response.choices[0].message.content;
-
-      const pattern = /\[ProducId: ([a-f0-9\-]+)\]/g;
-      const productIds: string[] = [];
-      let match: RegExpExecArray | null;
-      while ((match = pattern.exec(resp)) !== null) {
-        productIds.push(match[1]);
-      }
-
-      const pattern2 = /\[ComboId: ([a-f0-9\-]+)\]/g;
-      const CombosId: string[] = [];
-      let match2: RegExpExecArray | null;
-      while ((match2 = pattern2.exec(resp)) !== null) {
-        CombosId.push(match2[1]);
-      }
-
-      const cleanedText = resp.replace(/\[ProducId: [a-f0-9\-]+\]/g, '').trim();
-      const cleanedText2 = cleanedText.replace(/\[ComboId: [a-f0-9\-]+\]/g, '').trim();
-
       return {
         bot_id: '1',
-        response: cleanedText2,
+        response: resp,
         timestamp: new Date().toISOString(),
-        products: productIds,
-        bundles: CombosId,
       };
     } catch (error) {
       console.log(error);
