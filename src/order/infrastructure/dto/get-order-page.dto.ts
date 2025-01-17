@@ -17,5 +17,5 @@ export class GetOrderPageDto {
   @IsOptional()
   @IsString()
   @IsIn(['active', 'past'])
-  status?: 'active' | 'past';
+  state?: 'active' | 'past';
 }

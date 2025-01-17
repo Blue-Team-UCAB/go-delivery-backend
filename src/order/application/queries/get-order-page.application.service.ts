@@ -15,7 +15,7 @@ export class GetOrderByPageApplicationService implements IApplicationService<Get
   ) {}
 
   async execute(data: GetOrderPageServiceEntryDto): Promise<Result<GetOrderPageServiceResponseDto[]>> {
-    const orderResult: Result<Order[]> = await this.orderRepository.findAllOrders(data.page, data.perpage, data.id_customer, data.status);
+    const orderResult: Result<Order[]> = await this.orderRepository.findAllOrders(data.page, data.perpage, data.id_customer, data.state);
 
     if (!orderResult.isSuccess()) {
       return Result.fail<GetOrderPageServiceResponseDto[]>(orderResult.Error, orderResult.StatusCode, orderResult.Message);
