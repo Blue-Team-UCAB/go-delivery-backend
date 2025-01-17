@@ -1,7 +1,8 @@
-import { IsString, IsNumber, IsPositive } from 'class-validator';
+import { IsString, IsNumber, IsPositive, IsUUID } from 'class-validator';
 
 export class BundleProductDto {
   @IsString()
+  @IsUUID()
   id: string;
 
   @IsNumber()

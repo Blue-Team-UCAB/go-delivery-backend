@@ -5,8 +5,9 @@ export class DirectionLatitude implements ValueObject<DirectionLatitude> {
   private readonly _latitude: string;
 
   constructor(latitude: string) {
-    const regex = new RegExp('^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$');
-    if (!regex.test(latitude)) throw new InvalidDirectionLatitudeException(`Latitude ${latitude} is not valid`);
+    if (latitude.length < 1) {
+      throw new InvalidDirectionLatitudeException('Latitude is not valid');
+    }
     this._latitude = latitude;
   }
 

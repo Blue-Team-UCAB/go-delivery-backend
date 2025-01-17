@@ -4,6 +4,16 @@ import { ProductRepository } from '../../../../product/infrastructure/repository
 import { DataSource, getMetadataArgsStorage } from 'typeorm';
 import { WalletRepository } from 'src/customer/infrastructure/repository/wallet-repository';
 import { PaymentRepository } from 'src/payment/infrastructure/repository/payment-repository';
+import { DirectionRepository } from 'src/customer/infrastructure/repository/direction-repository';
+import { BundleRepository } from 'src/bundle/infrastructure/repository/bundle.repository';
+import { DiscountRepository } from 'src/discount/infrastructure/repository/discount.repository';
+import { CouponRepository } from 'src/coupon/infrastructure/repository/coupon.repository';
+import { OrderRepository } from 'src/order/infrastructure/repository/order.repository';
+import { CategoryRepository } from 'src/category/infrastructure/repository/category.repository';
+import { MovementRepository } from 'src/order/infrastructure/repository/movement.repository';
+import { PaymentMethodRepository } from 'src/payment/infrastructure/repository/payment-method.repository';
+import { CouponCustomerRepository } from 'src/coupon/infrastructure/repository/coupon-customer.repository';
+import { CourierRepository } from 'src/order/infrastructure/repository/courier.repository';
 
 export const ormDatabaseProviders = [
   {
@@ -68,6 +78,77 @@ export const ormDatabaseProviders = [
     provide: 'PaymentRepository',
     useFactory: (dataSource: DataSource) => {
       return new PaymentRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'DirectionRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new DirectionRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'CourierRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new CourierRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'CourierMovementRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new MovementRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'PaymentMethodRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new PaymentMethodRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+
+  {
+    provide: 'BundleRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new BundleRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'DiscountRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new DiscountRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'CouponRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new CouponRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'OrderRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new OrderRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'CategoryRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new CategoryRepository(dataSource);
+    },
+    inject: ['BaseDeDatos'],
+  },
+  {
+    provide: 'CouponCustomerRepository',
+    useFactory: (dataSource: DataSource) => {
+      return new CouponCustomerRepository(dataSource);
     },
     inject: ['BaseDeDatos'],
   },

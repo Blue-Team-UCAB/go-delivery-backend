@@ -29,6 +29,12 @@ import { OrderController } from './order/infrastructure/controllers/order.contro
 import { OrderStatusChangeCosumerService } from './order/infrastructure/event-listener/change-order-status.service';
 import { CouponController } from './coupon/infrastructure/controllers/coupon.controller';
 import { FirebaseNotifierService } from './common/infrastructure/providers/services/push.notification.service';
+import { DiscountController } from './discount/infrastructure/controllers/discount.controller';
+import { UserController } from './customer/infrastructure/controller/costumer.controller';
+import { NotificationsController } from './auth/infrastructure/controller/notification.controller';
+import { BestForTheCustomerStrategy } from './common/infrastructure/select-discount-strategies/best-for-the-customer-strategy';
+import { IAController } from './IA/infrastructure/controllers/ia.controller';
+import { OrderVectorModifyService } from './order/infrastructure/event-listener/order-create-handle-vector.service';
 
 @Module({
   imports: [ConfigModule.forRoot(), MongooseModule.forRoot(`${process.env.MONGO_DB_URL}`), MongoEventModule, HttpModule],
@@ -43,6 +49,11 @@ import { FirebaseNotifierService } from './common/infrastructure/providers/servi
     CreateProductConsumerService,
     PaymentController,
     OrderStatusChangeCosumerService,
+    DiscountController,
+    UserController,
+    NotificationsController,
+    IAController,
+    OrderVectorModifyService,
   ],
   providers: [
     ...ormDatabaseProviders,
@@ -55,6 +66,7 @@ import { FirebaseNotifierService } from './common/infrastructure/providers/servi
     EventPublisher,
     MailSenderService,
     UserEmailProvider,
+    BestForTheCustomerStrategy,
     DateService,
     UuidGenerator,
     CodeVerificationService,

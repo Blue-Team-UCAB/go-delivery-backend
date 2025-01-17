@@ -29,6 +29,7 @@ export class UserMapper implements IMapper<User, UserORMEntity> {
       costumerId: persistence.costumer.id_Costumer,
       stripeId: persistence.stripeId,
       linkedDivices: persistence.linkedDivices,
+      customerName: persistence.costumer.name_Costumer,
     } as User;
   }
 }

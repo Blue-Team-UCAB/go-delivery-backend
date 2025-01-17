@@ -7,4 +7,5 @@ export interface AuthInterface {
   idCostumer: string;
   idStripe: string;
   linkedDivices: string[];
+  customerName: string;
 }

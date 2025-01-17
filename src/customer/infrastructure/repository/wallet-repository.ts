@@ -29,7 +29,7 @@ export class WalletRepository extends Repository<WalletORM> implements IWalletRe
     try {
       const walletORM = await this.walletMapper.fromDomainToPersistence(wallet);
       await this.save(walletORM);
-      return Result.success<Wallet>(wallet, 201);
+      return Result.success<Wallet>(wallet, 200);
     } catch (e) {
       return Result.fail(new Error(e.message), 500, e.message);
     }

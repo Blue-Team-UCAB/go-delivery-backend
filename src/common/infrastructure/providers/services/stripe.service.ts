@@ -13,9 +13,10 @@ export class StripeService implements IStripeService {
 
   async PaymentIntent(amount: number, token: string, costumerId: string, idOrder: string): Promise<boolean> {
     try {
+      amount = Math.floor(amount * 100) / 100;
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount: amount * 100,
-        currency: 'usd',
+        currency: 'USD',
         customer: costumerId,
         payment_method: token,
         payment_method_types: ['card'],
@@ -83,5 +84,78 @@ export class StripeService implements IStripeService {
       }
       return false;
     } catch (e) {}
+  }
+
+  async deleteCard(userId: string, cardId: string): Promise<boolean> {
+    try {
+      const paymentMethods = await this.stripe.paymentMethods.list({
+        customer: userId,
+        type: 'card',
+      });
+      const cardExists = paymentMethods.data.some(method => method.id === cardId);
+      if (!cardExists) {
+        console.error('Card does not belong to the user');
+        return false;
+      }
+      await this.stripe.paymentMethods.detach(cardId);
+      return true;
+    } catch (err) {
+      console.error('Error deleting card:', err);
+      return false;
+    }
+  }
+
+  async getOrdersNotRefundWithStripe(userId: string): Promise<string[]> {
+    try {
+      const paymentIntents = await this.stripe.paymentIntents.list({
+        customer: userId,
+        limit: 100,
+      });
+
+      const validOrders: string[] = [];
+      for (const paymentIntent of paymentIntents.data) {
+        const charges = await this.stripe.charges.list({
+          payment_intent: paymentIntent.id,
+          limit: 1,
+        });
+        const hasRefund = charges.data.some(charge => charge.refunded);
+
+        if (!hasRefund && paymentIntent.metadata.idOrder) {
+          validOrders.push(paymentIntent.metadata.idOrder);
+        }
+      }
+
+      return validOrders;
+    } catch (err) {
+      console.error('Error getting orders with stripe:', err);
+      return [];
+    }
+  }
+
+  async getOrdersRefundWithStripe(idStripe: string): Promise<string[]> {
+    try {
+      const paymentIntents = await this.stripe.paymentIntents.list({
+        customer: idStripe,
+        limit: 100,
+      });
+
+      const validOrders: string[] = [];
+      for (const paymentIntent of paymentIntents.data) {
+        const charges = await this.stripe.charges.list({
+          payment_intent: paymentIntent.id,
+          limit: 1,
+        });
+        const hasRefund = charges.data.some(charge => charge.refunded);
+
+        if (hasRefund && paymentIntent.metadata.idOrder) {
+          validOrders.push(paymentIntent.metadata.idOrder);
+        }
+      }
+
+      return validOrders;
+    } catch (err) {
+      console.error('Error getting orders with stripe:', err);
+      return [];
+    }
   }
 }

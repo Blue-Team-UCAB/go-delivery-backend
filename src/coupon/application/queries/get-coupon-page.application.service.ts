@@ -6,7 +6,6 @@ import { IDateService } from '../../../common/application/date-service/date-serv
 import { GetCouponPageServiceEntryDto } from '../dto/entry/get-coupon-page-service-entry.dto';
 import { GetCouponPageServiceResponseDto } from '../dto/response/get-coupon-page-service-response.dto';
 
-@Injectable()
 export class GetCouponPageApplicationService implements IApplicationService<GetCouponPageServiceEntryDto, GetCouponPageServiceResponseDto> {
   constructor(
     private readonly couponRepository: ICouponRepository,
@@ -16,7 +15,7 @@ export class GetCouponPageApplicationService implements IApplicationService<GetC
   async execute(data: GetCouponPageServiceEntryDto): Promise<Result<GetCouponPageServiceResponseDto>> {
     const couponResult = await this.couponRepository.findAllCoupons(data.page, data.perpage, data.search);
 
-    if (!couponResult.isSuccess) {
+    if (!couponResult.isSuccess()) {
       return Result.fail<GetCouponPageServiceResponseDto>(couponResult.Error, couponResult.StatusCode, couponResult.Message);
     }
 

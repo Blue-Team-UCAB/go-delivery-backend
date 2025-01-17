@@ -18,7 +18,7 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
   async getByEmail(email: string): Promise<Optional<User>> {
     try {
       const user = await this.createQueryBuilder('user')
-        .select(['user.id_User', 'user.email_User', 'user.password_User', 'user.role_User', 'user.expirationCodeDate', 'user.verification_Code'])
+        .select(['user.id_User', 'user.email_User', 'user.password_User', 'user.role_User', 'user.expirationCodeDate', 'user.verification_Code', 'user.stripeId', 'user.linkedDivices'])
         .leftJoinAndSelect('user.costumer', 'costumer')
         .addSelect(['costumer.id_Costumer', 'costumer.name_Costumer', 'costumer.phone_Costumer'])
         .where('user.email_User = :email', { email })
@@ -28,6 +28,7 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
         let userDomain = await this.userMapper.fromPersistenceToDomain(user);
         return new Optional<User>(userDomain);
       }
+
       return new Optional<User>();
     } catch (error) {
       throw new InternalServerErrorException({ error });
@@ -57,7 +58,7 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
     try {
       const userEntity = await this.userMapper.fromDomainToPersistence(user);
       await this.save(userEntity);
-      return Result.success<User>(user, 201);
+      return Result.success<User>(user, 200);
     } catch (error) {
       return Result.fail<User>(new Error(error.message), error.code, error.message);
     }
@@ -79,6 +80,25 @@ export class UserRepository extends Repository<UserORMEntity> implements IUserRe
       return Result.success<User>(user, 200);
     } catch (error) {
       return Result.fail<User>(new Error(error.message), error.code, error.message);
+    }
+  }
+
+  async getByIdCostumer(id: string): Promise<Optional<User>> {
+    try {
+      const user = await this.createQueryBuilder('user')
+        .select(['user.id_User', 'user.email_User', 'user.password_User', 'user.role_User', 'user.expirationCodeDate', 'user.verification_Code', 'user.stripeId', 'user.linkedDivices'])
+        .leftJoinAndSelect('user.costumer', 'costumer')
+        .addSelect(['costumer.id_Costumer', 'costumer.name_Costumer', 'costumer.phone_Costumer'])
+        .where('costumer.id_Costumer = :id', { id })
+        .getOne();
+
+      if (user) {
+        let userDomain = await this.userMapper.fromPersistenceToDomain(user);
+        return new Optional<User>(userDomain);
+      }
+      return new Optional<User>();
+    } catch (error) {
+      throw new InternalServerErrorException({ error });
     }
   }
 }

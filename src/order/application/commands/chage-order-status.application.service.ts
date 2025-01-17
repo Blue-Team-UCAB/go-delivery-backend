@@ -11,12 +11,16 @@ import { ICourierRepository } from '../repositories/courier-repository.interface
 import { OrderCourierId } from 'src/order/domain/value-objects/order-courier.id';
 import { OrderCourierPhone } from 'src/order/domain/value-objects/order-courier-phone';
 import { OrderCourierName } from 'src/order/domain/value-objects/order-courier-name';
+import { ICustomerRepository } from 'src/customer/domain/repositories/customer-repository.interface';
+import { IUserRepository } from 'src/auth/application/repository/user-repository.interface';
+import { OrderCourierImage } from 'src/order/domain/value-objects/order-courier-image';
 
 export class ChangeOrderStatusApplicationService implements IApplicationService<ChangeOrderStatusEntryDto, ChangeOrderStatuResponseDto> {
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly publisher: IPublisher<DomainEventBase>,
     private readonly courierRepository: ICourierRepository,
+    private readonly userRepository: IUserRepository,
   ) {}
 
   async execute(data: ChangeOrderStatusEntryDto): Promise<Result<ChangeOrderStatuResponseDto>> {
@@ -48,7 +52,12 @@ export class ChangeOrderStatusApplicationService implements IApplicationService<
       }
       const random = Math.floor(Math.random() * courier.Value.length);
       randomCourier = courier.Value[random];
-      order.assignCourier(OrderCourierId.create(randomCourier.id), OrderCourierName.create(randomCourier.name), OrderCourierPhone.create(randomCourier.phone));
+      order.assignCourier(
+        OrderCourierId.create(randomCourier.id),
+        OrderCourierName.create(randomCourier.name),
+        OrderCourierPhone.create(randomCourier.phone),
+        OrderCourierImage.create(randomCourier.image),
+      );
     }
 
     const update = await this.orderRepository.updateOrderStatus(order.Id.Id, newStatus.State, newStatus.Date, randomCourier ? randomCourier.id : null);
@@ -56,12 +65,19 @@ export class ChangeOrderStatusApplicationService implements IApplicationService<
       return Result.fail<ChangeOrderStatuResponseDto>(null, update.StatusCode, update.Message);
     }
 
+    const user = await this.userRepository.getByIdCostumer(order.CustomerId.Id);
+    if (!user.getAssigned()) {
+      return Result.fail<ChangeOrderStatuResponseDto>(null, 500, 'Internal server error');
+    }
+
+    const linkedDivices = user.getValue().linkedDivices;
+
     const event = order.getDomainEvents();
 
     const rest = {
       idOrder: event['id'],
       state: event['state'],
-      linkedDivices: data.linkedDivices,
+      linkedDivices: linkedDivices,
     };
 
     await this.publisher.publish(ORDER_STATUS_CHANGE_EVENT, { name: event.getEventName, timestamp: event.getOcurredOn, data: rest });

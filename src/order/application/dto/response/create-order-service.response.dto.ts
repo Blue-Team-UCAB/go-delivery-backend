@@ -1,11 +1,19 @@
 export interface CreateOrderServiceResponseDto {
   id: string;
-  state: StateHistoryDto[];
+  orderState: StateHistoryDto[];
+  orderCreatedDate: Date;
+  orderTimeCreated: string;
   totalAmount: number;
   subtotalAmount: number;
-  direction: DirectionDto;
+  currency: string;
+  orderDirection: DirectionDto;
   products: ProductBundleDto[];
   bundles: ProductBundleDto[];
+  orderPayment: {
+    amount: number;
+    currency: string;
+    paymentMethod: string;
+  };
 }
 
 export class StateHistoryDto {
@@ -14,15 +22,15 @@ export class StateHistoryDto {
 }
 
 export class DirectionDto {
-  direction: string;
-  longitude: number;
-  latitude: number;
+  lat: number;
+  long: number;
 }
 
 export class ProductBundleDto {
   id: string;
   name: string;
   price: number;
-  imageUrl: string;
+  images: string[];
   quantity: number;
+  currency: string;
 }

@@ -8,4 +8,5 @@ export interface IUserRepository {
   getById(id: string): Promise<Optional<User>>;
   updateUser(user: User): Promise<Result<User>>;
   getAllEmails(): Promise<string[]>;
+  getByIdCostumer(id: string): Promise<Optional<User>>;
 }

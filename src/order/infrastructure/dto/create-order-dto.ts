@@ -1,28 +1,56 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { plainToInstance, Transform, Type } from 'class-transformer';
-import { ArrayMinSize, ArrayNotEmpty, IsArray, IsNumber, IsOptional, IsPositive, IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsPositive, IsString, IsUUID, MinLength, ValidateNested } from 'class-validator';
 
 export class CreateOrderDto {
+  @ApiProperty({
+    description: 'Payment identifier',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @IsString()
-  @MinLength(10)
-  direction: string;
+  @IsUUID()
+  @IsOptional()
+  paymentId?: string;
 
-  @IsNumber()
-  longitude: number;
+  @ApiProperty({
+    description: 'Payment method',
+    example: 'credit_card',
+  })
+  @IsString()
+  @IsOptional()
+  paymentMethod?: string;
 
-  @IsNumber()
-  latitude: number;
+  @ApiProperty({
+    description: 'Customer address identifier',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsString()
+  @IsUUID()
+  idUserDirection: string;
 
+  @ApiProperty({
+    description: 'Stripe token',
+    example: 'pm_1J4J9v2eZvKYlo2C5J9v2eZv',
+  })
   @IsOptional()
   @IsString()
-  token_stripe: string;
+  stripePaymentMethod: string;
 
+  @ApiProperty({
+    description: 'Coupon identifier',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @IsOptional()
   @IsString()
-  id_coupon: string;
+  @IsUUID()
+  idCupon: string;
 
+  @ApiProperty({
+    description: 'Products to add to the order',
+    example: '[{"id":"123e4567-e89b-12d3-a456-426614174000","quantity":2}]',
+  })
+  @IsOptional()
   @IsArray()
-  @ArrayNotEmpty()
-  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => ProductBundleDto)
   @Transform(({ value }) => {
@@ -41,8 +69,12 @@ export class CreateOrderDto {
 
     throw new Error('Invalid type for products, expected string or array');
   })
-  products: ProductBundleDto[];
+  products?: ProductBundleDto[];
 
+  @ApiProperty({
+    description: 'Bundles to add to the order',
+    example: '[{"id":"123e4567-e89b-12d3-a456-426614174000","quantity":2}]',
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
@@ -68,6 +100,7 @@ export class CreateOrderDto {
 
 export class ProductBundleDto {
   @IsString()
+  @IsUUID()
   id: string;
 
   @IsNumber()

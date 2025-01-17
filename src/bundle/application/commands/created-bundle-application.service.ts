@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IApplicationService } from '../../../common/application/application-services/application-service.interface';
 import { CreateBundleServiceEntryDto } from '../dto/entry/create-bundle-service-entry.dto';
-import { CreateBundleServiceResponseDto } from '../dto/response/create-bundle-service-response.dto';
+import { BundleProductResponseDto, CreateBundleServiceResponseDto } from '../dto/response/create-bundle-service-response.dto';
 import { Result } from '../../../common/domain/result-handler/result';
 import { IdGenerator } from '../../../common/application/id-generator/id-generator.interface';
 import { Bundle } from '../../domain/bundle';
@@ -22,14 +22,18 @@ import { IStorageS3Service } from '../../../common/application/s3-storage-servic
 import { PricableAndWeightable } from 'src/bundle/domain/interfaces/bundle-composite';
 import { BundleEntity } from '../../domain/entities/bundle';
 //import { BundleQuantity } from '.././../../bundle/domain/value-objects/bundle-quantity';
-import { BundleProductResponseDto } from '../dto/response/bundle-product-response.dto';
 import { IDateService } from '../../../common/application/date-service/date-service.interface';
+import { ICategoryRepository } from '../../../category/domain/repositories/category-repository.interface';
+import { BundleCategory } from '../../domain/entities/bundle-category';
+import { CategoryId } from '../../../category/domain/value-objects/category.id';
+import { BundleCategoryName } from '../../domain/value-objects/bundle-category-name';
 
 @Injectable()
 export class createBundleApplicationService implements IApplicationService<CreateBundleServiceEntryDto, CreateBundleServiceResponseDto> {
   constructor(
     private readonly bundleRepository: IBundleRepository,
     private readonly productRepository: IProductRepository,
+    private readonly categoryRepository: ICategoryRepository,
     private readonly idGenerator: IdGenerator<string>,
     private readonly s3Service: IStorageS3Service,
     private readonly dateService: IDateService,
@@ -38,13 +42,24 @@ export class createBundleApplicationService implements IApplicationService<Creat
   async execute(data: CreateBundleServiceEntryDto): Promise<Result<CreateBundleServiceResponseDto>> {
     const imageKey = `bundles/${await this.idGenerator.generateId()}.jpg`;
 
+    const categories = await Promise.all(
+      data.categories.map(async categoryId => {
+        const categoryResult = await this.categoryRepository.findCategoryById(categoryId);
+        if (!categoryResult.isSuccess()) {
+          throw new Error(`Category with ID ${categoryId} not found`);
+        }
+        const category = categoryResult.Value;
+        return new BundleCategory(new CategoryId(category.Id.Id), new BundleCategoryName(category.Name.Name));
+      }),
+    );
+
     const bundleProducts: PricableAndWeightable[] = [];
 
     for (const product of data.products) {
       let productEntity: PricableAndWeightable;
       //if (product.type === 'product') {
       const productResult = await this.productRepository.findProductById(product.id);
-      if (!productResult.isSuccess || !productResult.Value) {
+      if (!productResult.isSuccess()) {
         return Result.fail<CreateBundleServiceResponseDto>(productResult.Error, productResult.StatusCode, productResult.Message);
       }
       const productDetail = productResult.Value;
@@ -69,6 +84,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
       imageUrl: BundleImage.create(imageKey),
       caducityDate: BundleCaducityDate.create(data.caducityDate),
       products: bundleProducts,
+      categories: categories,
     };
 
     const bundle = new Bundle(
@@ -82,6 +98,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
       dataBundle.imageUrl,
       dataBundle.caducityDate,
       dataBundle.products,
+      dataBundle.categories,
     );
 
     bundle.calculatePrice();
@@ -107,7 +124,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
             name: product.Name.Name,
             price: product.Price.Price,
             weight: product.Weight.Weight,
-            imageUrl: imageUrlBundle,
+            images: [imageUrlBundle],
             quantity: product.Quantity.Quantity,
             type: 'product' as const,
           };
@@ -118,7 +135,7 @@ export class createBundleApplicationService implements IApplicationService<Creat
             name: product.Name.Name,
             price: product.Price.Price,
             weight: product.Weight.Weight,
-            imageUrl: imageUrlBundle,
+            images: [imageUrlBundle],
             quantity: product.Quantity.Quantity,
             type: 'bundle' as const,
           };
@@ -138,6 +155,10 @@ export class createBundleApplicationService implements IApplicationService<Creat
       imageUrl: imagenUlr,
       caducityDate: await this.dateService.toUtcMinus4(bundle.CaducityDate.CaducityDate),
       products: products,
+      categories: bundle.Categories.map(category => ({
+        id: category.Id.Id,
+        name: category.Name.Name,
+      })),
     };
 
     return Result.success<CreateBundleServiceResponseDto>(response, 200);

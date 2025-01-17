@@ -1,5 +1,4 @@
 export interface GetProductIdServiceResponseDto {
-  id: string;
   name: string;
   description: string;
   currency: string;
@@ -7,6 +6,14 @@ export interface GetProductIdServiceResponseDto {
   stock: number;
   weight: number;
   measurement: string;
-  imageUrl: string;
-  categories: string[];
+  images: string[];
+  category: {
+    id: string;
+    name: string;
+  }[];
+  discount: {
+    id: string;
+    percentage: number;
+  }[];
+  caducityDate?: Date;
 }

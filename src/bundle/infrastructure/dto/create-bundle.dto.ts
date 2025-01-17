@@ -52,4 +52,9 @@ export class CreateBundleDto {
   @Type(() => Date)
   @IsDate()
   caducityDate: Date;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  categories: string[];
 }

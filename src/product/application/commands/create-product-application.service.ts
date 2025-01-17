@@ -21,10 +21,12 @@ import { ProductCategory } from '../../domain/entities/product-category';
 import { CategoryId } from '../../../category/domain/value-objects/category.id';
 import { ProductCategoryName } from '../../domain/value-objects/product-category-name';
 import { ProductMeasurement } from '../../domain/value-objects/product-measurement';
+import { ICategoryRepository } from '../../../category/domain/repositories/category-repository.interface';
 
 export class createProductApplicationService implements IApplicationService<CreateProductServiceEntryDto, CreateProductServiceResponseDto> {
   constructor(
     private readonly productRepository: IProductRepository,
+    private readonly categoryRepository: ICategoryRepository,
     private readonly idGenerator: IdGenerator<string>,
     private readonly s3Service: IStorageS3Service,
     private readonly publisher: IPublisher<DomainEvent>,
@@ -33,7 +35,17 @@ export class createProductApplicationService implements IApplicationService<Crea
   async execute(data: CreateProductServiceEntryDto): Promise<Result<CreateProductServiceResponseDto>> {
     const imageKey = `products/${await this.idGenerator.generateId()}.png`;
 
-    const categories = data.categories.map(category => new ProductCategory(new CategoryId(category.id), new ProductCategoryName(category.name)));
+    const categories = await Promise.all(
+      data.categories.map(async categoryId => {
+        const categoryResult = await this.categoryRepository.findCategoryById(categoryId);
+        if (!categoryResult.isSuccess()) {
+          throw new Error(`Category with ID ${categoryId} not found`);
+        }
+        const category = categoryResult.Value;
+        return new ProductCategory(new CategoryId(category.Id.Id), new ProductCategoryName(category.Name.Name));
+      }),
+    );
+
     const dataProduct = {
       name: ProductName.create(data.name),
       description: ProductDescription.create(data.description),

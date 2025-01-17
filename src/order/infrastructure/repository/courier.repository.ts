@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ICourierRepository } from '../../application/repositories/courier-repository.interface';
 import { DataSource, Repository } from 'typeorm';
 import { OrderCourierORMEntity } from '../models/orm-order-courier.entity';
-import { Result } from 'src/common/domain/result-handler/result';
-import { CourierDto } from 'src/order/application/dto/response/get-order-id-service.response.dto';
+import { Result } from '../../../common/domain/result-handler/result';
+import { CourierDto } from '../../../order/application/dto/response/change-order-status.response.dto';
 
 @Injectable()
 export class CourierRepository extends Repository<OrderCourierORMEntity> implements ICourierRepository {
@@ -13,13 +13,14 @@ export class CourierRepository extends Repository<OrderCourierORMEntity> impleme
 
   async findAllCourier(): Promise<Result<CourierDto[]>> {
     try {
-      const courier = await this.createQueryBuilder('courier').select(['courier.id', 'courier.name', 'courier.phone']).getMany();
+      const courier = await this.createQueryBuilder('courier').select(['courier.id', 'courier.name', 'courier.phone', 'courier.image']).getMany();
       let couriers: CourierDto[] = [];
       courier.map(courier => {
         couriers.push({
           id: courier.id,
           name: courier.name,
           phone: courier.phone,
+          image: courier.image,
         });
       });
       return Result.success<CourierDto[]>(couriers, 200);

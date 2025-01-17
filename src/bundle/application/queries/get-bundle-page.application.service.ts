@@ -7,25 +7,34 @@ import { IBundleRepository } from '../../domain/repositories/bundle-repository.i
 import { Bundle } from '../../domain/bundle';
 import { IStorageS3Service } from '../../../common/application/s3-storage-service/s3.storage.service.interface';
 import { IDateService } from '../../../common/application/date-service/date-service.interface';
+import { Discount } from '../../../discount/domain/discount';
+import { IDiscountRepository } from '../../../discount/domain/repositories/discount-repository.interface';
+import { IStrategyToSelectDiscount } from '../../../common/domain/discount-strategy/select-discount-strategy.interface';
 
 @Injectable()
-export class GetBundleByPageApplicationService implements IApplicationService<GetBundlePageServiceEntryDto, GetBundlePageServiceResponseDto> {
+export class GetBundleByPageApplicationService implements IApplicationService<GetBundlePageServiceEntryDto, GetBundlePageServiceResponseDto[]> {
   constructor(
     private readonly bundleRepository: IBundleRepository,
+    private readonly discountRepository: IDiscountRepository,
+    private readonly selectDiscountStrategy: IStrategyToSelectDiscount,
     private readonly s3Service: IStorageS3Service,
     private readonly dateService: IDateService,
   ) {}
 
-  async execute(data: GetBundlePageServiceEntryDto): Promise<Result<GetBundlePageServiceResponseDto>> {
-    const bundleResult: Result<Bundle[]> = await this.bundleRepository.findAllBundles(data.page, data.perpage);
-
-    if (!bundleResult.isSuccess) {
+  async execute(data: GetBundlePageServiceEntryDto): Promise<Result<GetBundlePageServiceResponseDto[]>> {
+    const bundleResult: Result<Bundle[]> = await this.bundleRepository.findAllBundles(data.page, data.perpage, data.category, data.name, data.price, data.popular, data.discount);
+    if (!bundleResult.isSuccess()) {
       return Result.fail(bundleResult.Error, bundleResult.StatusCode, bundleResult.Message);
     }
 
-    const bundlesWithImages = await Promise.all(
+    const currentDate = await this.dateService.now();
+
+    const bundles = await Promise.all(
       bundleResult.Value.map(async bundle => {
         const imageUrl: string = await this.s3Service.getFile(bundle.ImageUrl.Url);
+        const discounts: Result<Discount[]> = await this.discountRepository.findDiscountByBundle(bundle, currentDate);
+        const discount: Discount = discounts.isSuccess() && discounts.Value.length > 0 ? this.selectDiscountStrategy.selectDiscount(discounts.Value) : null;
+
         return {
           id: bundle.Id.Id,
           name: bundle.Name.Name,
@@ -34,16 +43,13 @@ export class GetBundleByPageApplicationService implements IApplicationService<Ge
           price: bundle.Price.Price,
           stock: bundle.Stock.Stock,
           weight: bundle.Weight.Weight,
-          imageUrl: imageUrl,
-          caducityDate: await this.dateService.toUtcMinus4(bundle.CaducityDate.CaducityDate),
+          measurement: 'gr',
+          images: [imageUrl],
+          discount: discount ? [{ id: discount.Id.Id, percentage: discount.Percentage.Percentage }] : [],
         };
       }),
     );
 
-    const response: GetBundlePageServiceResponseDto = {
-      bundles: bundlesWithImages,
-    };
-
-    return Result.success(response, 200);
+    return Result.success<GetBundlePageServiceResponseDto[]>(bundles, 200);
   }
 }

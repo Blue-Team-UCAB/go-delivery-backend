@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, Brackets } from 'typeorm';
 import { IBundleRepository } from '../../domain/repositories/bundle-repository.interface';
 import { Bundle } from '../../domain/bundle';
 import { BundleORMEntity } from '../models/orm-bundle.entity';
@@ -42,9 +42,14 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
           // 'childBundle.price',
           // 'childBundle.weight',
           // 'childBundle.imageUrl',
+          'bundleCategory.id_',
+          'category.id_Category',
+          'category.name_Category',
         ])
         .leftJoinAndSelect('bundle.bundleProducts', 'bundleProducts')
         .leftJoinAndSelect('bundleProducts.product', 'product')
+        .leftJoin('bundle.bundle_Categories', 'bundleCategory')
+        .leftJoin('bundleCategory.category', 'category')
         // .leftJoinAndSelect('bundle.parentBundles', 'bundleBundle')
         // .leftJoinAndSelect('bundleBundle.childBundle', 'childBundle')
         .where('bundle.id = :id', { id })
@@ -60,14 +65,59 @@ export class BundleRepository extends Repository<BundleORMEntity> implements IBu
     }
   }
 
-  async findAllBundles(page: number, perpage: number): Promise<Result<Bundle[]>> {
+  async findAllBundles(page: number, perpage: number, category?: string[], name?: string, price?: string, popular?: string, discount?: string): Promise<Result<Bundle[]>> {
     try {
       const skip = perpage * page - perpage;
-      const bundles = await this.createQueryBuilder('bundle')
-        .select(['bundle.id', 'bundle.name', 'bundle.description', 'bundle.currency', 'bundle.price', 'bundle.stock', 'bundle.weight', 'bundle.imageUrl', 'bundle.caducityDate'])
+      const schema = process.env.PGDB_SCHEMA;
+
+      const query = this.createQueryBuilder('bundle')
+        .select([
+          'bundle.id',
+          'bundle.name',
+          'bundle.description',
+          'bundle.currency',
+          'bundle.price',
+          'bundle.stock',
+          'bundle.weight',
+          'bundle.imageUrl',
+          'bundle.caducityDate',
+          'bundleCategory.id_',
+          'category.id_Category',
+          'category.name_Category',
+        ])
+        .leftJoin('bundle.bundle_Categories', 'bundleCategory')
+        .leftJoin('bundleCategory.category', 'category')
         .skip(skip)
-        .take(perpage)
-        .getMany();
+        .take(perpage);
+
+      if (category && category.length > 0) {
+        query.andWhere('category.name_Category LIKE ANY(:categoryNames)', { categoryNames: category.map(name => name) });
+      }
+
+      if (name) {
+        query.andWhere('bundle.name ILIKE :search OR bundle.description ILIKE :search', { search: `%${name}%` });
+      }
+
+      if (price) {
+        const maxPrice = parseFloat(price);
+        query.andWhere('bundle.price <= :maxPrice', { maxPrice });
+      }
+
+      if (popular) {
+        //logica para buscar los productos mas populares
+      }
+
+      if (discount) {
+        query.andWhere(
+          new Brackets(qb => {
+            qb.where(`EXISTS (SELECT 1 FROM ${schema}."DiscountBundle" dp WHERE dp."bundleId" = bundle."id")`).orWhere(
+              `EXISTS (SELECT 1 FROM ${schema}."DiscountCategory" dc WHERE dc."categoryIdCategory" = category."id_Category")`,
+            );
+          }),
+        );
+      }
+      const bundles = await query.getMany();
+
       const resp = await Promise.all(bundles.map(bundle => this.bundleMapper.fromPersistenceToDomain(bundle, false)));
       return Result.success<Bundle[]>(resp, 200);
     } catch (e) {

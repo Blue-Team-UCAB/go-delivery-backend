@@ -22,4 +22,24 @@ export class PaymentRepository extends Repository<PaymentORM> implements IPaymen
       return Result.fail<Payment>(null, 500, 'Internal server error');
     }
   }
+
+  async getPayments(idCustomer: string): Promise<Result<Payment[]>> {
+    try {
+      const payment = await this.createQueryBuilder('payment')
+        .select(['payment.id_Payment', 'payment.name_Payment', 'payment.date_Payment', 'payment.amount_Payment', 'payment.reference_Payment', 'costumer.id_Costumer'])
+        .leftJoin('payment.costumer', 'costumer')
+        .where('costumer.id_Costumer = :idCustomer', { idCustomer })
+        .getMany();
+
+      const payments = await Promise.all(
+        payment.map(async payment => {
+          return await this.paymentMapper.fromPersistenceToDomain(payment);
+        }),
+      );
+
+      return Result.success<Payment[]>(payments, 200);
+    } catch (error) {
+      return Result.fail<Payment[]>(null, 500, 'Internal server error');
+    }
+  }
 }

@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsArray, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class GetProductPageDto {
   @IsOptional()
@@ -15,10 +15,24 @@ export class GetProductPageDto {
   perpage: number = 10;
 
   @IsOptional()
-  @IsString()
-  category?: string;
+  @IsArray()
+  @IsString({ each: true })
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  category?: string[];
 
   @IsOptional()
   @IsString()
-  search?: string;
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  price?: string;
+
+  @IsOptional()
+  @IsString()
+  popular?: string;
+
+  @IsOptional()
+  @IsString()
+  discount?: string;
 }

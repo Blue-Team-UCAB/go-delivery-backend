@@ -35,7 +35,7 @@ export class OrderDirection implements ValueObject<OrderDirection> {
   }
 
   private isValidDirection(direction: string): boolean {
-    return direction.length >= 10;
+    return direction.length >= 3;
   }
 
   private isValidCoordinate(latitude: number, longitude: number): boolean {

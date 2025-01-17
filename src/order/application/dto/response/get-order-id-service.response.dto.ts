@@ -1,41 +1,46 @@
 export interface GetOrderIdServiceResponseDto {
-  id: string;
-  state: StateHistoryDto[];
+  orderId: string;
+  orderState: {
+    state: string;
+    date: Date;
+  }[];
+  orderTimeCreated: string;
   totalAmount: number;
-  subtotalAmount: number;
-  courier?: CourierDto;
-  report?: OrderReportDto;
-  direction: DirectionDto;
+  subTotal: number;
+  orderReceivedDate?: Date;
+  orderPayment?: {
+    paymetAmount: number;
+    paymentCurrency: string;
+    paymentMethod: string;
+  };
+  orderDirection: DirectionDto;
+  orderReport?: OrderReportDto;
+  orderCourier?: CourierDto;
   products: ProductBundleDto[];
   bundles: ProductBundleDto[];
 }
 
-export class CourierDto {
-  id: string;
-  name: string;
-  phone: string;
-}
-
 export class OrderReportDto {
-  claimDate: Date;
-  claim: string;
-}
-
-export class StateHistoryDto {
-  state: string;
-  date: Date;
+  description: string;
 }
 
 export class DirectionDto {
-  direction: string;
-  longitude: number;
-  latitude: number;
+  lat: number;
+  long: number;
+}
+
+export class CourierDto {
+  courierName: string;
+  courierImage: string;
+  phone: string;
 }
 
 export class ProductBundleDto {
   id: string;
   name: string;
-  price: number;
-  imageUrl: string;
+  description: string;
   quantity: number;
+  price: number;
+  images: string[];
+  currency: string;
 }
