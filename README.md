@@ -4,7 +4,7 @@
     <img src="https://godely.s3.us-east-1.amazonaws.com/logoGodely.jpg" alt="Logo de Godely" width="40%">
 </p>
 
-Proyecto de Desarrollo de Software de la Universidad Catolica Andres Bello
+**GoDely** es un proyecto de **delivery** para la **Universidad Católica Andrés Bello**, diseñado para optimizar la compra y entrega de productos con enfoque en simplicidad, rapidez y eficiencia.
 
 # Arquitectura
 
@@ -38,3 +38,26 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
      ```bash
      npm run start:dev
      ```
+
+---
+
+## Autores
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://godely.s3.us-east-1.amazonaws.com/ChristianGomes.jpg" alt="Christian Gomes" width="150">
+      <p><strong>Christian Gomes</strong></p>
+    </td>
+    <td align="center">
+      <img src="https://godely.s3.us-east-1.amazonaws.com/Estefany+Torres.jpg" alt="Estefany Torres" width="150">
+      <p><strong>Estefany Torres</strong></p>
+    </td>
+  </tr>
+</table>
+
+## Copyright
+
+© 2025 **Blue Team**, todos los derechos reservados.
+
+Este proyecto es parte del curso de desarrollo de software de la **Universidad Católica Andrés Bello (UCAB)**. No se permite la reproducción, distribución ni modificación sin autorización previa.
