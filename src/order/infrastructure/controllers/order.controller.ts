@@ -128,11 +128,11 @@ export class OrderController {
   @IsClientOrAdmin()
   @ApiBearerAuth()
   async getOrderPage(@Query(ValidationPipe) query: GetOrderPageDto, @GetUser() user: AuthInterface) {
-    const { page, perpage, status } = query;
+    const { page, perpage, state } = query;
     const service = new ErrorHandlerAspect(new GetOrderByPageApplicationService(this.orderRepository, this.dateService), (error: Error) => {
       throw new InternalServerErrorException('Error getting orders');
     });
-    return (await service.execute({ page, perpage, id_customer: user.idCostumer, status })).Value;
+    return (await service.execute({ page, perpage, id_customer: user.idCostumer, state })).Value;
   }
 
   @Post('change-status')
