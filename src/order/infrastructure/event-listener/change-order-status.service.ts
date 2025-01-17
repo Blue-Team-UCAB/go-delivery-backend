@@ -22,7 +22,7 @@ export class OrderStatusChangeCosumerService<T extends DataDto> implements IList
         data.data.state._state = 'CANCELADA';
       }
 
-      if (data.data.state._state === 'IN_PROCESS') {
+      if (data.data.state._state === 'IN PROCESS') {
         data.data.state._state = 'EN PROCESO';
       }
 
