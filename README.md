@@ -20,7 +20,7 @@ Proyecto de Desarrollo de Software de la Universidad Catolica Andres Bello
 2. **Configura el archivo `.env`**:
 
    - En la raíz del proyecto, crea un archivo llamado `.env`.
-   - Agrega tus variables de entorno, giandote del archivo llamado `.env.template`
+   - Guíate por el archivo `.env.template` para agregar las variables de entorno
 
 3. **Instala las Dependencias del Proyecto**:
 
