@@ -19,7 +19,7 @@ export class ChatGptService implements IIaService {
       const { contexto, contextoUser } = await this.getRequests(idCustomer);
 
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-3.5-turbo',
         messages: [
           {
             role: 'assistant',
@@ -33,6 +33,7 @@ export class ChatGptService implements IIaService {
               Recuerda Tratarlo de manera amigable, dando respuestas en una sola linea y cortas, maximo usemos 20 palabras y recuerda tener coherencia en tus respuestas.\n
 
               Se amable y cordial, y nunca lo dejes sin respuesta, recuerda que el cliente es lo mas importante, y que tu eres el mejor en ayudarlo.\n
+              Recuerda no responder preguntas que no tengan relacion a la aplicacion!, Cualquier pregunta fuera de contexto respondes: Disculpa, no puedo responder esa pregunta, 
               `,
           },
           {
@@ -62,7 +63,7 @@ export class ChatGptService implements IIaService {
         const { contexto, contextoUser } = await this.getRequests(idCustomer);
 
         const response = await this.openai.chat.completions.create({
-          model: 'gpt-4',
+          model: 'gpt-3.5-turbo',
           messages: [
             {
               role: 'assistant',
