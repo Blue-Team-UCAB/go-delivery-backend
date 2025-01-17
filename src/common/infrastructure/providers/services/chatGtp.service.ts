@@ -71,9 +71,12 @@ export class ChatGptService implements IIaService {
         CombosId.push(match2[1]);
       }
 
+      const cleanedText = resp.replace(/\[ProducId: [a-f0-9\-]+\]/g, '').trim();
+      const cleanedText2 = cleanedText.replace(/\[ComboId: [a-f0-9\-]+\]/g, '').trim();
+
       return {
         bot_id: '1',
-        response: resp,
+        response: cleanedText2,
         timestamp: new Date().toISOString(),
         products: productIds,
         bundles: CombosId,
