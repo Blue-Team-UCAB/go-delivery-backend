@@ -14,7 +14,7 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
 
 <div align="center">
   <a href="https://godely.s3.us-east-1.amazonaws.com/GoDely+-+Documentaci%C3%B3n+-+Modelo+de+Domino+V2.svg" >
-    <img src="https://godely.s3.us-east-1.amazonaws.com/GoDely+-+Documentaci%C3%B3n+-+Modelo+de+Domino+V2.svg" alr="Dominio" width="500px" height="350"  >
+    <img src="https://godely.s3.us-east-1.amazonaws.com/GoDely+-+Documentaci%C3%B3n+-+Modelo+de+Domino+V2.svg" alr="Dominio" width="500px" height=""  >
   </a>
 </div>
 
