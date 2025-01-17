@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class IaMakeRequestDto {
   @ApiProperty({
@@ -17,4 +17,12 @@ export class IaMakeRequestDto {
   @IsString()
   @IsNotEmpty()
   message: string;
+
+  @ApiProperty({
+    type: String,
+    example: 'context',
+  })
+  @IsString()
+  @IsOptional()
+  context?: string;
 }

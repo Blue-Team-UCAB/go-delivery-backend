@@ -9,6 +9,6 @@ export interface ComboDtoIA {
   cantidad: number;
 }
 export interface IIaService {
-  makeRequest(message: string, idCustomer: string, userName: string): Promise<IaResponseDto>;
+  makeRequest(message: string, idCustomer: string, userName: string, contextConver: string): Promise<IaResponseDto>;
   getCard(idCustomer: string): Promise<{ products: ProdcutDtoIA[]; combos: ComboDtoIA[] }>;
 }

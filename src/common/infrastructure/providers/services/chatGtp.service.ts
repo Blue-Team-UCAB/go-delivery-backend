@@ -14,7 +14,7 @@ export class ChatGptService implements IIaService {
     });
   }
 
-  async makeRequest(mensage: string, idCustomer: string, userName: string): Promise<IaResponseDto> {
+  async makeRequest(mensage: string, idCustomer: string, userName: string, contextConver: string): Promise<IaResponseDto> {
     try {
       const { contexto, contextoUser } = await this.getRequests(idCustomer);
 
@@ -27,11 +27,15 @@ export class ChatGptService implements IIaService {
               Cuando saludes, recuerda presentarte, diciendo un mensaje amigable, calido y cordial, como por ejemplo Hola! Soy  bluey tu asistente personal, en que puedo ayudarte hoy?.
               El usuario con el que estas hablando se llama: ${userName}
 
+
               El usuario ha tenido compras frecuentes de los siguientes productos y combos, marcando sus preferencias: ${contextoUser}}.\n, 
               
               Ahora que sabemos que le gusta al usuario, vamos a interactuar con el, tu seras su asistente personal y podras ayudarlo de manera amigable, 
               consisa y precisa, respondiendo a sus inquietudes, y ayudandolo en lo que necesite, recuerda que el cliente es lo mas importante, y que tu eres el mejor 
               en aydarlo.\n 
+
+              Aqui tienes un poco el contexto de lo que haz hablado  con el usuario: ${contextConver}.\n, siendo los mensajes del usuario los que dicen User:"" y los tuyos los que dicen Bluey:"".
+              Recuerda darle sentido a la conversacion siguiendo el contexto de lo ya hablado y ten memoria.
 
               Recuerda Tratarlo de manera amigable, dando respuestas en una sola linea y cortas, maximo usemos 20 palabras y recuerda tener coherencia en tus respuestas.\n
 
