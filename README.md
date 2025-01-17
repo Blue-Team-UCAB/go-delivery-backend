@@ -1,7 +1,7 @@
 # GoDely Backend
 
 <p align="center">
-    <img src="https://godely.s3.us-east-1.amazonaws.com/logoGodely.jpg" alt="Logo de Godely" width="40%">
+    <img src="https://godely.s3.us-east-1.amazonaws.com/logoGodely.svg" alt="Logo de Godely" width="40%">
 </p>
 
 **GoDely** es un proyecto de **delivery** para la **Universidad Católica Andrés Bello**, diseñado para optimizar la compra y entrega de productos con enfoque en simplicidad, rapidez y eficiencia.
