@@ -8,13 +8,9 @@
 
 # Arquitectura
 
----
-
 La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domain-Driven Design (DDD)** y **Behavior-Driven Development (BDD)** para garantizar un sistema flexible, escalable y de fácil mantenimiento.
 
 # Herramientas
-
----
 
 <div align="center">
   <img src="https://nestjs.com/img/logo-small.svg" alt="NestJS Logo" width="50" style="margin: 10px;">
@@ -30,8 +26,6 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
 </div>
 
 # Instalación
-
----
 
 1. **Clona el Repositorio desde GitHub**:
 
@@ -60,8 +54,6 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
 
 ## Autores
 
----
-
 <div align="center">
   <table>
     <tr>
@@ -78,8 +70,6 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
 </div>
 
 ## Copyright
-
----
 
 Este proyecto es parte del curso de desarrollo de software de la **Universidad Católica Andrés Bello (UCAB)**. No se permite la reproducción, distribución ni modificación sin autorización previa.
 
