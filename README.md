@@ -13,7 +13,9 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
 # Modelo de Dominio
 
 <div align="center">
-  <img src="https://godely.s3.us-east-1.amazonaws.com/GoDely+-+Documentaci%C3%B3n+-+Modelo+de+Domino+V2.svg" alr="Dominio" width="500px" height="400" >
+  <a href="https://godely.s3.us-east-1.amazonaws.com/GoDely+-+Documentaci%C3%B3n+-+Modelo+de+Domino+V2.svg" >
+    <img src="https://godely.s3.us-east-1.amazonaws.com/GoDely+-+Documentaci%C3%B3n+-+Modelo+de+Domino+V2.svg" alr="Dominio" width="500px" height="350"  >
+  </a>
 </div>
 
 # Modelo Hexagonal
@@ -74,15 +76,20 @@ La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domai
 <div align="center">
   <table>
     <tr>
-      <td align="center">
-        <img src="https://godely.s3.us-east-1.amazonaws.com/ChristianGomes.jpg" alt="Christian Gomes" width="140" height="170">
-        <p><strong>Christian Gomes</strong></p>
-      </td>
-      <td align="center">
-        <img src="https://godely.s3.us-east-1.amazonaws.com/Estefany+Torres.jpg" alt="Estefany Torres" width="140" height="170">
-        <p><strong>Estefany Torres</strong></p>
-      </td>
+        <td align="center">
+          <a href="https://github.com/Christianu7522">
+            <img src="https://godely.s3.us-east-1.amazonaws.com/ChristianGomes.jpg" alt="Christian Gomes" width="140" height="170">
+          </a>
+          <p><strong>Christian Gomes</strong></p>
+        </td>
+        <td align="center">
+          <a href="https://github.com/emmezita">
+            <img src="https://godely.s3.us-east-1.amazonaws.com/Estefany+Torres.jpg" alt="Estefany Torres" width="140" height="170">
+          </a>
+          <p><strong>Estefany Torres</strong></p>
+        </td>
     </tr>
+
   </table>
 </div>
 
