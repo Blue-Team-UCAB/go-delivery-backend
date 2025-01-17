@@ -1,3 +1,5 @@
 # GoDely Backend
 
-![GoDely Logo](https://godely.s3.us-east-1.amazonaws.com/logoGodely.jpg)
+<div style="text-align: center;">
+    <img src="https://godely.s3.us-east-1.amazonaws.com/logoGodely.jpg" alt="Logo de Godely" width="40%">
+</div>
