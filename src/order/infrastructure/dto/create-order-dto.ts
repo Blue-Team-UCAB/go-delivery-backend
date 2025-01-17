@@ -9,14 +9,16 @@ export class CreateOrderDto {
   })
   @IsString()
   @IsUUID()
-  paymentId: string;
+  @IsOptional()
+  paymentId?: string;
 
   @ApiProperty({
     description: 'Payment method',
     example: 'credit_card',
   })
   @IsString()
-  paymentMethod: string;
+  @IsOptional()
+  paymentMethod?: string;
 
   @ApiProperty({
     description: 'Customer address identifier',
