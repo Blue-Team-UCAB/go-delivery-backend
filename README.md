@@ -10,6 +10,10 @@
 
 La aplicación **Godely** sigue una **arquitectura hexagonal** junto con **Domain-Driven Design (DDD)** y **Behavior-Driven Development (BDD)** para garantizar un sistema flexible, escalable y de fácil mantenimiento.
 
+<div align="center">
+  <img src="https://godely.s3.us-east-1.amazonaws.com/GoDely+-+Documentaci%C3%B3n+-+Modelo+de+Domino+V2.svg" alr="Dominio" width="500px" height="400" >
+</div>
+
 # Herramientas
 
 <div align="center">
