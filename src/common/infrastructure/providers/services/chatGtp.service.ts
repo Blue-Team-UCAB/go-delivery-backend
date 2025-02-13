@@ -19,7 +19,7 @@ export class ChatGptService implements IIaService {
       const { contexto, contextoUser } = await this.getRequests(idCustomer);
 
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-3.5-turbo',
         messages: [
           {
             role: 'assistant',
@@ -73,7 +73,7 @@ export class ChatGptService implements IIaService {
         const { contexto, contextoUser } = await this.getRequests(idCustomer);
 
         const response = await this.openai.chat.completions.create({
-          model: 'gpt-4',
+          model: 'gpt-3.5-turbo',
           messages: [
             {
               role: 'assistant',
