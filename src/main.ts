@@ -34,6 +34,7 @@ async function GoDely() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/documentation', app, documentFactory);
 
+  console.log(`Go Dely API is running on port ${process.env.PORT}`);
   await app.listen(process.env.PORT, '0.0.0.0');
 }
 
