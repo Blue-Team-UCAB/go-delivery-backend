@@ -8,8 +8,6 @@ export class ChatGptService implements IIaService {
 
   constructor() {
     this.openai = new OpenAI({
-      organization: process.env.openIA_organization,
-      project: process.env.openIA_project,
       apiKey: process.env.openIA_api_key,
     });
   }
@@ -103,7 +101,7 @@ export class ChatGptService implements IIaService {
         hacerPregunta = false;
         return { products, combos };
       } catch (error) {
-        continue;
+        throw new Error('Error in the request');
       }
     }
   }
@@ -136,7 +134,7 @@ export class ChatGptService implements IIaService {
   }
 
   async getRequests(idCustomer: string): Promise<{ contexto: string; contextoUser: string }> {
-    const url = `https://admin.godely.net/api/get/context/${idCustomer}`;
+    const url = `${process.env.ADMIN_URL}/api/get/context/${idCustomer}`;
     const apiResponse = await axios.get(url);
     if (apiResponse.status !== 200) {
       throw new Error('Error al obtener la ruta de Google Maps');

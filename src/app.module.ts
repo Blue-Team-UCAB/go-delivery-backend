@@ -52,8 +52,8 @@ import { OrderVectorModifyService } from './order/infrastructure/event-listener/
     DiscountController,
     UserController,
     NotificationsController,
-    // IAController,  // IA is not active
-    // OrderVectorModifyService, // IA is not active
+    IAController,
+    OrderVectorModifyService,
   ],
   providers: [
     ...ormDatabaseProviders,

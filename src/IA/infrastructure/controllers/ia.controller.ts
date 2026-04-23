@@ -17,7 +17,6 @@ import { DataSource } from 'typeorm';
 import { GetBundleByPageApplicationService } from 'src/bundle/application/queries/get-bundle-page.application.service';
 import { BundleRepository } from 'src/bundle/infrastructure/repository/bundle.repository';
 
-@ApiExcludeController()
 @ApiTags('IA')
 @Controller('ia')
 export class IAController {
