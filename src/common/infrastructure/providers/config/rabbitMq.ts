@@ -7,7 +7,17 @@ export const RabbitMQProvider = [
     useFactory: (): ClientOptions => ({
       transport: Transport.RMQ,
       options: {
-        urls: [process.env.RABBITMQ_URL],
+        urls: [
+          {
+            protocol: 'amqp',
+            hostname: process.env.RABBITMQ_HOST,
+            port: process.env.RABBITMQ_PORT ? parseInt(process.env.RABBITMQ_PORT, 10) : 5672,
+            username: process.env.RABBITMQ_USERNAME,
+            password: process.env.RABBITMQ_PASSWORD,
+            vhost: process.env.RABBITMQ_VHOST || '/',
+            frameMax: 8192,
+          },
+        ],
         queue: process.env.RABBITMQ_QUEUE,
         queueOptions: {
           durable: true,
@@ -25,7 +35,17 @@ export const RabbitMQProvider = [
 export const RabbitMQMicroservice = (configService: ConfigService): MicroserviceOptions => ({
   transport: Transport.RMQ,
   options: {
-    urls: [configService.get<string>('RABBITMQ_URL')],
+    urls: [
+      {
+        protocol: 'amqp',
+        hostname: process.env.RABBITMQ_HOST,
+        port: process.env.RABBITMQ_PORT ? parseInt(process.env.RABBITMQ_PORT, 10) : 5672,
+        username: process.env.RABBITMQ_USERNAME,
+        password: process.env.RABBITMQ_PASSWORD,
+        vhost: process.env.RABBITMQ_VHOST || '/',
+        frameMax: 8192,
+      },
+    ],
     queue: configService.get<string>('RABBITMQ_QUEUE'),
     queueOptions: {
       durable: true,

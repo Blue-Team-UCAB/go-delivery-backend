@@ -48,18 +48,18 @@ import { OrderVectorModifyService } from './order/infrastructure/event-listener/
     AuthController,
     CreateProductConsumerService,
     PaymentController,
-    OrderStatusChangeCosumerService,
+    // OrderStatusChangeCosumerService, // Firebase Is not active
     DiscountController,
     UserController,
     NotificationsController,
-    IAController,
-    OrderVectorModifyService,
+    // IAController,  // IA is not active
+    // OrderVectorModifyService, // IA is not active
   ],
   providers: [
     ...ormDatabaseProviders,
     ...s3Provider,
     S3Service,
-    ...FireBaseConfig,
+    // ...FireBaseConfig, // Firebase Is not active
     Sha256Service,
     ...JwtProvider,
     ...RabbitMQProvider,
@@ -72,7 +72,7 @@ import { OrderVectorModifyService } from './order/infrastructure/event-listener/
     CodeVerificationService,
     ApiBCV,
     PaymentCheckPagoMovil,
-    FirebaseNotifierService,
+    // FirebaseNotifierService, // Firebase Is not active
   ],
 })
 export class AppModule {}
